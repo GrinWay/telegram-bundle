@@ -10,6 +10,18 @@ composer require grinway/telegram-bundle
 > NOTE: With the help of composer recipe you will get<br>`config/packages/grinway_telegram.yaml` and
 > `config/routes/grinway_telegram_routes.yaml`<br>**Check they're not empty!**
 
+Add this to your `bundles.php`
+
+```php
+<?php
+
+// %kernel.project_dir%/config/bundles.php
+return [
+    GrinWay\Service\GrinWayServiceBundle::class => ['all' => true],
+    GrinWay\Telegram\GrinWayTelegramBundle::class => ['all' => true],
+];
+```
+
 If you didn't get these configuration files just copy them from `@GrinWayTelegram/.install/symfony/config`
 
 2. Execute (for `node_modules` dependencies)
