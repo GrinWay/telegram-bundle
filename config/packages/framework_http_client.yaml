@@ -5,13 +5,13 @@ framework:
         scoped_clients:
 
             # https://core.telegram.org/bots/api#making-requests
-            grinway.telegram.client:
+            grinway_telegram.client:
                 base_uri: 'https://api.telegram.org/bot%env(default:grinway_telegram.bot.api_token:)%/'
                 headers:
                     Content-Type: 'application/json'
 
             # https://core.telegram.org/bots/api#file
-            grinway.telegram.file.client:
+            grinway_telegram.file.client:
                 base_uri: 'https://api.telegram.org/file/bot%env(default:grinway_telegram.bot.api_token:)%/'
                 headers:
                     Content-Type: 'application/json'
