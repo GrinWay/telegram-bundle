@@ -10,7 +10,7 @@ composer require grinway/telegram-bundle
 > NOTE: With the help of composer recipe you will get<br>`config/packages/grinway_telegram.yaml` and
 > `config/routes/grinway_telegram_routes.yaml`<br>**Check they're not empty!**
 
-Add this to your `bundles.php`
+2. Add this to your `bundles.php`
 
 ```php
 <?php
@@ -24,13 +24,13 @@ return [
 
 If you didn't get these configuration files just copy them from `@GrinWayTelegram/.install/symfony/config`
 
-2. Execute (for `node_modules` dependencies)
+3. Execute (for `node_modules` dependencies)
 
 ```console
 yarn install --force
 ```
 
-3. Set all ENV variables of this bundle (required by the `config/packages/grinway_telegram.yaml` file):
+4. Set all ENV variables of this bundle (required by the `config/packages/grinway_telegram.yaml` file):
 
 ```env
 ###> grinway/telegram-bundle ###
