@@ -1,5 +1,6 @@
 GrinWay/telegram-bundle
 ======
+[![Tests](https://github.com/GrinWay/telegram-bundle/workflows/tests/badge.svg)
 [![Latest Stable Version](https://poser.pugx.org/GrinWay/telegram-bundle/v)](//packagist.org/packages/GrinWay/telegram-bundle)
 [![Total Downloads](https://poser.pugx.org/GrinWay/telegram-bundle/downloads)](//packagist.org/packages/GrinWay/telegram-bundle)
 
