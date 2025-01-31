@@ -1,0 +1,11 @@
+framework:
+    notifier:
+
+        enabled: true
+
+when@test:
+    framework:
+        notifier:
+
+            chatter_transports:
+                telegram: 'telegram://%env(default:grinway_telegram.bot.api_token:)%@default'

@@ -1,0 +1,35 @@
+{
+    "name": "@grinway/telegram",
+    "description": "",
+    "license": "MIT",
+    "version": "0.0.0",
+    "main": "dist/bot/web-app_controller.js",
+    "scripts": {},
+    "symfony": {
+        "controllers": {
+            "web-app": {
+                "main": "dist/bot/web-app_controller.js",
+                "name": "grinway-telegram/web-app",
+                "webpackMode": "eager",
+                "fetch": "eager",
+                "autoimport": {
+                    "@grinway/telegram/dist/style/main.scss": false
+                },
+                "enabled": true
+            }
+        },
+        "importmap": {
+            "@hotwired/stimulus": "^3.0.0"
+        }
+    },
+    "peerDependencies": {
+        "@hotwired/stimulus": "^3.0.0",
+        "@grinway/type-checker": "^1.0.0",
+        "@grinway/theme-manager": "^1.0.0"
+	},
+    "devDependencies": {
+        "@hotwired/stimulus": "^3.0.0",
+        "sass": "^1.82.0",
+        "sass-loader": "16.0.1"
+    }
+}

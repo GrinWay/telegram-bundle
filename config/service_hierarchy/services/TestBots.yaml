@@ -1,0 +1,80 @@
+when@test:
+    services:
+
+        _defaults:
+            autoconfigure: false
+            autowire: true
+
+        ###> MESSAGE TAG ###
+        GrinWay\Telegram\Bot\Test\ReplyToMessage\:
+            resource: '../../../src/Bot/Test/ReplyToMessage/'
+            tags:
+            -   name: !php/const GrinWay\Telegram\Bot\Contract\Topic\ReplyToMessageHandlerInterface::TAG
+                priority: !php/const GrinWay\Telegram\Bot\Contract\Topic\ReplyToMessageHandlerInterface::PRIORITY
+
+        GrinWay\Telegram\Bot\Test\PriorityAble\Message\Payment\:
+            resource: '../../../src/Bot/Test/PriorityAble/Message/Payment/'
+            tags:
+            -   name: !php/const GrinWay\Telegram\Bot\Contract\Topic\SuccessfulPaymentMessageHandlerInterface::TAG
+                priority: !php/const GrinWay\Telegram\Bot\Contract\Topic\SuccessfulPaymentMessageHandlerInterface::PRIORITY
+
+        GrinWay\Telegram\Bot\Test\PriorityAble\Message\Command\:
+            resource: '../../../src/Bot/Test/PriorityAble/Message/Command/'
+            tags:
+            -   name: !php/const GrinWay\Telegram\Bot\Contract\Topic\CommandMessageHandlerInterface::TAG
+                priority: !php/const GrinWay\Telegram\Bot\Contract\Topic\CommandMessageHandlerInterface::PRIORITY
+
+        GrinWay\Telegram\Bot\Test\PriorityAble\Message\Command\LowPriority\:
+            resource: '../../../src/Bot/Test/PriorityAble/Message/Command/LowPriority/'
+            tags:
+            -   name: !php/const GrinWay\Telegram\Bot\Contract\Topic\LowPriorityCommandMessageHandlerInterface::TAG
+                priority: !php/const GrinWay\Telegram\Bot\Contract\Topic\LowPriorityCommandMessageHandlerInterface::PRIORITY
+
+        GrinWay\Telegram\Bot\Test\PriorityAble\Message\PrivateChat\:
+            resource: '../../../src/Bot/Test/PriorityAble/Message/PrivateChat/'
+            tags:
+            -   name: !php/const GrinWay\Telegram\Bot\Contract\Topic\PrivateChatMessageHandlerInterface::TAG
+                priority: !php/const GrinWay\Telegram\Bot\Contract\Topic\PrivateChatMessageHandlerInterface::PRIORITY
+
+        GrinWay\Telegram\Bot\Test\PriorityAble\Message\Group\:
+            resource: '../../../src/Bot/Test/PriorityAble/Message/Group/'
+            tags:
+            -   name: !php/const GrinWay\Telegram\Bot\Contract\Topic\GroupMessageHandlerInterface::TAG
+                priority: !php/const GrinWay\Telegram\Bot\Contract\Topic\GroupMessageHandlerInterface::PRIORITY
+
+        GrinWay\Telegram\Bot\Test\Message\:
+            resource: '../../../src/Bot/Test/Message/'
+            tags:
+            -   name: !php/const GrinWay\Telegram\Bot\Contract\Topic\MessageHandlerInterface::TAG
+                priority: !php/const GrinWay\Telegram\Bot\Contract\Topic\MessageHandlerInterface::PRIORITY
+        ###< MESSAGE TAG ###
+
+        ###> CALLBACK QUERY TAG ###
+        GrinWay\Telegram\Bot\Test\CallbackQuery\:
+            resource: '../../../src/Bot/Test/CallbackQuery/'
+            tags:
+            -   name: !php/const GrinWay\Telegram\Bot\Contract\Topic\CallbackQueryHandlerInterface::TAG
+                priority: !php/const GrinWay\Telegram\Bot\Contract\Topic\CallbackQueryHandlerInterface::PRIORITY
+        ###< CALLBACK QUERY TAG ###
+
+        ###> INLINE QUERY TAG ###
+        GrinWay\Telegram\Bot\Test\InlineQuery\:
+            resource: '../../../src/Bot/Test/InlineQuery/'
+            tags:
+            -   name: !php/const GrinWay\Telegram\Bot\Contract\Topic\InlineQueryHandlerInterface::TAG
+                priority: !php/const GrinWay\Telegram\Bot\Contract\Topic\InlineQueryHandlerInterface::PRIORITY
+        ###< INLINE QUERY TAG ###
+
+        ###> PAYMENTS ###
+        GrinWay\Telegram\Bot\Test\Payment\PreCheckoutQuery\:
+            resource: '../../../src/Bot/Test/Payment/PreCheckoutQuery/'
+            tags:
+            -   name: !php/const GrinWay\Telegram\Bot\Contract\Topic\PreCheckoutQueryHandlerInterface::TAG
+                priority: !php/const GrinWay\Telegram\Bot\Contract\Topic\PreCheckoutQueryHandlerInterface::PRIORITY
+
+        GrinWay\Telegram\Bot\Test\Payment\ShippingQuery\:
+            resource: '../../../src/Bot/Test/Payment/ShippingQuery/'
+            tags:
+            -   name: !php/const GrinWay\Telegram\Bot\Contract\Topic\ShippingQueryHandlerInterface::TAG
+                priority: !php/const GrinWay\Telegram\Bot\Contract\Topic\ShippingQueryHandlerInterface::PRIORITY
+        ###< PAYMENTS ###

@@ -1,0 +1,70 @@
+{
+  "name": "grinway/telegram-bundle",
+  "type": "symfony-bundle",
+  "version": "1.0.0",
+  "description": "This bundle is intended to create telegram bots",
+  "keywords": [
+    "grinway",
+    "symfony",
+    "telegram-bot",
+    "telegram-bundle",
+    "telegram-bot-api",
+    "bundle",
+    "symfony-ux"
+  ],
+  "license": "MIT",
+  "require-dev": {
+    "symfony/phpunit-bridge": "^7.2",
+    "phpunit/phpunit": "11.4",
+    "symfony/test-pack": "^1.0"
+  },
+  "authors": [
+    {
+      "name": "Grigory Koblitskiy",
+      "email": "grin180898@outlook.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "GrinWay\\Telegram\\": "src/",
+      "GrinWay\\Telegram\\Tests\\": "tests/"
+    }
+  },
+  "conflict": {
+    "symfony/flex": "<1.13"
+  },
+  "extra": {},
+  "minimum-stability": "stable",
+  "require": {
+    "symfony/framework-bundle": "^7.2",
+    "symfony/runtime": "^7.2",
+    "symfony/http-client": "^7.2",
+    "symfony/console": "^7.2",
+    "symfony/translation": "^7.2",
+    "symfony/property-access": "^7.2",
+    "symfony/telegram-notifier": "^7.2",
+    "symfony/messenger": "^7.2",
+    "symfony/serializer": "^7.2",
+    "symfony/notifier": "^7.2",
+    "symfony/string": "^7.2",
+    "symfony/yaml": "^7.2",
+    "symfony/validator": "^7.2",
+    "symfony/intl": "^7.2",
+    "symfony/dotenv": "^7.2",
+    "symfony/emoji": "^7.2",
+    "symfony/twig-bundle": "^7.2",
+    "symfony/stimulus-bundle": "^2.22",
+    "symfony/webpack-encore-bundle": "^2.2",
+    "endroid/installer": "^1",
+    "grinway/service-bundle": "0.0.6",
+    "zenstruck/browser": "^1.9",
+    "guzzlehttp/uri-template": "^1.0",
+    "symfony/ux-turbo": "^2.22"
+  },
+  "config": {
+    "allow-plugins": {
+      "symfony/runtime": true,
+      "endroid/installer": true
+    }
+  }
+}

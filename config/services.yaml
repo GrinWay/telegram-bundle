@@ -1,0 +1,14 @@
+#
+# Slash "/" at the end of dirs is needed
+#
+imports:
+# (PRIORITY LOW)
+-   resource: 'service_hierarchy/services/'
+# (PRIORITY HIGH)
+
+# when always OVERRIDES
+when@test:
+    imports:
+    # priority (low)
+    -   resource: 'service_hierarchy/test/services/'
+    # priority (hight)

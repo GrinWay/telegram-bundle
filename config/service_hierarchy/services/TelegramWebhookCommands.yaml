@@ -1,0 +1,25 @@
+services:
+
+    _defaults:
+        autoconfigure: false
+        autowire: false
+
+    .grinway_telegram.telegram_bot.command.set_webhook:
+        class: 'GrinWay\Telegram\Bot\Command\TelegramSetWebhookCommand'
+        tags:
+        -   name: 'console.command'
+        arguments:
+            $serviceLocator: !service_locator
+                telegram: '@GrinWay\Telegram\Service\Telegram'
+                pa: '@Symfony\Component\PropertyAccess\PropertyAccessorInterface'
+            $name: !php/const GrinWay\Telegram\Bot\Command\TelegramSetWebhookCommand::NAME
+
+    .grinway_telegram.telegram_bot.command.remove_webhook:
+        class: 'GrinWay\Telegram\Bot\Command\TelegramRemoveWebhookCommand'
+        tags:
+        -   name: 'console.command'
+        arguments:
+            $serviceLocator: !service_locator
+                telegram: '@GrinWay\Telegram\Service\Telegram'
+                pa: '@Symfony\Component\PropertyAccess\PropertyAccessorInterface'
+            $name: !php/const GrinWay\Telegram\Bot\Command\TelegramRemoveWebhookCommand::NAME

@@ -1,0 +1,5 @@
+grinway_telegram_bot_webhook:
+    path: !php/const GrinWay\Telegram\Bot\Controller\TelegramController::WEBHOOK_PATH
+    methods:
+    - 'POST'
+    controller: 'GrinWay\Telegram\Bot\Controller\TelegramController::webhook'

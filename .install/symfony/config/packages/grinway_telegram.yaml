@@ -1,0 +1,18 @@
+grinway_telegram:
+
+    # your-domain.com[:PORT]
+    app_host: '%env(resolve:APP_HOST)%'
+
+    bot:
+        name: '%env(APP_TELEGRAM_BOT_NAME)%'
+        api_token: '%env(APP_TELEGRAM_BOT_API_TOKEN)%'
+        on_topic_supergroup_message_reply_directly_there: true
+
+when@test:
+    grinway_telegram:
+
+        bot:
+            name: '%env(APP_TEST_TELEGRAM_BOT_NAME)%'
+            api_token: '%env(APP_TEST_TELEGRAM_BOT_API_TOKEN)%'
+            chat_id: '%env(APP_TEST_TELEGRAM_BOT_CHAT_ID)%'
+            payment_provider_token: '%env(APP_TEST_TELEGRAM_BOT_PAYMENT_PROVIDER_TOKEN)%'

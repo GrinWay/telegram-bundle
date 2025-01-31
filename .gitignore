@@ -1,0 +1,29 @@
+###> grinway ###
+/.env
+/assets/node_modules/
+/node_modules/
+.idea/
+*.exe
+/bundles/
+private.*
+###< grinway ###
+
+###> symfony/framework-bundle ###
+/drivers/
+/.env.local
+/.env.local.php
+/.env.*.local
+/*.local
+!/workflows/Docker/.env.local
+/config/secrets/*/*.decrypt.private.php
+/config/secrets/*.decrypt.private.php
+/public/*
+!/public/index.php
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+###> symfony/phpunit-bridge ###
+.phpunit.result.cache
+/phpunit.xml
+###< symfony/phpunit-bridge ###

@@ -1,0 +1,10 @@
+services:
+
+    _defaults:
+        autoconfigure: false
+        autowire: false
+
+    GrinWay\Telegram\Validator\:
+        resource: '../../../src/Validator/**Validator.php'
+        tags:
+        -   name: 'validator.constraint_validator'

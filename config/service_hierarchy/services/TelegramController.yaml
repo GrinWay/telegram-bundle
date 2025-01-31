@@ -1,0 +1,16 @@
+services:
+
+    _defaults:
+        autoconfigure: false
+        autowire: false
+
+    GrinWay\Telegram\Bot\Controller\TelegramController:
+        class: 'GrinWay\Telegram\Bot\Controller\TelegramController'
+        tags:
+        -   name: 'controller.service_arguments'
+        arguments:
+            $serviceLocator: !service_locator
+                requestStack: '@Symfony\Component\HttpFoundation\RequestStack'
+            $updateHandlersServiceLocator: !tagged_locator
+                tag: !php/const GrinWay\Telegram\Bot\Contract\Update\UpdateHandlerInterface::TAG
+                default_index_method: 'updateField'

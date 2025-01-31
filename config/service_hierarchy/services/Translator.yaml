@@ -1,0 +1,10 @@
+services:
+
+    _defaults:
+        autoconfigure: false
+        autowire: false
+
+    .grinway_telegram.translator:
+        class: 'GrinWay\Telegram\Translation\Translator'
+        arguments:
+            $t: '@translator'

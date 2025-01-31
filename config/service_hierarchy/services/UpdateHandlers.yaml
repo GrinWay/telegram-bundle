@@ -1,0 +1,10 @@
+services:
+
+    _defaults:
+        autoconfigure: false
+        autowire: true
+
+    GrinWay\Telegram\Bot\Handler\Update\:
+        resource: '../../../src/Bot/Handler/Update/'
+        tags:
+        - name: !php/const GrinWay\Telegram\Bot\Contract\Update\UpdateHandlerInterface::TAG

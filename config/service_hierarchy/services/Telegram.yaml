@@ -1,0 +1,22 @@
+services:
+
+    _defaults:
+        autoconfigure: false
+        autowire: true
+
+    GrinWay\Telegram\Service\Telegram:
+        class: 'GrinWay\Telegram\Service\Telegram'
+        arguments:
+            $serviceLocator: !service_locator
+                grinwayTelegramClient: '@Symfony\Contracts\HttpClient\HttpClientInterface $grinwayTelegramClient'
+                grinwayTelegramFileClient: '@Symfony\Contracts\HttpClient\HttpClientInterface $grinwayTelegramFileClient'
+                serializer: '@Symfony\Component\Serializer\SerializerInterface'
+                pa: '@Symfony\Component\PropertyAccess\PropertyAccessorInterface'
+                filesystem: '@Symfony\Component\Filesystem\Filesystem'
+                slugger: '@Symfony\Component\String\Slugger\SluggerInterface'
+                currency: '@GrinWay\Service\Service\Currency'
+                t: '@.grinway_telegram.translator'
+            $telegramWebhookPath: '%env(default:grinway_telegram.bot.webhook_path:)%'
+            $appHost: '%env(default:grinway_telegram.app_host:)%'
+
+    grinway_telegram: '@GrinWay\Telegram\Service\Telegram'
