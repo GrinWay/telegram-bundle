@@ -1,0 +1,49 @@
+name: Symfony
+
+on:
+  workflow_dispatch: ~
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+
+  tests:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    
+    - name: PHP Installation
+      uses: 'shivammathur/setup-php@2cb9b829437ee246e9b3cac53555a39208ca6d28'
+      with:
+        php-version: '8.4'
+
+    - name: Donwload the project
+      uses: actions/checkout@v4
+    
+    - name: Cache Composer packages
+      id: composer-cache
+      uses: actions/cache@v3
+      with:
+        path: vendor
+        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-php-
+
+    - name: Install Composer Dependencies
+      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+    
+    #- name: Create Database
+    #  run: |
+    #    mkdir -p data
+    #    touch data/database.sqlite
+    
+    - name: tests
+      #env:
+      #  DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
+      run: vendor/bin/phpunit
