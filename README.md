@@ -1,12 +1,14 @@
 GrinWay/telegram-bundle
 ======
+[![Latest Stable Version](https://poser.pugx.org/GrinWay/telegram-bundle/v)](//packagist.org/packages/GrinWay/telegram-bundle)
+[![Total Downloads](https://poser.pugx.org/GrinWay/telegram-bundle/downloads)](//packagist.org/packages/GrinWay/telegram-bundle)
 
 <h2>This bundle is intended to create telegram bots (and even more 🥰)</h2>
 <h2>By the way creating telegram bots with this bundle you'll get high 💕</h2>
 <h2>Because it's amazingly easy 💗</h2>
 
 <p align="center">
-  <img src="https://github.com/GrinWay/telegram-bundle/blob/main/docs/media/gif/dance.gif" />
+  <img alt="dance gif" src="https://github.com/GrinWay/telegram-bundle/blob/main/docs/media/gif/dance.gif" />
 </p>
 
 ### 1. 😗 [Abilities](https://github.com/GrinWay/telegram-bundle/blob/main/docs/abilities.md)
