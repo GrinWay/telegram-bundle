@@ -44,6 +44,12 @@ jobs:
     #    touch data/database.sqlite
     
     - name: tests
-      #env:
+      env:
+         APP_TELEGRAM_BOT_API_TOKEN: "${{ secrets.APP_TELEGRAM_BOT_API_TOKEN }}"
+         APP_TEST_TELEGRAM_BOT_API_TOKEN: "${{ secrets.APP_TEST_TELEGRAM_BOT_API_TOKEN }}"
+         APP_TEST_TELEGRAM_BOT_CHAT_ID: "${{ secrets.APP_TEST_TELEGRAM_BOT_CHAT_ID }}"
+         APP_TELEGRAM_BOT_NAME: "${{ secrets.APP_TELEGRAM_BOT_NAME }}"
+         APP_TEST_TELEGRAM_BOT_NAME: "${{ secrets.APP_TEST_TELEGRAM_BOT_NAME }}"
+         APP_TEST_TELEGRAM_BOT_PAYMENT_PROVIDER_TOKEN: "${{ secrets.APP_TEST_TELEGRAM_BOT_PAYMENT_PROVIDER_TOKEN }}"
       #  DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
       run: vendor/bin/phpunit
