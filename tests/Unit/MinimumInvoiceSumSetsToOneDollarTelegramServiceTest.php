@@ -2,6 +2,8 @@
 
 namespace GrinWay\Telegram\Tests\Unit;
 
+use GrinWay\Service\Service\Currency;
+use GrinWay\Service\Service\FiguresRepresentation;
 use GrinWay\Telegram\Service\Telegram;
 use GrinWay\Telegram\Tests\AbstractTelegramTestCase;
 use GrinWay\Telegram\Type\TelegramLabeledPrice;
@@ -24,12 +26,11 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class MinimumInvoiceSumSetsToOneDollarTelegramServiceTest extends AbstractTelegramTestCase
 {
     public static array $fixerPayload;
+    protected Currency $currencyService;
 
     public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
-
-        \dump(__METHOD__);
 
         $currencyFixerPayload = self::getContainer()
             ->get(\sprintf('%s $grinwayServiceCurrencyFixerLatest', HttpClientInterface::class))
@@ -38,25 +39,73 @@ class MinimumInvoiceSumSetsToOneDollarTelegramServiceTest extends AbstractTelegr
         ;
         self::$fixerPayload = self::getContainer()
             ->get('serializer')
-            ->decode($currencyFixerPayload)//
+            ->decode($currencyFixerPayload, 'json')//
         ;
+
+        //
+        if (null === (self::$fixerPayload['grinway_key_fake_fixer'] ?? null)) {
+            $message = '!!! Accidentally used a real fixer API service, MOCK IT !!!';
+            echo $message . \PHP_EOL . \PHP_EOL;
+            throw new \RuntimeException($message);
+        }
     }
 
-    public function testRUB()
+    protected function setUp(): void
     {
-        \dump(self::$fixerPayload);
+        parent::setUp();
 
-        $this->assertTrue(true);
+        $this->currencyService = self::getContainer()->get('GrinWay\Service\Service\Currency');
 
-//        $prices = new TelegramLabeledPrices(
-//            new TelegramLabeledPrice('TEST', '100'), // 1.00 RUB
+        // TODO: current
+//        [$this->startOneDollarIntInRUB, $this->endOneDollarIntInRUB] = FiguresRepresentation::getStartEndNumbers(
+//            $this->oneDollarIn('RUB'),
+//            Telegram::LENGTH_AMOUNT_END_FIGURES,
 //        );
-//
-//        $this->telegram->appendDopPriceIfAmountLessThanPossibleLowestPrice(
-//            prices: $prices,
-//            labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi: '',
-//            currency: 'RUB',
-//            forceMakeHttpRequestToCurrencyApi: true, // force request the mocked fixer API
-//        );
+    }
+
+
+    public function testRubAmountLessThanOneDollarButGetsOneDollar()
+    {
+        $currency = 'RUB';
+
+        $this->assertCountIs2AndSumSameAsOneDollar('100', $currency); // 1.00 RUB
+        $this->assertCountIs2AndSumSameAsOneDollar('111', $currency); // 1.11 RUB
+    }
+
+    /**
+     * Helper
+     *
+     * @internal
+     */
+    protected function assertCountIs2AndSumSameAsOneDollar(string $amountWithEndFigures, string $currency): void
+    {
+        $prices = new TelegramLabeledPrices(
+            new TelegramLabeledPrice('TEST', $amountWithEndFigures), // 1.00 RUB
+        );
+
+        $this->telegram->appendDopPriceIfAmountLessThanPossibleLowestPrice(
+            prices: $prices,
+            labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi: '',
+            currency: $currency,
+            forceMakeHttpRequestToCurrencyApi: true, // force request the mocked fixer API
+        );
+
+        $this->assertCount(2, $prices);
+        $this->assertSame($this->oneDollarIn($currency), $prices->getSumFigures());
+    }
+
+    /**
+     * Helper
+     *
+     * @internal
+     */
+    protected function oneDollarIn(string $currency): string
+    {
+        return $this->currencyService->transferAmountFromToWithEndFigures(
+            '100',
+            'USD',
+            $currency,
+            Telegram::LENGTH_AMOUNT_END_FIGURES,
+        );
     }
 }

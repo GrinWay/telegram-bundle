@@ -183,9 +183,7 @@ class TelegramLabeledPrices implements \ArrayAccess, \Countable, \Iterator
 
     private function validateStringNumber(string $stringNumber): string
     {
-        if (!Validation::createIsValidCallable(new TelegramAmountWithEndFigures())($stringNumber)) {
-            throw new \RangeException(\sprintf('String "%s" not a number', $stringNumber));
-        }
+        Validation::createCallable(new TelegramAmountWithEndFigures())($stringNumber);
         return $stringNumber;
     }
 
