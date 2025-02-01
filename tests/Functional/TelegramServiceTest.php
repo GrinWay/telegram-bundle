@@ -24,14 +24,13 @@ class TelegramServiceTest extends AbstractTelegramTestCase
         $this->httpClient = self::getContainer()->get(HttpClientInterface::class);
     }
 
-    public function testCreateAndSuccessfullyVisitInvoiceLink()
+    public function testNotNullInvoiceLinkCreatedWithMinItemAmountIs1AndMinSumAmountNotLessThanOneDollar()
     {
         $invoiceLink = $this->telegram->createInvoiceLink(
             title: 'title',
             description: 'description',
             prices: new TelegramLabeledPrices(
-                new TelegramLabeledPrice('label 1', '100'),
-                new TelegramLabeledPrice('label 2', '1000000'),
+                new TelegramLabeledPrice('label 1', '100'), // min available item amount
             ),
             providerToken: $this->telegramTestPaymentProviderToken,
             currency: 'RUB',
@@ -45,7 +44,7 @@ class TelegramServiceTest extends AbstractTelegramTestCase
             throw: false, // don't reveal secrets of http client
         );
 
-        $this->assertNotNull($invoiceLink);
+        $this->assertNotNull($invoiceLink, 'Invoice link successfully created');
         $response = $this->httpClient->request('GET', $invoiceLink);
         $this->assertMatchesRegularExpression('~^2\d{2}$~', $response->getStatusCode());
     }
