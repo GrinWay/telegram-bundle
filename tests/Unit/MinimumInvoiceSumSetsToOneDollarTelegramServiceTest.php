@@ -3,7 +3,6 @@
 namespace GrinWay\Telegram\Tests\Unit;
 
 use GrinWay\Service\Service\Currency;
-use GrinWay\Service\Service\FiguresRepresentation;
 use GrinWay\Telegram\Service\Telegram;
 use GrinWay\Telegram\Tests\AbstractTelegramTestCase;
 use GrinWay\Telegram\Type\TelegramLabeledPrice;
@@ -28,9 +27,9 @@ class MinimumInvoiceSumSetsToOneDollarTelegramServiceTest extends AbstractTelegr
     public static array $fixerPayload;
     protected Currency $currencyService;
 
-    public static function setUpBeforeClass(): void
+    protected function setUp(): void
     {
-        parent::setUpBeforeClass();
+        parent::setUp();
 
         $currencyFixerPayload = self::getContainer()
             ->get(\sprintf('%s $grinwayServiceCurrencyFixerLatest', HttpClientInterface::class))
@@ -48,11 +47,6 @@ class MinimumInvoiceSumSetsToOneDollarTelegramServiceTest extends AbstractTelegr
             echo $message . \PHP_EOL . \PHP_EOL;
             throw new \RuntimeException($message);
         }
-    }
-
-    protected function setUp(): void
-    {
-        parent::setUp();
 
         $this->currencyService = self::getContainer()->get('GrinWay\Service\Service\Currency');
 
@@ -80,7 +74,7 @@ class MinimumInvoiceSumSetsToOneDollarTelegramServiceTest extends AbstractTelegr
     protected function assertCountIs2AndSumSameAsOneDollar(string $amountWithEndFigures, string $currency): void
     {
         $prices = new TelegramLabeledPrices(
-            new TelegramLabeledPrice('TEST', $amountWithEndFigures), // 1.00 RUB
+            new TelegramLabeledPrice('TEST', $amountWithEndFigures),
         );
 
         $this->telegram->appendDopPriceIfAmountLessThanPossibleLowestPrice(
@@ -91,7 +85,10 @@ class MinimumInvoiceSumSetsToOneDollarTelegramServiceTest extends AbstractTelegr
         );
 
         $this->assertCount(2, $prices);
-        $this->assertSame($this->oneDollarIn($currency), $prices->getSumFigures());
+        $this->assertSame(
+            $this->oneDollarIn($currency),
+            $prices->getSumFigures(),
+        );
     }
 
     /**

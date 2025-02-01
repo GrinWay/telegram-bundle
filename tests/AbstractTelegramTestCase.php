@@ -37,9 +37,9 @@ abstract class AbstractTelegramTestCase extends WebTestCase
     protected array $paymentShippingQueryPayload = [];
     protected array $paymentPreCheckoutQueryPayload = [];
 
-    public static function setUpBeforeClass(): void
+    protected function setUp(): void
     {
-        parent::setUpBeforeClass();
+        parent::setUp();
 
         $grinwayTelegramClientResponseGenerator = static function (): \Generator {
             while (true) {
@@ -70,12 +70,6 @@ abstract class AbstractTelegramTestCase extends WebTestCase
         self::getContainer()->set(\sprintf('%s $grinwayServiceCurrencyFixerLatest', HttpClientInterface::class), new MockHttpClient(
             $grinwayTelegramFileClientResponseGenerator(),
         ));
-    }
-
-
-    protected function setUp(): void
-    {
-        parent::setUp();
 
         $this->getenv = self::getContainer()->get('container.getenv');
 

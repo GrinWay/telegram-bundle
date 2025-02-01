@@ -5,18 +5,13 @@ namespace GrinWay\Telegram\Service;
 use GrinWay\Service\Service\Currency;
 use GrinWay\Service\Service\FiguresRepresentation;
 use GrinWay\Service\Validator\AbsolutePath;
-use GrinWay\Service\Validator\LikeInt;
-use GrinWay\Telegram\GrinWayTelegramBundle;
 use GrinWay\Telegram\Type\TelegramLabeledPrice;
 use GrinWay\Telegram\Type\TelegramLabeledPrices;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\Emoji\EmojiTransliterator;
 use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validation;
-use Symfony\Contracts\Cache\CacheInterface;
-use Symfony\Contracts\Cache\ItemInterface;
 use function Symfony\Component\String\u;
 
 class Telegram
@@ -29,14 +24,11 @@ class Telegram
      */
     public const MIN_START_AMOUNT_PART = 1;
     public const TELEGRAM_STARS_CURRENCY = 'XTR';
-    public const ALLOWED_INCREMENT_ATTEMPTS = 2;
 
     /**
      * @var array Array of ServiceLocator
      */
     private array $updateHandlerIterators = [];
-    private bool $incrementDopFigureRequired = false;
-    private int $incrementDopFigureIdx = 0;
 
     public function __construct(
         private readonly ServiceLocator $serviceLocator,
@@ -244,29 +236,36 @@ class Telegram
         ?bool                       $throw = null,
     ): ?string
     {
-        $responsePayload = $this->makeIncreasingInvoiceTelegramAPIMethod(
-            telegramApiInvoiceMethod: 'createInvoiceLink',
-            title: $title,
-            description: $description,
-            prices: $prices,
-            providerToken: $providerToken,
-            currency: $currency,
-            photoUri: $photoUri,
-            needName: $needName,
-            needPhoneNumber: $needPhoneNumber,
-            needEmail: $needEmail,
-            needShippingAddress: $needShippingAddress,
-            sendPhoneNumberToProvider: $sendPhoneNumberToProvider,
-            sendEmailToProvider: $sendEmailToProvider,
-            isFlexible: $isFlexible,
-            payload: $payload,
-            startParameter: $startParameter,
-            providerData: $providerData,
-            prependJsonRequest: $prependJsonRequest,
-            labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi: $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi,
-            forceMakeHttpRequestToCurrencyApi: $forceMakeHttpRequestToCurrencyApi,
-            throw: $throw,
-        );
+        try {
+            $invoicePayload = $this->getInvoicePayload(
+                title: $title,
+                description: $description,
+                prices: $prices,
+                providerToken: $providerToken,
+                currency: $currency,
+                photoUri: $photoUri,
+                needName: $needName,
+                needPhoneNumber: $needPhoneNumber,
+                needEmail: $needEmail,
+                needShippingAddress: $needShippingAddress,
+                sendPhoneNumberToProvider: $sendPhoneNumberToProvider,
+                sendEmailToProvider: $sendEmailToProvider,
+                isFlexible: $isFlexible,
+                payload: $payload,
+                startParameter: $startParameter,
+                providerData: $providerData,
+                prependJsonRequest: $prependJsonRequest,
+                labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi: $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi,
+                forceMakeHttpRequestToCurrencyApi: $forceMakeHttpRequestToCurrencyApi,
+                throw: $throw,
+            );
+            $responsePayload = $this->request('POST', 'createInvoiceLink', $invoicePayload);
+        } catch (\Exception $exception) {
+            if (true === $throw) {
+                throw $exception;
+            }
+            return null;
+        }
 
         if ($this->isResponsePayloadOk($responsePayload)) {
             return $this->serviceLocator->get('pa')->getValue($responsePayload, '[result]');
@@ -304,64 +303,6 @@ class Telegram
         ?bool                       $throw = null,
     ): bool
     {
-        $responsePayload = $this->makeIncreasingInvoiceTelegramAPIMethod(
-            telegramApiInvoiceMethod: 'sendInvoice',
-            title: $title,
-            description: $description,
-            prices: $prices,
-            chatId: $chatId,
-            providerToken: $providerToken,
-            currency: $currency,
-            photoUri: $photoUri,
-            needName: $needName,
-            needPhoneNumber: $needPhoneNumber,
-            needEmail: $needEmail,
-            needShippingAddress: $needShippingAddress,
-            sendPhoneNumberToProvider: $sendPhoneNumberToProvider,
-            sendEmailToProvider: $sendEmailToProvider,
-            isFlexible: $isFlexible,
-            payload: $payload,
-            startParameter: $startParameter,
-            providerData: $providerData,
-            prependJsonRequest: $prependJsonRequest,
-            labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi: $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi,
-            forceMakeHttpRequestToCurrencyApi: $forceMakeHttpRequestToCurrencyApi,
-            throw: $throw,
-        );
-
-        return $this->isResponsePayloadOk($responsePayload);
-    }
-
-    /**
-     * Helper
-     *
-     * @param ?string $chatId Is not required for createInvoiceLink method
-     */
-    public function makeIncreasingInvoiceTelegramAPIMethod(
-        string                      $telegramApiInvoiceMethod,
-        string                      $title,
-        string                      $description,
-        TelegramLabeledPrices|array $prices,
-        ?string                     $chatId = null,
-        ?string                     $providerToken = null,
-        ?string                     $currency = null,
-        ?string                     $photoUri = null,
-        ?bool                       $needName = null,
-        ?bool                       $needPhoneNumber = null,
-        ?bool                       $needEmail = null,
-        ?bool                       $needShippingAddress = null,
-        ?bool                       $sendPhoneNumberToProvider = null,
-        ?bool                       $sendEmailToProvider = null,
-        ?bool                       $isFlexible = null,
-        ?string                     $payload = null,
-        ?string                     $startParameter = null,
-        ?array                      $providerData = null,
-        ?array                      $prependJsonRequest = null,
-        ?string                     $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi = null,
-        ?bool                       $forceMakeHttpRequestToCurrencyApi = null,
-        ?bool                       $throw = null,
-    ): mixed
-    {
         try {
             $invoicePayload = $this->getInvoicePayload(
                 title: $title,
@@ -386,50 +327,15 @@ class Telegram
                 forceMakeHttpRequestToCurrencyApi: $forceMakeHttpRequestToCurrencyApi,
                 throw: $throw,
             );
+            $responsePayload = $this->request('POST', 'sendInvoice', $invoicePayload);
         } catch (\Exception $exception) {
             if (true === $throw) {
                 throw $exception;
             }
-            return ['ok' => false];
+            return false;
         }
 
-        try {
-            $responsePayload = $this->request('POST', $telegramApiInvoiceMethod, $invoicePayload);
-        } catch (\Exception $exception) {
-            if ($this->ifCanUpdateIncrementDopFigureStateDoIt()) {
-                return $this->makeIncreasingInvoiceTelegramAPIMethod(
-                    telegramApiInvoiceMethod: $telegramApiInvoiceMethod,
-                    title: $title,
-                    description: $description,
-                    prices: $prices,
-                    chatId: $chatId,
-                    providerToken: $providerToken,
-                    currency: $currency,
-                    photoUri: $photoUri,
-                    needName: $needName,
-                    needPhoneNumber: $needPhoneNumber,
-                    needEmail: $needEmail,
-                    needShippingAddress: $needShippingAddress,
-                    sendPhoneNumberToProvider: $sendPhoneNumberToProvider,
-                    sendEmailToProvider: $sendEmailToProvider,
-                    isFlexible: $isFlexible,
-                    payload: $payload,
-                    startParameter: $startParameter,
-                    providerData: $providerData,
-                    prependJsonRequest: $prependJsonRequest,
-                    labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi: $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi,
-                    throw: $throw,
-                );
-            } else {
-                if (true === $throw) {
-                    throw $exception;
-                }
-                return ['ok' => false];
-            }
-        }
-
-        $this->incrementDopFigureClearState();
-        return $responsePayload;
+        return $this->isResponsePayloadOk($responsePayload);
     }
 
     /**
@@ -763,61 +669,20 @@ class Telegram
 
     /**
      * Telegram Bot Api restricts the possible minimum price for the invoice as 1$
+     *
      * https://core.telegram.org/bots/payments#supported-currencies
      *
      * @internal
      */
     public function appendDopPriceIfAmountLessThanPossibleLowestPrice(TelegramLabeledPrices $prices, string $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi, string $currency, bool $forceMakeHttpRequestToCurrencyApi = false): void
     {
-        $dopStartAmountNumber = 0;
-        $dopEndAmountNumber = 0;
-        [$startPassedAmount, $endPassedAmount] = $prices->getStartEndSumNumbers();
-
-        /** @var Currency $currencyService */
-        $currencyService = $this->serviceLocator->get('currency');
-
-        $oneDollarToPassedCurrency = $currencyService->transferAmountFromToWithEndFigures(
-            '100',
-            'USD',
+        [$dopStartAmountNumber, $dopEndAmountNumber] = $this->getCalculatedDopStartEndNumbersToReachValidMinSumInvoice(
+            $prices,
             $currency,
-            self::LENGTH_AMOUNT_END_FIGURES,
             $forceMakeHttpRequestToCurrencyApi,
         );
-        [$startOneDollarAmountInCurrentCurrency, $endOneDollarAmountInCurrentCurrency] = $prices->getStartEndNumbers(
-            $oneDollarToPassedCurrency
-        );
-
-        //###> LESS than MIN
-        if ($startPassedAmount < $startOneDollarAmountInCurrentCurrency) {
-            $dopStartAmountNumber = $startOneDollarAmountInCurrentCurrency - $startPassedAmount;
-
-            // after start exactly (<=) because there is else
-            if ($endPassedAmount <= $endOneDollarAmountInCurrentCurrency) {
-                $dopEndAmountNumber = $endOneDollarAmountInCurrentCurrency - $endPassedAmount;
-            } else {
-                // Do nothing when can't apply reduction to the start part, because it won't be correct
-                // can't operate with 0.xx only with 1.xx
-                if (self::MIN_START_AMOUNT_PART < $dopStartAmountNumber) {
-                    // reduction
-                    --$dopStartAmountNumber;
-                    $dopEndAmountNumber = (10 ** static::LENGTH_AMOUNT_END_FIGURES) - ($endPassedAmount - $endOneDollarAmountInCurrentCurrency);
-                }
-            }
-            // can't operate with 0.xx only with 1.xx
-        } elseif ($startPassedAmount === $startOneDollarAmountInCurrentCurrency) {
-            // exactly (<) because if start equals and end equals to dollar do nothing
-            if ($endPassedAmount < $endOneDollarAmountInCurrentCurrency) {
-                ++$dopStartAmountNumber;
-            }
-        }
 
         if (0 !== $dopStartAmountNumber || 0 !== $dopEndAmountNumber) {
-
-            $cachedDopFigureNumber = $this->getCachedDopFigureNumberToCreateValidInvoice();
-            if (0 !== $cachedDopFigureNumber) {
-                $dopStartAmountNumber += $cachedDopFigureNumber;
-                $dopEndAmountNumber = 0;
-            }
 
             $dopAmountWithEndFigures = FiguresRepresentation::concatNumbersWithCorrectCountOfEndFigures(
                 $dopStartAmountNumber,
@@ -876,6 +741,72 @@ class Telegram
     }
 
     /**
+     * Helper
+     */
+    private function getStartEndOneDollarInCurrentCurrency(TelegramLabeledPrices $prices, string $currency, bool $forceMakeHttpRequestToCurrencyApi): array
+    {
+        /** @var Currency $currencyService */
+        $currencyService = $this->serviceLocator->get('currency');
+
+        $oneDollarToPassedCurrency = $currencyService->transferAmountFromToWithEndFigures(
+            '100',
+            'USD',
+            $currency,
+            self::LENGTH_AMOUNT_END_FIGURES,
+            $forceMakeHttpRequestToCurrencyApi,
+        );
+
+        return $prices->getStartEndNumbers(
+            $oneDollarToPassedCurrency,
+        );
+    }
+
+    /**
+     * Helper
+     *
+     * @internal
+     */
+    protected function getCalculatedDopStartEndNumbersToReachValidMinSumInvoice(TelegramLabeledPrices $prices, string $currency, bool $forceMakeHttpRequestToCurrencyApi): array
+    {
+        $dopStartAmountNumber = 0;
+        $dopEndAmountNumber = 0;
+
+        [$startPassedAmount, $endPassedAmount] = $prices->getStartEndSumNumbers();
+
+        [$startOneDollarAmountInCurrentCurrency, $endOneDollarAmountInCurrentCurrency]
+            = $this->getStartEndOneDollarInCurrentCurrency(
+            $prices,
+            $currency,
+            $forceMakeHttpRequestToCurrencyApi,
+        );
+
+        if ($startPassedAmount < $startOneDollarAmountInCurrentCurrency) {
+            $dopStartAmountNumber = $startOneDollarAmountInCurrentCurrency - $startPassedAmount;
+
+            // after start exactly (<=) because there is else
+            if ($endPassedAmount <= $endOneDollarAmountInCurrentCurrency) {
+                $dopEndAmountNumber = $endOneDollarAmountInCurrentCurrency - $endPassedAmount;
+            } else {
+                // Do nothing when can't apply reduction to the start part, because it won't be correct
+                // can't operate with 0.xx only with 1.xx
+                if (self::MIN_START_AMOUNT_PART < $dopStartAmountNumber) {
+                    // reduction
+                    --$dopStartAmountNumber;
+                    $dopEndAmountNumber = (10 ** static::LENGTH_AMOUNT_END_FIGURES) - ($endPassedAmount - $endOneDollarAmountInCurrentCurrency);
+                }
+            }
+            // can't operate with 0.xx only with 1.xx
+        } elseif ($startPassedAmount === $startOneDollarAmountInCurrentCurrency) {
+            // exactly (<) because if start equals and end equals to dollar do nothing
+            if ($endPassedAmount < $endOneDollarAmountInCurrentCurrency) {
+                ++$dopStartAmountNumber;
+            }
+        }
+
+        return [$dopStartAmountNumber, $dopEndAmountNumber];
+    }
+
+    /**
      * Used by the \GrinWay\Telegram\Bot\Handler\Update\AbstractUpdateHandler
      *
      * @internal
@@ -894,71 +825,5 @@ class Telegram
     {
         $this->updateHandlerIterators[$key] = $iterable;
         return $this;
-    }
-
-    /**
-     * @internal
-     */
-    protected function getCachedDopFigureNumberToCreateValidInvoice(): int
-    {
-        /** @var CacheInterface $dopCachePool */
-        $dopCachePool = $this->serviceLocator->get('cache_pool.dop_figure');
-
-        $dopFigureCacheKey = GrinWayTelegramBundle::bundlePrefixed('dop_figure');
-
-        if (0 === $this->incrementDopFigureIdx) {
-            // delete it beforehand, get rid of the possible trash in the cache
-            // We can't rely on it
-            $dopCachePool->delete($dopFigureCacheKey);
-        }
-        // start always with 0
-        $cachedDopFigure = $dopCachePool->get($dopFigureCacheKey, static function (ItemInterface $item): string {
-            $item->tag(GrinWayTelegramBundle::GENERIC_CACHE_TAG);
-            return '0';
-        });
-
-        if (!Validation::createIsValidCallable(
-            new NotBlank(),
-            new LikeInt()
-        )($cachedDopFigure)) {
-            $dopCachePool->delete($dopFigureCacheKey); // force get init value on invalid cache
-            $this->getCachedDopFigureNumberToCreateValidInvoice();
-        }
-
-        if (true === $this->incrementDopFigureRequired) {
-            $cachedDopFigure = (int)$cachedDopFigure;
-            ++$cachedDopFigure;
-            $dopCachePool->delete($dopFigureCacheKey);
-
-            $cachedDopFigure = $dopCachePool
-                ->get($dopFigureCacheKey, static function (ItemInterface $item) use ($cachedDopFigure): string {
-                    $item->tag(GrinWayTelegramBundle::GENERIC_CACHE_TAG);
-                    return (string)$cachedDopFigure;
-                });
-        }
-
-        return (int)$cachedDopFigure;
-    }
-
-    /**
-     * @internal
-     */
-    protected function incrementDopFigureClearState(): void
-    {
-        $this->incrementDopFigureRequired = false;
-        $this->incrementDopFigureIdx = 0;
-    }
-
-    /**
-     * @internal
-     */
-    protected function ifCanUpdateIncrementDopFigureStateDoIt(): bool
-    {
-        if (static::ALLOWED_INCREMENT_ATTEMPTS > $this->incrementDopFigureIdx++) {
-            $this->incrementDopFigureRequired = true;
-            return true;
-        }
-        $this->incrementDopFigureClearState();
-        return false;
     }
 }

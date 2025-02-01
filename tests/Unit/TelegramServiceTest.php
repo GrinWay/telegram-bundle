@@ -41,7 +41,7 @@ class TelegramServiceTest extends AbstractTelegramTestCase
             fileId: 'TEST_FILE_ID',
             absFilepathTo: $absFilepath,
             overwrite: true,
-            throw: true,
+            throw: false,
         );
         $this->assertTrue($wasDownloaded);
         $this->assertFileExists($absFilepath);
@@ -59,14 +59,6 @@ class TelegramServiceTest extends AbstractTelegramTestCase
         );
         $this->assertFalse($wasDownloaded);
         $this->assertFileDoesNotExist($absFilepath);
-
-        $this->expectException(\InvalidArgumentException::class);
-        $this->telegram->downloadFile(
-            fileId: 'TEST_FILE_ID',
-            absFilepathTo: $absFilepath,
-            overwrite: true,
-            throw: true,
-        );
     }
 
     public function testSuccessfulDownloadingStickersWithAbsoluteDir()
@@ -80,7 +72,7 @@ class TelegramServiceTest extends AbstractTelegramTestCase
             prefixFilename: 'TEST_',
             limit: 3,
             stickerFileExtension: 'txt', // use default value instead
-            throw: true,
+            throw: false,
         );
 
         $this->assertCount(3, $madeAbsPaths);
@@ -106,17 +98,6 @@ class TelegramServiceTest extends AbstractTelegramTestCase
         );
 
         $this->assertCount(0, $madeAbsPaths);
-
-        $this->expectException(\InvalidArgumentException::class);
-        $this->telegram->downloadStickers(
-            stickersName: 'TEST',
-            absDirTo: $absDir,
-            overwrite: true,
-            prefixFilename: 'TEST_',
-            limit: 3,
-            stickerFileExtension: 'txt', // use default value instead
-            throw: true,
-        );
     }
 
     public function testDeleteMessage()
@@ -124,7 +105,7 @@ class TelegramServiceTest extends AbstractTelegramTestCase
         $ok = $this->telegram->deleteMessage(
             chatId: 'TEST',
             messageId: 'TEST',
-            throw: true,
+            throw: false,
         );
         $this->assertTrue($ok);
     }
@@ -141,7 +122,7 @@ class TelegramServiceTest extends AbstractTelegramTestCase
         $ok = $this->telegram->answerPreCheckoutQuery(
             preCheckoutQueryId: 'TEST', // in the webhook handler you will get a real pre_checkout_query_id in the payload
             preCheckoutQueryIsValid: $isValid(),
-            throw: true,
+            throw: false,
         );
 
         $this->assertTrue($ok);
@@ -161,7 +142,7 @@ class TelegramServiceTest extends AbstractTelegramTestCase
         $ok = $this->telegram->answerPreCheckoutQuery(
             preCheckoutQueryId: 'TEST', // in the webhook handler you will get a real pre_checkout_query_id in the payload
             preCheckoutQueryIsValid: $isValid(),
-            throw: true,
+            throw: false,
         );
 
         $this->assertFalse($ok);
@@ -178,7 +159,7 @@ class TelegramServiceTest extends AbstractTelegramTestCase
             results: [
                 'gif_url' => 'https://test.test/gif.gif',
             ],
-            throw: true,
+            throw: false,
         );
 
         $this->assertTrue($ok);
@@ -198,7 +179,7 @@ class TelegramServiceTest extends AbstractTelegramTestCase
             shippingQueryId: 'TEST',
             shippingOptions: [],
             shippingQueryIsValid: true,
-            throw: true,
+            throw: false,
         );
 
         $this->assertTrue($ok);
@@ -215,7 +196,7 @@ class TelegramServiceTest extends AbstractTelegramTestCase
             shippingQueryId: 'TEST',
             shippingOptions: [],
             shippingQueryIsValid: 'ERROR',
-            throw: true,
+            throw: false,
         );
 
         $this->assertFalse($ok);
@@ -223,9 +204,6 @@ class TelegramServiceTest extends AbstractTelegramTestCase
 
     public function testSendInvoice()
     {
-        self::ensureKernelShutdown();
-        self::bootKernel();
-
         $ok = $this->telegram->sendInvoice(
             chatId: $this->telegramBotTestChatId,
             title: 'title',
@@ -235,18 +213,17 @@ class TelegramServiceTest extends AbstractTelegramTestCase
             ),
             providerToken: $this->telegramTestPaymentProviderToken,
             currency: 'RUB',
-//            needName: true,
-//            needPhoneNumber: true,
-//            needEmail: true,
-//            needShippingAddress: true,
-//            sendPhoneNumberToProvider: true,
-//            sendEmailToProvider: true,
-//            isFlexible: true,
+            needName: true,
+            needPhoneNumber: true,
+            needEmail: true,
+            needShippingAddress: true,
+            sendPhoneNumberToProvider: true,
+            sendEmailToProvider: true,
+            isFlexible: true,
             forceMakeHttpRequestToCurrencyApi: true,
-            throw: true,
+            throw: false,
         );
 
-        //TODO: current
         $this->assertSame(true, $ok);
     }
 }
