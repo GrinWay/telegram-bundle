@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0981679f11e86315d69a7f7f58106f69",
+    "content-hash": "a73ac22cf99b9535e01f18828a205a81",
     "packages": [
         {
             "name": "behat/mink",
@@ -138,12 +138,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/GrinWay/service-bundle.git",
-                "reference": "fae2d703a611c8f2944749db71e73a2e1342bf18"
+                "reference": "803dae472abc05d0e21643494e6eca209f84e733"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/GrinWay/service-bundle/zipball/fae2d703a611c8f2944749db71e73a2e1342bf18",
-                "reference": "fae2d703a611c8f2944749db71e73a2e1342bf18",
+                "url": "https://api.github.com/repos/GrinWay/service-bundle/zipball/803dae472abc05d0e21643494e6eca209f84e733",
+                "reference": "803dae472abc05d0e21643494e6eca209f84e733",
                 "shasum": ""
             },
             "require": {
@@ -202,7 +202,7 @@
                 "issues": "https://github.com/GrinWay/service-bundle/issues",
                 "source": "https://github.com/GrinWay/service-bundle/tree/currency_realization"
             },
-            "time": "2025-02-01T12:01:09+00:00"
+            "time": "2025-02-01T14:25:39+00:00"
         },
         {
             "name": "guzzlehttp/uri-template",

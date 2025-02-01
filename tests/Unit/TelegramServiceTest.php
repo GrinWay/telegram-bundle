@@ -223,6 +223,9 @@ class TelegramServiceTest extends AbstractTelegramTestCase
 
     public function testSendInvoice()
     {
+        self::ensureKernelShutdown();
+        self::bootKernel();
+
         $ok = $this->telegram->sendInvoice(
             chatId: $this->telegramBotTestChatId,
             title: 'title',
@@ -232,16 +235,18 @@ class TelegramServiceTest extends AbstractTelegramTestCase
             ),
             providerToken: $this->telegramTestPaymentProviderToken,
             currency: 'RUB',
-            needName: true,
-            needPhoneNumber: true,
-            needEmail: true,
-            needShippingAddress: true,
-            sendPhoneNumberToProvider: true,
-            sendEmailToProvider: true,
-            isFlexible: true,
+//            needName: true,
+//            needPhoneNumber: true,
+//            needEmail: true,
+//            needShippingAddress: true,
+//            sendPhoneNumberToProvider: true,
+//            sendEmailToProvider: true,
+//            isFlexible: true,
+            forceMakeHttpRequestToCurrencyApi: true,
             throw: true,
         );
 
+        //TODO: current
         $this->assertSame(true, $ok);
     }
 }

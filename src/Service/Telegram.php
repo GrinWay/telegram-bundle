@@ -22,16 +22,21 @@ use function Symfony\Component\String\u;
 class Telegram
 {
     public const LENGTH_AMOUNT_END_FIGURES = 2;
+    /**
+     * Telegram API won't accept label like this in a payment:
+     * 0.99 or 0.01
+     * instead it should be at least 1.00 but not 0.99
+     */
     public const MIN_START_AMOUNT_PART = 1;
     public const TELEGRAM_STARS_CURRENCY = 'XTR';
-    public const ALLOWED_INCREMENT_ATTEMPTS = 10;
+    public const ALLOWED_INCREMENT_ATTEMPTS = 2;
 
     /**
      * @var array Array of ServiceLocator
      */
     private array $updateHandlerIterators = [];
-    private bool $incrementDopEndFigureRequired = false;
-    private int $incrementDopEndFigureIdx = 0;
+    private bool $incrementDopFigureRequired = false;
+    private int $incrementDopFigureIdx = 0;
 
     public function __construct(
         private readonly ServiceLocator $serviceLocator,
@@ -235,6 +240,7 @@ class Telegram
         ?array                      $providerData = null,
         ?array                      $prependJsonRequest = null,
         ?string                     $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi = null,
+        ?bool                       $forceMakeHttpRequestToCurrencyApi = null,
         ?bool                       $throw = null,
     ): ?string
     {
@@ -258,6 +264,7 @@ class Telegram
             providerData: $providerData,
             prependJsonRequest: $prependJsonRequest,
             labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi: $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi,
+            forceMakeHttpRequestToCurrencyApi: $forceMakeHttpRequestToCurrencyApi,
             throw: $throw,
         );
 
@@ -293,6 +300,7 @@ class Telegram
         ?array                      $providerData = null,
         ?array                      $prependJsonRequest = null,
         ?string                     $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi = null,
+        ?bool                       $forceMakeHttpRequestToCurrencyApi = null,
         ?bool                       $throw = null,
     ): bool
     {
@@ -317,6 +325,7 @@ class Telegram
             providerData: $providerData,
             prependJsonRequest: $prependJsonRequest,
             labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi: $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi,
+            forceMakeHttpRequestToCurrencyApi: $forceMakeHttpRequestToCurrencyApi,
             throw: $throw,
         );
 
@@ -349,6 +358,7 @@ class Telegram
         ?array                      $providerData = null,
         ?array                      $prependJsonRequest = null,
         ?string                     $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi = null,
+        ?bool                       $forceMakeHttpRequestToCurrencyApi = null,
         ?bool                       $throw = null,
     ): mixed
     {
@@ -373,6 +383,7 @@ class Telegram
                 providerData: $providerData,
                 prependJsonRequest: $prependJsonRequest,
                 labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi: $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi,
+                forceMakeHttpRequestToCurrencyApi: $forceMakeHttpRequestToCurrencyApi,
                 throw: $throw,
             );
         } catch (\Exception $exception) {
@@ -385,8 +396,8 @@ class Telegram
         try {
             $responsePayload = $this->request('POST', $telegramApiInvoiceMethod, $invoicePayload);
         } catch (\Exception $exception) {
-            if ($this->ifCanUpdateIncrementDopEndFigureStateDoIt()) {
-                $this->makeIncreasingInvoiceTelegramAPIMethod(
+            if ($this->ifCanUpdateIncrementDopFigureStateDoIt()) {
+                return $this->makeIncreasingInvoiceTelegramAPIMethod(
                     telegramApiInvoiceMethod: $telegramApiInvoiceMethod,
                     title: $title,
                     description: $description,
@@ -417,7 +428,7 @@ class Telegram
             }
         }
 
-        $this->incrementDopEndFigureClearState();
+        $this->incrementDopFigureClearState();
         return $responsePayload;
     }
 
@@ -620,6 +631,7 @@ class Telegram
         ?array                      $providerData = null,
         ?array                      $prependJsonRequest = null,
         ?string                     $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi = null,
+        ?bool                       $forceMakeHttpRequestToCurrencyApi = null,
         ?bool                       $throw = null,
     ): array
     {
@@ -632,6 +644,7 @@ class Telegram
         $sendEmailToProvider ??= false;
         $isFlexible ??= false;
         $prependJsonRequest ??= [];
+        $forceMakeHttpRequestToCurrencyApi ??= false;
         $throw ??= false;
 
         // At least these settings must exist by default
@@ -691,6 +704,7 @@ class Telegram
             $prices,
             $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi,
             $currency,
+            $forceMakeHttpRequestToCurrencyApi,
         );
         if ($prices instanceof TelegramLabeledPrices) {
             $prices = $prices->toArray();
@@ -753,7 +767,7 @@ class Telegram
      *
      * @internal
      */
-    protected function appendDopPriceIfAmountLessThanPossibleLowestPrice(TelegramLabeledPrices $prices, string $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi, string $currency): void
+    public function appendDopPriceIfAmountLessThanPossibleLowestPrice(TelegramLabeledPrices $prices, string $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi, string $currency, bool $forceMakeHttpRequestToCurrencyApi = false): void
     {
         $dopStartAmountNumber = 0;
         $dopEndAmountNumber = 0;
@@ -767,27 +781,43 @@ class Telegram
             'USD',
             $currency,
             self::LENGTH_AMOUNT_END_FIGURES,
+            $forceMakeHttpRequestToCurrencyApi,
         );
         [$startOneDollarAmountInCurrentCurrency, $endOneDollarAmountInCurrentCurrency] = $prices->getStartEndNumbers(
             $oneDollarToPassedCurrency
         );
+
         //###> LESS than MIN
-        if ($startPassedAmount <= $startOneDollarAmountInCurrentCurrency) {
+        if ($startPassedAmount < $startOneDollarAmountInCurrentCurrency) {
             $dopStartAmountNumber = $startOneDollarAmountInCurrentCurrency - $startPassedAmount;
-            // after start
-            if ($endPassedAmount !== $endOneDollarAmountInCurrentCurrency) {
+
+            // after start exactly (<=) because there is else
+            if ($endPassedAmount <= $endOneDollarAmountInCurrentCurrency) {
+                $dopEndAmountNumber = $endOneDollarAmountInCurrentCurrency - $endPassedAmount;
+            } else {
+                // Do nothing when can't apply reduction to the start part, because it won't be correct
+                // can't operate with 0.xx only with 1.xx
                 if (self::MIN_START_AMOUNT_PART < $dopStartAmountNumber) {
+                    // reduction
                     --$dopStartAmountNumber;
-                    $dopEndAmountNumber = (10 ** self::LENGTH_AMOUNT_END_FIGURES) - \abs($endPassedAmount - $endOneDollarAmountInCurrentCurrency);
+                    $dopEndAmountNumber = (10 ** static::LENGTH_AMOUNT_END_FIGURES) - ($endPassedAmount - $endOneDollarAmountInCurrentCurrency);
                 }
+            }
+            // can't operate with 0.xx only with 1.xx
+        } elseif ($startPassedAmount === $startOneDollarAmountInCurrentCurrency) {
+            // exactly (<) because if start equals and end equals to dollar do nothing
+            if ($endPassedAmount < $endOneDollarAmountInCurrentCurrency) {
+                ++$dopStartAmountNumber;
             }
         }
 
         if (0 !== $dopStartAmountNumber || 0 !== $dopEndAmountNumber) {
-            \dump('$dopEndAmountNumber', $dopEndAmountNumber);
 
-            $dopEndAmountNumber += $this->getCachedDopEndFigureNumberToCreateValidInvoice();
-            \dump('$dopEndAmountNumber', $dopEndAmountNumber);
+            $cachedDopFigureNumber = $this->getCachedDopFigureNumberToCreateValidInvoice();
+            if (0 !== $cachedDopFigureNumber) {
+                $dopStartAmountNumber += $cachedDopFigureNumber;
+                $dopEndAmountNumber = 0;
+            }
 
             $dopAmountWithEndFigures = FiguresRepresentation::concatNumbersWithCorrectCountOfEndFigures(
                 $dopStartAmountNumber,
@@ -869,61 +899,66 @@ class Telegram
     /**
      * @internal
      */
-    protected function getCachedDopEndFigureNumberToCreateValidInvoice(): int
+    protected function getCachedDopFigureNumberToCreateValidInvoice(): int
     {
-        /** @var CacheInterface $dopEndCachePool */
-        $dopEndCachePool = $this->serviceLocator->get('cache_pool.dop_end_figure');
-        $dopEndFigureCacheKey = GrinWayTelegramBundle::bundlePrefixed('dop_end_figure');
+        /** @var CacheInterface $dopCachePool */
+        $dopCachePool = $this->serviceLocator->get('cache_pool.dop_figure');
 
-        // init cache
-        $cachedDopEndFigure = $dopEndCachePool
-            ->get($dopEndFigureCacheKey, static function (ItemInterface $item): string {
-                $item->tag(GrinWayTelegramBundle::GENERIC_CACHE_TAG);
-                return '0';
-            });
+        $dopFigureCacheKey = GrinWayTelegramBundle::bundlePrefixed('dop_figure');
+
+        if (0 === $this->incrementDopFigureIdx) {
+            // delete it beforehand, get rid of the possible trash in the cache
+            // We can't rely on it
+            $dopCachePool->delete($dopFigureCacheKey);
+        }
+        // start always with 0
+        $cachedDopFigure = $dopCachePool->get($dopFigureCacheKey, static function (ItemInterface $item): string {
+            $item->tag(GrinWayTelegramBundle::GENERIC_CACHE_TAG);
+            return '0';
+        });
 
         if (!Validation::createIsValidCallable(
             new NotBlank(),
             new LikeInt()
-        )($dopEndFigureCacheKey)) {
-            $dopEndCachePool->delete($dopEndFigureCacheKey); // force get init value on invalid cache
-            $this->getCachedDopEndFigureNumberToCreateValidInvoice();
+        )($cachedDopFigure)) {
+            $dopCachePool->delete($dopFigureCacheKey); // force get init value on invalid cache
+            $this->getCachedDopFigureNumberToCreateValidInvoice();
         }
 
-        if (true === $this->incrementDopEndFigureRequired) {
-            $cachedDopEndFigure = (int)$cachedDopEndFigure;
-            ++$cachedDopEndFigure;
-            $dopEndCachePool->delete($dopEndFigureCacheKey);
+        if (true === $this->incrementDopFigureRequired) {
+            $cachedDopFigure = (int)$cachedDopFigure;
+            ++$cachedDopFigure;
+            $dopCachePool->delete($dopFigureCacheKey);
 
-            $cachedDopEndFigure = $dopEndCachePool
-                ->get($dopEndFigureCacheKey, static function (ItemInterface $item) use ($cachedDopEndFigure): string {
+            $cachedDopFigure = $dopCachePool
+                ->get($dopFigureCacheKey, static function (ItemInterface $item) use ($cachedDopFigure): string {
                     $item->tag(GrinWayTelegramBundle::GENERIC_CACHE_TAG);
-                    return (string)$cachedDopEndFigure;
+                    return (string)$cachedDopFigure;
                 });
         }
 
-        return (int)$cachedDopEndFigure;
+        return (int)$cachedDopFigure;
     }
 
     /**
      * @internal
      */
-    protected function incrementDopEndFigureClearState(): void
+    protected function incrementDopFigureClearState(): void
     {
-        $this->incrementDopEndFigureRequired = false;
-        $this->incrementDopEndFigureIdx = 0;
+        $this->incrementDopFigureRequired = false;
+        $this->incrementDopFigureIdx = 0;
     }
 
     /**
      * @internal
      */
-    protected function ifCanUpdateIncrementDopEndFigureStateDoIt(): bool
+    protected function ifCanUpdateIncrementDopFigureStateDoIt(): bool
     {
-        if (static::ALLOWED_INCREMENT_ATTEMPTS > $this->incrementDopEndFigureIdx++) {
-            $this->incrementDopEndFigureRequired = true;
+        if (static::ALLOWED_INCREMENT_ATTEMPTS > $this->incrementDopFigureIdx++) {
+            $this->incrementDopFigureRequired = true;
             return true;
         }
-        $this->incrementDopEndFigureClearState();
+        $this->incrementDopFigureClearState();
         return false;
     }
 }

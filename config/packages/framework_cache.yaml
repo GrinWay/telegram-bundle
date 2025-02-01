@@ -2,8 +2,8 @@ framework:
     cache:
         pools:
 
-            grinway_telegram.cache_pool.dop_end_figure:
+            grinway_telegram.cache_pool.dop_figure:
                 adapters:
                 - 'cache.adapter.filesystem'
-                default_lifetime: !php/const \PHP_INT_MAX
+                default_lifetime: 30000000
                 tags: true

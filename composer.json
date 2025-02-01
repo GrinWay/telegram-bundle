@@ -56,11 +56,11 @@
     "symfony/stimulus-bundle": "^2.22",
     "symfony/webpack-encore-bundle": "^2.2",
     "endroid/installer": "^1",
-    "grinway/service-bundle": "dev-currency_realization",
     "zenstruck/browser": "^1.9",
     "guzzlehttp/uri-template": "^1.0",
     "symfony/ux-turbo": "^2.22",
-    "symfony/cache": "^7.2"
+    "symfony/cache": "^7.2",
+    "grinway/service-bundle": "dev-currency_realization"
   },
   "config": {
     "allow-plugins": {

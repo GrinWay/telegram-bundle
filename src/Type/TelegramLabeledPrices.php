@@ -9,7 +9,12 @@ use Symfony\Component\Validator\Validation;
 
 /**
  * https://core.telegram.org/bots/api#labeledprice
- * Price representation 000 === 0.00
+ *
+ * Telegram payments have a restriction that one item in a whole invoice can't be 0.xx
+ * it must be 1.xx
+ * if you pass 0.99 or 0.01 as an item amount of the invoice telegram will return 4xx http status code
+ *
+ * Imagined amount 1.00 writes as 100
  */
 class TelegramLabeledPrices implements \ArrayAccess, \Countable, \Iterator
 {
@@ -24,12 +29,7 @@ class TelegramLabeledPrices implements \ArrayAccess, \Countable, \Iterator
         $this->labeledPricesIdx = 0;
 
         foreach ($labeledPrices as $labeledPrice) {
-            $startAmountPart = $this->getStartNumber($labeledPrice->getAmountWithEndFigures());
-            if (Telegram::MIN_START_AMOUNT_PART > $startAmountPart) {
-                continue;
-            }
-            $this->labeledPrices[] = $labeledPrice;
-            $this->addSum($labeledPrice);
+            $this[] = $labeledPrice;
         }
     }
 
@@ -81,10 +81,26 @@ class TelegramLabeledPrices implements \ArrayAccess, \Countable, \Iterator
 
     public function offsetSet(mixed $offset, mixed $value): void
     {
+        if (!$value instanceof TelegramLabeledPrice) {
+            $message = \sprintf(
+                'Invalid value, got value type of "%s", allowed only "%s"',
+                \get_debug_type($value),
+                TelegramLabeledPrice::class,
+            );
+            throw new \InvalidArgumentException($message);
+        }
+        $labeledPrice = $value;
+
+        $startAmountPart = $this->getStartNumber($labeledPrice->getAmountWithEndFigures());
+        if (Telegram::MIN_START_AMOUNT_PART > $startAmountPart) {
+            return;
+        }
+
+        $this->addSum($labeledPrice);
         if (null === $offset) {
-            $this->labeledPrices[] = $value;
+            $this->labeledPrices[] = $labeledPrice;
         } else {
-            $this->labeledPrices[$offset] = $value;
+            $this->labeledPrices[$offset] = $labeledPrice;
         }
     }
 
