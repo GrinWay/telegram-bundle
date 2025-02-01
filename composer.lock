@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ba61d2d0809e229cc659654d5c97dbe3",
+    "content-hash": "0981679f11e86315d69a7f7f58106f69",
     "packages": [
         {
             "name": "behat/mink",
@@ -134,20 +134,21 @@
         },
         {
             "name": "grinway/service-bundle",
-            "version": "1.0.0",
+            "version": "dev-currency_realization",
             "source": {
                 "type": "git",
                 "url": "https://github.com/GrinWay/service-bundle.git",
-                "reference": "1bc9f2b78972d6c836647e6e4f64846232c42146"
+                "reference": "fae2d703a611c8f2944749db71e73a2e1342bf18"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/GrinWay/service-bundle/zipball/1bc9f2b78972d6c836647e6e4f64846232c42146",
-                "reference": "1bc9f2b78972d6c836647e6e4f64846232c42146",
+                "url": "https://api.github.com/repos/GrinWay/service-bundle/zipball/fae2d703a611c8f2944749db71e73a2e1342bf18",
+                "reference": "fae2d703a611c8f2944749db71e73a2e1342bf18",
                 "shasum": ""
             },
             "require": {
                 "endroid/installer": "^1",
+                "symfony/cache": "^7.2",
                 "symfony/console": "7.2.*",
                 "symfony/framework-bundle": "7.2.*",
                 "symfony/http-client": "7.2.*",
@@ -158,7 +159,6 @@
                 "symfony/serializer": "7.2.*",
                 "symfony/stimulus-bundle": "^2.22",
                 "symfony/string": "7.2.*",
-                "symfony/telegram-notifier": "7.2.*",
                 "symfony/translation": "7.2.*",
                 "symfony/validator": "^7.2",
                 "symfony/webpack-encore-bundle": "^2.2",
@@ -169,6 +169,7 @@
             },
             "require-dev": {
                 "phpunit/phpunit": "11.4",
+                "symfony/maker-bundle": "^1.62",
                 "symfony/phpunit-bridge": "^7.2",
                 "symfony/test-pack": "^1.0"
             },
@@ -188,6 +189,7 @@
                     "email": "grin180898@outlook.com"
                 }
             ],
+            "description": "Commonly used tools for a symfony app",
             "keywords": [
                 "bundle",
                 "grinway",
@@ -198,9 +200,9 @@
             ],
             "support": {
                 "issues": "https://github.com/GrinWay/service-bundle/issues",
-                "source": "https://github.com/GrinWay/service-bundle/tree/v1.0.0"
+                "source": "https://github.com/GrinWay/service-bundle/tree/currency_realization"
             },
-            "time": "2025-01-31T10:03:23+00:00"
+            "time": "2025-02-01T12:01:09+00:00"
         },
         {
             "name": "guzzlehttp/uri-template",
@@ -7140,7 +7142,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "grinway/service-bundle": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
