@@ -2,6 +2,7 @@
 
 namespace GrinWay\Telegram\Service;
 
+use GrinWay\Service\Service\Currency;
 use GrinWay\Service\Service\FiguresRepresentation;
 use GrinWay\Service\Validator\AbsolutePath;
 use GrinWay\Telegram\Type\TelegramLabeledPrice;
@@ -657,12 +658,16 @@ class Telegram
      *
      * @internal
      */
-    protected function appendDopPriceIfAmountLessThanPossibleLowestPrice(TelegramLabeledPrices $prices, string $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi, mixed $currency): void
+    protected function appendDopPriceIfAmountLessThanPossibleLowestPrice(TelegramLabeledPrices $prices, string $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi, string $currency): void
     {
         $dopStartAmountNumber = 0;
         $dopEndAmountNumber = 0;
         [$startPassedAmount, $endPassedAmount] = $prices->getStartEndSumNumbers();
-        $oneDollarToPassedCurrency = $this->serviceLocator->get('currency')->transferAmountFromTo(
+
+        /** @var Currency $currencyService */
+        $currencyService = $this->serviceLocator->get('currency');
+
+        $oneDollarToPassedCurrency = $currencyService->transferAmountFromTo(
             '100',
             'USD',
             $currency,
