@@ -4,10 +4,6 @@ add min amount min
 
 don't touch max
 
-    //['label' => 'l', 'amount' => '1 end_dollar / 2',], // one dollar
-    //['label' => 'l', 'amount' => '1 end_dollar',], // one dollar
-    //['label' => 'l', 'amount' => '1end_dollar_more',], // one dollar
-    
     //['label' => 'l', 'amount' => 'one_dollar / 2',], // one dollar
     
     //['label' => 'l', 'amount' => 'start_dollar end_dollar',], // one dollar

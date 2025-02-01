@@ -3,6 +3,7 @@
 namespace GrinWay\Telegram\Tests\Unit;
 
 use GrinWay\Service\Service\Currency;
+use GrinWay\Service\Service\FiguresRepresentation;
 use GrinWay\Telegram\Service\Telegram;
 use GrinWay\Telegram\Tests\AbstractTelegramTestCase;
 use GrinWay\Telegram\Type\TelegramLabeledPrice;
@@ -26,6 +27,8 @@ class MinimumInvoiceSumSetsToOneDollarTelegramServiceTest extends AbstractTelegr
 {
     public static array $fixerPayload;
     protected Currency $currencyService;
+    protected int $startOneDollarIntInRUB;
+    protected int $endOneDollarIntInRUB;
 
     protected function setUp(): void
     {
@@ -50,11 +53,10 @@ class MinimumInvoiceSumSetsToOneDollarTelegramServiceTest extends AbstractTelegr
 
         $this->currencyService = self::getContainer()->get('GrinWay\Service\Service\Currency');
 
-        // TODO: current
-//        [$this->startOneDollarIntInRUB, $this->endOneDollarIntInRUB] = FiguresRepresentation::getStartEndNumbers(
-//            $this->oneDollarIn('RUB'),
-//            Telegram::LENGTH_AMOUNT_END_FIGURES,
-//        );
+        [$this->startOneDollarIntInRUB, $this->endOneDollarIntInRUB] = FiguresRepresentation::getStartEndNumbersWithEndFigures(
+            $this->oneDollarWithEndFiguresIn('RUB'),
+            Telegram::LENGTH_AMOUNT_END_FIGURES,
+        );
     }
 
 
@@ -62,8 +64,34 @@ class MinimumInvoiceSumSetsToOneDollarTelegramServiceTest extends AbstractTelegr
     {
         $currency = 'RUB';
 
+        $_1_halfEndDollar = FiguresRepresentation::concatNumbersWithCorrectCountOfEndFigures(
+            1,
+            (int)($this->endOneDollarIntInRUB / 2),
+            Telegram::LENGTH_AMOUNT_END_FIGURES,
+        );
+        $_1_endDollar = FiguresRepresentation::concatNumbersWithCorrectCountOfEndFigures(
+            1,
+            $this->endOneDollarIntInRUB,
+            Telegram::LENGTH_AMOUNT_END_FIGURES,
+        );
+
+        $oneDollarWithEndFigures = $this->oneDollarWithEndFiguresIn($currency);
+        $floatOneDollar = FiguresRepresentation::amountWithEndFiguresAsFloat(
+            $oneDollarWithEndFigures,
+            Telegram::LENGTH_AMOUNT_END_FIGURES,
+        );
+//        $halfDollar = FiguresRepresentation::getStringWithEndFigures(
+//            $hd = $floatOneDollar / 2,
+//            Telegram::LENGTH_AMOUNT_END_FIGURES,
+//        );
+//        \dump($floatOneDollar, $hd, $halfDollar);
+
         $this->assertCountIs2AndSumSameAsOneDollar('100', $currency); // 1.00 RUB
         $this->assertCountIs2AndSumSameAsOneDollar('111', $currency); // 1.11 RUB
+        $this->assertCountIs2AndSumSameAsOneDollar($_1_halfEndDollar, $currency);
+        $this->assertCountIs2AndSumSameAsOneDollar($_1_endDollar, $currency);
+        $this->assertCountIs2AndSumSameAsOneDollar('199', $currency);
+        $this->assertCountIs2AndSumSameAsOneDollar($halfDollar, $currency);
     }
 
     /**
@@ -86,7 +114,7 @@ class MinimumInvoiceSumSetsToOneDollarTelegramServiceTest extends AbstractTelegr
 
         $this->assertCount(2, $prices);
         $this->assertSame(
-            $this->oneDollarIn($currency),
+            $this->oneDollarWithEndFiguresIn($currency),
             $prices->getSumFigures(),
         );
     }
@@ -96,7 +124,7 @@ class MinimumInvoiceSumSetsToOneDollarTelegramServiceTest extends AbstractTelegr
      *
      * @internal
      */
-    protected function oneDollarIn(string $currency): string
+    protected function oneDollarWithEndFiguresIn(string $currency): string
     {
         return $this->currencyService->transferAmountFromToWithEndFigures(
             '100',
