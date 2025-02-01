@@ -38,6 +38,11 @@ and this method says:
 > [grinway_telegram](https://github.com/GrinWay/telegram-bundle/blob/main/docs/services.md#grinway_telegram)
 > service, it'll be explained later
 
+> **PRO TIP**:
+> [grinway_telegram](https://github.com/GrinWay/telegram-bundle/blob/main/docs/services.md#grinway_telegram)
+> service always available in any handler automatically, access this directly
+> <br>`$this->telegram->answerInlineQuery(...)` for instance
+
 Client can send different messages, and it means that `webhook` will receive `POST` request with appropriate `payload`
 
 Depending on what client sent, the `webhook` will receive an appropriate `payload` which will contain information

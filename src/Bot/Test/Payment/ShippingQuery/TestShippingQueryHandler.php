@@ -57,6 +57,9 @@ class TestShippingQueryHandler extends AbstractShippingQueryHandler
          *
          * In your client code use service:
          * "grinway_telegram" and call "answerShippingQuery" method
+         *
+         * like: $this->telegram->answerShippingQuery(...)
+         *
          * Needless set subject and return true, because you will answer right here without ChatMessage
          */
         $telegramOptions->chatId($this->testChatId);

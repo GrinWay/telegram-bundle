@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ba61d2d0809e229cc659654d5c97dbe3",
+    "content-hash": "e3240bbe42c1386bd7704dd706e3b1fb",
     "packages": [
         {
             "name": "behat/mink",
@@ -134,16 +134,16 @@
         },
         {
             "name": "grinway/service-bundle",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/GrinWay/service-bundle.git",
-                "reference": "1bc9f2b78972d6c836647e6e4f64846232c42146"
+                "reference": "86baa508e5b48e2d62b7f43000d8a15039a8d211"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/GrinWay/service-bundle/zipball/1bc9f2b78972d6c836647e6e4f64846232c42146",
-                "reference": "1bc9f2b78972d6c836647e6e4f64846232c42146",
+                "url": "https://api.github.com/repos/GrinWay/service-bundle/zipball/86baa508e5b48e2d62b7f43000d8a15039a8d211",
+                "reference": "86baa508e5b48e2d62b7f43000d8a15039a8d211",
                 "shasum": ""
             },
             "require": {
@@ -188,6 +188,7 @@
                     "email": "grin180898@outlook.com"
                 }
             ],
+            "description": "Commonly used tools for a symfony app",
             "keywords": [
                 "bundle",
                 "grinway",
@@ -198,9 +199,9 @@
             ],
             "support": {
                 "issues": "https://github.com/GrinWay/service-bundle/issues",
-                "source": "https://github.com/GrinWay/service-bundle/tree/v1.0.0"
+                "source": "https://github.com/GrinWay/service-bundle/tree/v1.0.1"
             },
-            "time": "2025-01-31T10:03:23+00:00"
+            "time": "2025-01-31T11:21:30+00:00"
         },
         {
             "name": "guzzlehttp/uri-template",

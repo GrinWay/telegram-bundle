@@ -57,6 +57,9 @@ class TestPreCheckoutQueryHandler extends AbstractPreCheckoutQueryHandler
          *
          * In your client code use service:
          * "grinway_telegram" and call "answerPreCheckoutQuery" method
+         *
+         * like: $this->telegram->answerPreCheckoutQuery(...)
+         *
          * Needless set subject and return true, because you will answer right here without ChatMessage
          */
         $telegramOptions->chatId($this->testChatId);

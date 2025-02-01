@@ -21,14 +21,14 @@ abstract class AbstractTopicHandler implements TopicHandlerInterface
     protected ?string $text = null;
 
     public function __construct(
-        protected PropertyAccessorInterface                                                                            $pa,
-        protected TranslatorInterface                                                                                  $t,
-        protected Packages                                                                                             $asset,
-        #[Autowire('%kernel.project_dir%')] protected string                                                           $projectDir,
-        #[Autowire('%grinway_telegram.bot.name%')] protected string                                                    $telegramBotName,
-        protected Telegram                                                                                             $telegram,
+        protected readonly PropertyAccessorInterface                                                                   $pa,
+        protected readonly TranslatorInterface                                                                         $t,
+        protected readonly Packages                                                                                    $asset,
+        #[Autowire('%kernel.project_dir%')] protected readonly string                                                  $projectDir,
+        #[Autowire('%grinway_telegram.bot.name%')] protected readonly string                                           $telegramBotName,
+        protected readonly Telegram                                                                                    $telegram,
         #[Autowire('%grinway_telegram.bot.on_topic_supergroup_message_reply_directly_there%')] protected readonly bool $replyOnTopicSuperGroupMessage,
-        protected ?ChatterInterface                                                                                    $chatter = null,
+        protected readonly ?ChatterInterface                                                                           $chatter = null,
     )
     {
     }
