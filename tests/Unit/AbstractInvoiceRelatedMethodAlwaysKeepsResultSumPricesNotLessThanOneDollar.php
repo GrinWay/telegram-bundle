@@ -30,8 +30,8 @@ abstract class AbstractInvoiceRelatedMethodAlwaysKeepsResultSumPricesNotLessThan
     protected float $floatOneDollar;
     protected int $rubStartOneDollarInt;
     protected int $rubEndOneDollarInt;
-    protected int $rub_1_with_halfEndDollar;
-    protected int $rub_1_with_endDollar;
+    protected int $halfEndDollarWithEndFigures;
+    protected int $endDollarWithEndFigures;
     protected int $rubOneDollarStartWithHalfEndDollar;
     protected int $halfDollarWithEndFigures;
 
@@ -101,7 +101,7 @@ abstract class AbstractInvoiceRelatedMethodAlwaysKeepsResultSumPricesNotLessThan
     {
         $prices = $this->createAndMutatePricesWithGrinWayServiceMethod(
             [
-                $this->rub_1_with_halfEndDollar,
+                \sprintf('1%s', $this->halfEndDollarWithEndFigures),
             ],
             'RUB',
         );
@@ -118,7 +118,7 @@ abstract class AbstractInvoiceRelatedMethodAlwaysKeepsResultSumPricesNotLessThan
     {
         $prices = $this->createAndMutatePricesWithGrinWayServiceMethod(
             [
-                $this->rub_1_with_endDollar,
+                \sprintf('1%s', $this->endDollarWithEndFigures),
             ],
             'RUB',
         );
@@ -199,7 +199,7 @@ abstract class AbstractInvoiceRelatedMethodAlwaysKeepsResultSumPricesNotLessThan
         );
     }
 
-    public function testStartOneDollarAndHalfOneDollarInRubChangesPricesResultTo2SumStartOneDollarPlus1AndHalfOneDollar()
+    public function testStartOneDollarAndHalfEndDollarInRubChangesPricesResultTo2SumStartOneDollarPlus1AndHalfEndDollar()
     {
         $prices = $this->createAndMutatePricesWithGrinWayServiceMethod(
             [
@@ -213,6 +213,74 @@ abstract class AbstractInvoiceRelatedMethodAlwaysKeepsResultSumPricesNotLessThan
             $prices,
             $this->rubStartOneDollarInt + 1,
             (int)($this->rubEndOneDollarInt / 2),
+        );
+    }
+
+    public function testStartOneDollarSub1And99InRubChangesPricesResultTo2SumStartOneDollarAnd99()
+    {
+        $prices = $this->createAndMutatePricesWithGrinWayServiceMethod(
+            [
+                ($this->rubStartOneDollarInt - 1) . '99',
+            ],
+            'RUB',
+        );
+
+        $this->assertCount(2, $prices);
+        $this->assertStartEndPricesSum(
+            $prices,
+            $this->rubStartOneDollarInt,
+            99,
+        );
+    }
+
+    public function testStartOneDollarPlus1And00InRubDoesNotChangePricesResultSumStartOneDollarPlus1And00()
+    {
+        $prices = $this->createAndMutatePricesWithGrinWayServiceMethod(
+            [
+                ($this->rubStartOneDollarInt + 1) . '00',
+            ],
+            'RUB',
+        );
+
+        $this->assertCount(1, $prices);
+        $this->assertStartEndPricesSum(
+            $prices,
+            $this->rubStartOneDollarInt + 1,
+            0,
+        );
+    }
+
+    public function testStartOneDollarPlus1AndHalfEndDollarInRubDoesNotChangePricesResultSumStartOneDollarPlus1AndHalfEndDollar()
+    {
+        $prices = $this->createAndMutatePricesWithGrinWayServiceMethod(
+            [
+                ($this->rubStartOneDollarInt + 1) . $this->halfEndDollarWithEndFigures,
+            ],
+            'RUB',
+        );
+
+        $this->assertCount(1, $prices);
+        $this->assertStartEndPricesSum(
+            $prices,
+            $this->rubStartOneDollarInt + 1,
+            $this->halfEndDollarWithEndFigures,
+        );
+    }
+
+    public function testStartOneDollarPlus1And99InRubDoesNotChangePricesResultSumStartOneDollarPlus1And99()
+    {
+        $prices = $this->createAndMutatePricesWithGrinWayServiceMethod(
+            [
+                ($this->rubStartOneDollarInt + 1) . '99',
+            ],
+            'RUB',
+        );
+
+        $this->assertCount(1, $prices);
+        $this->assertStartEndPricesSum(
+            $prices,
+            $this->rubStartOneDollarInt + 1,
+            '99',
         );
     }
 
@@ -265,8 +333,7 @@ abstract class AbstractInvoiceRelatedMethodAlwaysKeepsResultSumPricesNotLessThan
             Telegram::LENGTH_AMOUNT_END_FIGURES,
         );
 
-        $this->rub_1_with_halfEndDollar = FiguresRepresentation::concatNumbersWithCorrectCountOfEndFigures(
-            1,
+        $this->halfEndDollarWithEndFigures = FiguresRepresentation::getEndNumberWithEndFigures(
             (int)($this->rubEndOneDollarInt / 2),
             Telegram::LENGTH_AMOUNT_END_FIGURES,
         );
@@ -277,8 +344,7 @@ abstract class AbstractInvoiceRelatedMethodAlwaysKeepsResultSumPricesNotLessThan
             Telegram::LENGTH_AMOUNT_END_FIGURES,
         );
 
-        $this->rub_1_with_endDollar = FiguresRepresentation::concatNumbersWithCorrectCountOfEndFigures(
-            1,
+        $this->endDollarWithEndFigures = FiguresRepresentation::getEndNumberWithEndFigures(
             $this->rubEndOneDollarInt,
             Telegram::LENGTH_AMOUNT_END_FIGURES,
         );
