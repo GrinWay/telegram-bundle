@@ -32,7 +32,7 @@ abstract class AbstractInvoiceRelatedMethodAlwaysKeepsResultSumPricesNotLessThan
     protected int $rubEndOneDollarInt;
     protected int $rub_1_with_halfEndDollar;
     protected int $rub_1_with_endDollar;
-    protected int $rubOneDollarStartWithHalfEndDollarEnd;
+    protected int $rubOneDollarStartWithHalfEndDollar;
     protected int $halfDollarWithEndFigures;
 
     /**
@@ -199,11 +199,11 @@ abstract class AbstractInvoiceRelatedMethodAlwaysKeepsResultSumPricesNotLessThan
         );
     }
 
-    public function testStartOneDollarAndOneDollarEndHalfInRubChangesPricesResultTo2SumStartOneDollarPlus1AndOneDollarEndHalf()
+    public function testStartOneDollarAndHalfOneDollarInRubChangesPricesResultTo2SumStartOneDollarPlus1AndHalfOneDollar()
     {
         $prices = $this->createAndMutatePricesWithGrinWayServiceMethod(
             [
-                $this->rubOneDollarStartWithHalfEndDollarEnd,
+                $this->rubOneDollarStartWithHalfEndDollar,
             ],
             'RUB',
         );
@@ -215,6 +215,7 @@ abstract class AbstractInvoiceRelatedMethodAlwaysKeepsResultSumPricesNotLessThan
             (int)($this->rubEndOneDollarInt / 2),
         );
     }
+
 
     /**
      * Helper
@@ -270,7 +271,7 @@ abstract class AbstractInvoiceRelatedMethodAlwaysKeepsResultSumPricesNotLessThan
             Telegram::LENGTH_AMOUNT_END_FIGURES,
         );
 
-        $this->rubOneDollarStartWithHalfEndDollarEnd = FiguresRepresentation::concatNumbersWithCorrectCountOfEndFigures(
+        $this->rubOneDollarStartWithHalfEndDollar = FiguresRepresentation::concatNumbersWithCorrectCountOfEndFigures(
             $this->rubStartOneDollarInt,
             (int)($this->rubEndOneDollarInt / 2),
             Telegram::LENGTH_AMOUNT_END_FIGURES,
