@@ -176,15 +176,14 @@ class TelegramLabeledPrices implements \ArrayAccess, \Countable, \Iterator
         $startSum = $startSumNumber + $startPriceNumber;
         $endSum = $endSumNumber + $endPriceNumber;
 
-        $endSumFirstNumber = (int)($endSum / (10 ** Telegram::LENGTH_AMOUNT_END_FIGURES));
-        $endSumOverflow = 0 !== $endSumFirstNumber;
-        if ($endSumOverflow) {
-            $startSum += $endSumFirstNumber;
-            $endSum %= (10 ** Telegram::LENGTH_AMOUNT_END_FIGURES);
-        }
+        $sum = FiguresRepresentation::concatNumbersWithCorrectCountOfEndFigures(
+            $startSum,
+            $endSum,
+            Telegram::LENGTH_AMOUNT_END_FIGURES,
+        );
 
         return FiguresRepresentation::getStartEndNumbersWithEndFigures(
-            \sprintf('%s%s', $startSum, $endSum),
+            $sum,
             Telegram::LENGTH_AMOUNT_END_FIGURES,
         );
     }

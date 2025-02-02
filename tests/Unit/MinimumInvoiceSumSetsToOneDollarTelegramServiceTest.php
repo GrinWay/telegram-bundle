@@ -76,7 +76,7 @@ class MinimumInvoiceSumSetsToOneDollarTelegramServiceTest extends AbstractTelegr
         );
 
         $oneDollarWithEndFigures = $this->oneDollarWithEndFiguresIn($currency);
-        $floatOneDollar = FiguresRepresentation::amountWithEndFiguresAsFloat(
+        $floatOneDollar = FiguresRepresentation::numberWithEndFiguresAsFloat(
             $oneDollarWithEndFigures,
             Telegram::LENGTH_AMOUNT_END_FIGURES,
         );
