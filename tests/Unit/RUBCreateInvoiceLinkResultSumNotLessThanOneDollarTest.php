@@ -7,8 +7,10 @@ use GrinWay\Telegram\Type\TelegramLabeledPrices;
 use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(Telegram::class)]
-class CreateInvoiceLinkCorrectlyMutatePricesTest extends AbstractInvoiceRelatedMethodAlwaysKeepsResultSumPricesNotLessThanOneDollar
+class RUBCreateInvoiceLinkResultSumNotLessThanOneDollarTest extends AbstractGrinWayServiceInvoiceMethodResultSumNotLessThanOneDollarTestCase
 {
+    public const CURRENCY = 'RUB';
+
     protected function setUp(): void
     {
         $this->mockedGrinwayTelegramClientPlainResponse = '{"ok": "true", "result": "https://fakeurl"}';

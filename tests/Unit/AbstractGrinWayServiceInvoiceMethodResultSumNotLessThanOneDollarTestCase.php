@@ -2,14 +2,12 @@
 
 namespace GrinWay\Telegram\Tests\Unit;
 
-use GrinWay\Service\Service\Currency;
 use GrinWay\Service\Service\FiguresRepresentation;
 use GrinWay\Telegram\Service\Telegram;
 use GrinWay\Telegram\Tests\AbstractTelegramTestCase;
 use GrinWay\Telegram\Type\TelegramLabeledPrice;
 use GrinWay\Telegram\Type\TelegramLabeledPrices;
 use PHPUnit\Framework\Attributes\CoversClass;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * 1) Telegram payments have a restriction that minimum summary invoice must be not less than 1$
@@ -23,7 +21,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  * https://core.telegram.org/bots/payments#supported-currencies
  */
 #[CoversClass(Telegram::class)]
-abstract class AbstractInvoiceRelatedMethodAlwaysKeepsResultSumPricesNotLessThanOneDollar extends AbstractTelegramTestCase
+abstract class AbstractGrinWayServiceInvoiceMethodResultSumNotLessThanOneDollarTestCase extends AbstractTelegramTestCase
 {
     // rub
     protected int $rubOneDollarWithEndFigures;
@@ -38,6 +36,8 @@ abstract class AbstractInvoiceRelatedMethodAlwaysKeepsResultSumPricesNotLessThan
     /**
      * Pay your attention at getTestPricesByPriceAmounts of this abstract class
      */
+    public const CURRENCY = '!CHANGE_ME!';
+
     abstract protected function createAndMutatePricesWithGrinWayServiceMethod(array $priceAmounts, string $currency): TelegramLabeledPrices;
 
     protected function setUp(): void
@@ -46,7 +46,7 @@ abstract class AbstractInvoiceRelatedMethodAlwaysKeepsResultSumPricesNotLessThan
         $this->rubSetters();
     }
 
-    public function test1And00InRubChangesPricesTo2ResultSumOneDollar()
+    public function test1And00ChangesPricesTo2ResultSumOneDollar()
     {
         $prices = $this->createAndMutatePricesWithGrinWayServiceMethod(
             [
@@ -63,13 +63,13 @@ abstract class AbstractInvoiceRelatedMethodAlwaysKeepsResultSumPricesNotLessThan
         );
     }
 
-    public function test1And11InRubChangesPricesTo2ResultSumOneDollar()
+    public function test1And11ChangesPricesTo2ResultSumOneDollar()
     {
         $prices = $this->createAndMutatePricesWithGrinWayServiceMethod(
             [
                 '111',
             ],
-            'RUB',
+            static::CURRENCY,
         );
 
         $this->assertCount(2, $prices);
@@ -80,13 +80,13 @@ abstract class AbstractInvoiceRelatedMethodAlwaysKeepsResultSumPricesNotLessThan
         );
     }
 
-    public function test1And99InRubChangesPricesTo2ResultSumOneDollar()
+    public function test1And99ChangesPricesTo2ResultSumOneDollar()
     {
         $prices = $this->createAndMutatePricesWithGrinWayServiceMethod(
             [
                 '199',
             ],
-            'RUB',
+            static::CURRENCY,
         );
 
         $this->assertCount(2, $prices);
@@ -97,13 +97,13 @@ abstract class AbstractInvoiceRelatedMethodAlwaysKeepsResultSumPricesNotLessThan
         );
     }
 
-    public function test1AndHalfEndDollarInRubChangesPricesTo2ResultSumOneDollar()
+    public function test1AndHalfEndDollarChangesPricesTo2ResultSumOneDollar()
     {
         $prices = $this->createAndMutatePricesWithGrinWayServiceMethod(
             [
                 \sprintf('1%s', $this->halfEndDollarWithEndFigures),
             ],
-            'RUB',
+            static::CURRENCY,
         );
 
         $this->assertCount(2, $prices);
@@ -114,13 +114,13 @@ abstract class AbstractInvoiceRelatedMethodAlwaysKeepsResultSumPricesNotLessThan
         );
     }
 
-    public function test1AndEndDollarInRubChangesPricesTo2ResultSumOneDollar()
+    public function test1AndEndDollarChangesPricesTo2ResultSumOneDollar()
     {
         $prices = $this->createAndMutatePricesWithGrinWayServiceMethod(
             [
                 \sprintf('1%s', $this->endDollarWithEndFigures),
             ],
-            'RUB',
+            static::CURRENCY,
         );
 
         $this->assertCount(2, $prices);
@@ -131,13 +131,13 @@ abstract class AbstractInvoiceRelatedMethodAlwaysKeepsResultSumPricesNotLessThan
         );
     }
 
-    public function testHalfDollarInRubChangesPricesTo2ResultSumOneDollar()
+    public function testHalfDollarChangesPricesTo2ResultSumOneDollar()
     {
         $prices = $this->createAndMutatePricesWithGrinWayServiceMethod(
             [
                 $this->halfDollarWithEndFigures,
             ],
-            'RUB',
+            static::CURRENCY,
         );
 
         $this->assertCount(2, $prices);
@@ -148,13 +148,13 @@ abstract class AbstractInvoiceRelatedMethodAlwaysKeepsResultSumPricesNotLessThan
         );
     }
 
-    public function testExactly1DollarInRubDoesNotChangePricesResultSum1Dollar()
+    public function testExactly1DollarDoesNotChangePricesResultSum1Dollar()
     {
         $prices = $this->createAndMutatePricesWithGrinWayServiceMethod(
             [
                 $this->rubOneDollarWithEndFigures,
             ],
-            'RUB',
+            static::CURRENCY,
         );
 
         $this->assertCount(1, $prices);
@@ -165,13 +165,13 @@ abstract class AbstractInvoiceRelatedMethodAlwaysKeepsResultSumPricesNotLessThan
         );
     }
 
-    public function testStartOneDollarAnd99InRubDoesNotChangePricesResultSumStartOneDollarAnd99()
+    public function testStartOneDollarAnd99DoesNotChangePricesResultSumStartOneDollarAnd99()
     {
         $prices = $this->createAndMutatePricesWithGrinWayServiceMethod(
             [
                 $this->rubStartOneDollarInt . '99',
             ],
-            'RUB',
+            static::CURRENCY,
         );
 
         $this->assertCount(1, $prices);
@@ -182,13 +182,13 @@ abstract class AbstractInvoiceRelatedMethodAlwaysKeepsResultSumPricesNotLessThan
         );
     }
 
-    public function testStartOneDollarAnd00InRubChangesPricesResultTo2SumStartOneDollarPlus1And00()
+    public function testStartOneDollarAnd00ChangesPricesResultTo2SumStartOneDollarPlus1And00()
     {
         $prices = $this->createAndMutatePricesWithGrinWayServiceMethod(
             [
                 $this->rubStartOneDollarInt . '00',
             ],
-            'RUB',
+            static::CURRENCY,
         );
 
         $this->assertCount(2, $prices);
@@ -199,13 +199,13 @@ abstract class AbstractInvoiceRelatedMethodAlwaysKeepsResultSumPricesNotLessThan
         );
     }
 
-    public function testStartOneDollarAndHalfEndDollarInRubChangesPricesResultTo2SumStartOneDollarPlus1AndHalfEndDollar()
+    public function testStartOneDollarAndHalfEndDollarChangesPricesResultTo2SumStartOneDollarPlus1AndHalfEndDollar()
     {
         $prices = $this->createAndMutatePricesWithGrinWayServiceMethod(
             [
                 $this->rubOneDollarStartWithHalfEndDollar,
             ],
-            'RUB',
+            static::CURRENCY,
         );
 
         $this->assertCount(2, $prices);
@@ -216,13 +216,13 @@ abstract class AbstractInvoiceRelatedMethodAlwaysKeepsResultSumPricesNotLessThan
         );
     }
 
-    public function testStartOneDollarSub1And99InRubChangesPricesResultTo2SumStartOneDollarAnd99()
+    public function testStartOneDollarSub1And99ChangesPricesResultTo2SumStartOneDollarAnd99()
     {
         $prices = $this->createAndMutatePricesWithGrinWayServiceMethod(
             [
                 ($this->rubStartOneDollarInt - 1) . '99',
             ],
-            'RUB',
+            static::CURRENCY,
         );
 
         $this->assertCount(2, $prices);
@@ -233,13 +233,13 @@ abstract class AbstractInvoiceRelatedMethodAlwaysKeepsResultSumPricesNotLessThan
         );
     }
 
-    public function testStartOneDollarPlus1And00InRubDoesNotChangePricesResultSumStartOneDollarPlus1And00()
+    public function testStartOneDollarPlus1And00DoesNotChangePricesResultSumStartOneDollarPlus1And00()
     {
         $prices = $this->createAndMutatePricesWithGrinWayServiceMethod(
             [
                 ($this->rubStartOneDollarInt + 1) . '00',
             ],
-            'RUB',
+            static::CURRENCY,
         );
 
         $this->assertCount(1, $prices);
@@ -250,13 +250,13 @@ abstract class AbstractInvoiceRelatedMethodAlwaysKeepsResultSumPricesNotLessThan
         );
     }
 
-    public function testStartOneDollarPlus1AndHalfEndDollarInRubDoesNotChangePricesResultSumStartOneDollarPlus1AndHalfEndDollar()
+    public function testStartOneDollarPlus1AndHalfEndDollarDoesNotChangePricesResultSumStartOneDollarPlus1AndHalfEndDollar()
     {
         $prices = $this->createAndMutatePricesWithGrinWayServiceMethod(
             [
                 ($this->rubStartOneDollarInt + 1) . $this->halfEndDollarWithEndFigures,
             ],
-            'RUB',
+            static::CURRENCY,
         );
 
         $this->assertCount(1, $prices);
@@ -267,13 +267,13 @@ abstract class AbstractInvoiceRelatedMethodAlwaysKeepsResultSumPricesNotLessThan
         );
     }
 
-    public function testStartOneDollarPlus1And99InRubDoesNotChangePricesResultSumStartOneDollarPlus1And99()
+    public function testStartOneDollarPlus1And99DoesNotChangePricesResultSumStartOneDollarPlus1And99()
     {
         $prices = $this->createAndMutatePricesWithGrinWayServiceMethod(
             [
                 ($this->rubStartOneDollarInt + 1) . '99',
             ],
-            'RUB',
+            static::CURRENCY,
         );
 
         $this->assertCount(1, $prices);
@@ -321,7 +321,7 @@ abstract class AbstractInvoiceRelatedMethodAlwaysKeepsResultSumPricesNotLessThan
      */
     private function rubSetters(): void
     {
-        $this->rubOneDollarWithEndFigures = $this->oneDollarWithEndFiguresIn('RUB');
+        $this->rubOneDollarWithEndFigures = $this->oneDollarWithEndFiguresIn(static::CURRENCY);
 
         $this->floatOneDollar = FiguresRepresentation::numberWithEndFiguresAsFloat(
             $this->rubOneDollarWithEndFigures,

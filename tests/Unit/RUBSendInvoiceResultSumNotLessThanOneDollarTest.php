@@ -7,8 +7,10 @@ use GrinWay\Telegram\Type\TelegramLabeledPrices;
 use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(Telegram::class)]
-class SendInvoiceCorrectlyMutatePricesTest extends AbstractInvoiceRelatedMethodAlwaysKeepsResultSumPricesNotLessThanOneDollar
+class RUBSendInvoiceResultSumNotLessThanOneDollarTest extends AbstractGrinWayServiceInvoiceMethodResultSumNotLessThanOneDollarTestCase
 {
+    public const CURRENCY = 'RUB';
+
     protected function createAndMutatePricesWithGrinWayServiceMethod(array $priceAmounts, string $currency): TelegramLabeledPrices
     {
         $prices = $this->getTestPricesByPriceAmounts($priceAmounts);
