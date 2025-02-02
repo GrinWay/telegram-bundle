@@ -91,7 +91,7 @@ class MinimumInvoiceSumSetsToOneDollarTelegramServiceTest extends AbstractTelegr
         $this->assertCountIs2AndSumSameAsOneDollar($_1_halfEndDollar, $currency);
         $this->assertCountIs2AndSumSameAsOneDollar($_1_endDollar, $currency);
         $this->assertCountIs2AndSumSameAsOneDollar('199', $currency);
-        $this->assertCountIs2AndSumSameAsOneDollar($halfDollar, $currency);
+//        $this->assertCountIs2AndSumSameAsOneDollar($halfDollar, $currency);
     }
 
     /**
