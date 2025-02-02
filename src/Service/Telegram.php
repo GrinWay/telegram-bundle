@@ -31,9 +31,9 @@ class Telegram
     private array $updateHandlerIterators = [];
 
     public function __construct(
-        private readonly ServiceLocator $serviceLocator,
-        private readonly string         $telegramWebhookPath,
-        private readonly string         $appHost,
+        protected readonly ServiceLocator $serviceLocator,
+        protected readonly string         $telegramWebhookPath,
+        protected readonly string         $appHost,
     )
     {
     }
@@ -674,7 +674,7 @@ class Telegram
      *
      * @internal
      */
-    public function appendDopPriceIfAmountLessThanPossibleLowestPrice(TelegramLabeledPrices $prices, string $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi, string $currency, bool $forceMakeHttpRequestToCurrencyApi = false): void
+    protected function appendDopPriceIfAmountLessThanPossibleLowestPrice(TelegramLabeledPrices $prices, string $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi, string $currency, bool $forceMakeHttpRequestToCurrencyApi = false): void
     {
         [$dopStartAmountNumber, $dopEndAmountNumber] = $this->getCalculatedDopStartEndNumbersToReachValidMinSumInvoice(
             $prices,
@@ -756,8 +756,9 @@ class Telegram
             $forceMakeHttpRequestToCurrencyApi,
         );
 
-        return $prices->getStartEndNumbers(
+        return FiguresRepresentation::getStartEndNumbersWithEndFigures(
             $oneDollarToPassedCurrency,
+            Telegram::LENGTH_AMOUNT_END_FIGURES,
         );
     }
 

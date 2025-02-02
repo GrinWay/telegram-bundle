@@ -46,9 +46,9 @@ class TelegramLabeledPrices implements \ArrayAccess, \Countable, \Iterator
         );
     }
 
-    public function getStartEndNumbers(TelegramLabeledPrice|string $labeledPrice): array
+    public function getStartEndNumbers(TelegramLabeledPrice $labeledPrice): array
     {
-        $stringPrice = $this->getConvertedToString($labeledPrice);
+        $stringPrice = $this->getConvertedToStringWithEndFigures($labeledPrice);
 
         return FiguresRepresentation::getStartEndNumbersWithEndFigures(
             $stringPrice,
@@ -93,6 +93,7 @@ class TelegramLabeledPrices implements \ArrayAccess, \Countable, \Iterator
             $labeledPrice->getAmountWithEndFigures(),
             Telegram::LENGTH_AMOUNT_END_FIGURES,
         );
+
         if (Telegram::MIN_START_AMOUNT_PART > $startAmountPart) {
             return;
         }
@@ -143,48 +144,48 @@ class TelegramLabeledPrices implements \ArrayAccess, \Countable, \Iterator
     private function addSum(TelegramLabeledPrice $labeledPrice): static
     {
         [$startSum, $endSum] = $this->getAddedStartEndSumNumbers($labeledPrice);
-        $this->sumFigures = FiguresRepresentation::concatNumbersWithCorrectCountOfEndFigures($startSum, $endSum, Telegram::LENGTH_AMOUNT_END_FIGURES);
+
+        $this->sumFigures = FiguresRepresentation::concatNumbersWithCorrectCountOfEndFigures(
+            $startSum,
+            $endSum,
+            Telegram::LENGTH_AMOUNT_END_FIGURES,
+        );
+
         return $this;
     }
 
-    private function getConvertedToString(TelegramLabeledPrice|string $labeledPrice): string
+    private function getConvertedToStringWithEndFigures(TelegramLabeledPrice $labeledPrice): string
     {
-        if ($labeledPrice instanceof TelegramLabeledPrice) {
-            $labeledPrice = $labeledPrice->getAmountWithEndFigures();
-        }
-        return $this->getValidatedStringNumberWithEndFigures($labeledPrice);
-    }
-
-    private function getValidatedStringNumberWithEndFigures(string $stringNumber): string
-    {
-        Validation::createCallable(new StringNumberWithEndFigures())($stringNumber);
-        return $stringNumber;
+        $stringPriceWithEndFigures = $labeledPrice->getAmountWithEndFigures();
+        Validation::createCallable(new StringNumberWithEndFigures())($stringPriceWithEndFigures);
+        return $stringPriceWithEndFigures;
     }
 
     private function getAddedStartEndSumNumbers(TelegramLabeledPrice $price): array
     {
-        $stringPrice = $this->getConvertedToString($price);
+        $stringPriceWithEndFigures = $this->getConvertedToStringWithEndFigures($price);
+
         [$startSumNumber, $endSumNumber] = FiguresRepresentation::getStartEndNumbersWithEndFigures(
             $this->sumFigures,
             Telegram::LENGTH_AMOUNT_END_FIGURES,
         );
         [$startPriceNumber, $endPriceNumber] = FiguresRepresentation::getStartEndNumbersWithEndFigures(
-            $stringPrice,
+            $stringPriceWithEndFigures,
             Telegram::LENGTH_AMOUNT_END_FIGURES,
         );
 
         $startSum = $startSumNumber + $startPriceNumber;
         $endSum = $endSumNumber + $endPriceNumber;
 
-        $sum = FiguresRepresentation::concatNumbersWithCorrectCountOfEndFigures(
-            $startSum,
-            $endSum,
-            Telegram::LENGTH_AMOUNT_END_FIGURES,
-        );
+        $part = 10 ** Telegram::LENGTH_AMOUNT_END_FIGURES;
 
-        return FiguresRepresentation::getStartEndNumbersWithEndFigures(
-            $sum,
-            Telegram::LENGTH_AMOUNT_END_FIGURES,
-        );
+        // 199 -> 1 + startSum
+        $frontNumbersEndSum = (int)($endSum / $part);
+        $startSum += $frontNumbersEndSum;
+
+        // 199 -> 99
+        $endSum %= $part;
+
+        return [$startSum, $endSum];
     }
 }
