@@ -1,0 +1,3 @@
+grinway_service:
+    currency:
+        fixer_api_key: '%env(APP_CURRENCY_FIXER_API_KEY)%'
