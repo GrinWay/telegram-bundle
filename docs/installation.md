@@ -7,8 +7,10 @@ Installation
 composer require grinway/telegram-bundle
 ```
 
-> NOTE: With the help of composer recipe you will get<br>`config/packages/grinway_telegram.yaml` and
+> NOTE: With the help of the composer recipe you will get<br>`config/packages/grinway_telegram.yaml` and
 > `config/routes/grinway_telegram_routes.yaml`<br>**Check they're not empty!**
+
+If you didn't get these configuration files just copy them from `@GrinWayTelegram/.install/symfony/config`
 
 2. Add this to your `bundles.php`
 
@@ -21,8 +23,6 @@ return [
     GrinWay\Telegram\GrinWayTelegramBundle::class => ['all' => true],
 ];
 ```
-
-If you didn't get these configuration files just copy them from `@GrinWayTelegram/.install/symfony/config`
 
 3. Execute (for `node_modules` dependencies)
 

@@ -17,6 +17,11 @@ use function Symfony\Component\String\u;
 class Telegram
 {
     public const LENGTH_AMOUNT_END_FIGURES = 2;
+    /**
+     * Telegram API won't accept label like this in a payment:
+     * 0.99 or 0.01
+     * instead it should be at least 1.00 but not 0.99
+     */
     public const MIN_START_AMOUNT_PART = 1;
     public const TELEGRAM_STARS_CURRENCY = 'XTR';
 
@@ -26,9 +31,9 @@ class Telegram
     private array $updateHandlerIterators = [];
 
     public function __construct(
-        private readonly ServiceLocator $serviceLocator,
-        private readonly string         $telegramWebhookPath,
-        private readonly string         $appHost,
+        protected readonly ServiceLocator $serviceLocator,
+        protected readonly string         $telegramWebhookPath,
+        protected readonly string         $appHost,
     )
     {
     }
@@ -227,6 +232,7 @@ class Telegram
         ?array                      $providerData = null,
         ?array                      $prependJsonRequest = null,
         ?string                     $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi = null,
+        ?bool                       $forceMakeHttpRequestToCurrencyApi = null,
         ?bool                       $throw = null,
     ): ?string
     {
@@ -250,6 +256,7 @@ class Telegram
                 providerData: $providerData,
                 prependJsonRequest: $prependJsonRequest,
                 labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi: $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi,
+                forceMakeHttpRequestToCurrencyApi: $forceMakeHttpRequestToCurrencyApi,
                 throw: $throw,
             );
             $responsePayload = $this->request('POST', 'createInvoiceLink', $invoicePayload);
@@ -259,9 +266,11 @@ class Telegram
             }
             return null;
         }
+
         if ($this->isResponsePayloadOk($responsePayload)) {
             return $this->serviceLocator->get('pa')->getValue($responsePayload, '[result]');
         }
+
         return null;
     }
 
@@ -290,6 +299,7 @@ class Telegram
         ?array                      $providerData = null,
         ?array                      $prependJsonRequest = null,
         ?string                     $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi = null,
+        ?bool                       $forceMakeHttpRequestToCurrencyApi = null,
         ?bool                       $throw = null,
     ): bool
     {
@@ -314,6 +324,7 @@ class Telegram
                 providerData: $providerData,
                 prependJsonRequest: $prependJsonRequest,
                 labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi: $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi,
+                forceMakeHttpRequestToCurrencyApi: $forceMakeHttpRequestToCurrencyApi,
                 throw: $throw,
             );
             $responsePayload = $this->request('POST', 'sendInvoice', $invoicePayload);
@@ -323,6 +334,7 @@ class Telegram
             }
             return false;
         }
+
         return $this->isResponsePayloadOk($responsePayload);
     }
 
@@ -525,6 +537,7 @@ class Telegram
         ?array                      $providerData = null,
         ?array                      $prependJsonRequest = null,
         ?string                     $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi = null,
+        ?bool                       $forceMakeHttpRequestToCurrencyApi = null,
         ?bool                       $throw = null,
     ): array
     {
@@ -537,6 +550,7 @@ class Telegram
         $sendEmailToProvider ??= false;
         $isFlexible ??= false;
         $prependJsonRequest ??= [];
+        $forceMakeHttpRequestToCurrencyApi ??= false;
         $throw ??= false;
 
         // At least these settings must exist by default
@@ -596,6 +610,7 @@ class Telegram
             $prices,
             $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi,
             $currency,
+            $forceMakeHttpRequestToCurrencyApi,
         );
         if ($prices instanceof TelegramLabeledPrices) {
             $prices = $prices->toArray();
@@ -654,40 +669,22 @@ class Telegram
 
     /**
      * Telegram Bot Api restricts the possible minimum price for the invoice as 1$
+     *
      * https://core.telegram.org/bots/payments#supported-currencies
      *
      * @internal
      */
-    protected function appendDopPriceIfAmountLessThanPossibleLowestPrice(TelegramLabeledPrices $prices, string $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi, string $currency): void
+    protected function appendDopPriceIfAmountLessThanPossibleLowestPrice(TelegramLabeledPrices $prices, string $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi, string $currency, bool $forceMakeHttpRequestToCurrencyApi = false): void
     {
-        $dopStartAmountNumber = 0;
-        $dopEndAmountNumber = 0;
-        [$startPassedAmount, $endPassedAmount] = $prices->getStartEndSumNumbers();
-
-        /** @var Currency $currencyService */
-        $currencyService = $this->serviceLocator->get('currency');
-
-        $oneDollarToPassedCurrency = $currencyService->transferAmountFromTo(
-            '100',
-            'USD',
+        [$dopStartAmountNumber, $dopEndAmountNumber] = $this->getCalculatedDopStartEndNumbersToReachValidMinSumInvoice(
+            $prices,
             $currency,
+            $forceMakeHttpRequestToCurrencyApi,
         );
-        [$startOneDollarAmountInCurrentCurrency, $endOneDollarAmountInCurrentCurrency] = $prices->getStartEndNumbers(
-            $oneDollarToPassedCurrency
-        );
-        //###> LESS than MIN
-        if ($startPassedAmount <= $startOneDollarAmountInCurrentCurrency) {
-            $dopStartAmountNumber = $startOneDollarAmountInCurrentCurrency - $startPassedAmount;
-            // after start
-            if ($endPassedAmount !== $endOneDollarAmountInCurrentCurrency) {
-                if (self::MIN_START_AMOUNT_PART < $dopStartAmountNumber) {
-                    --$dopStartAmountNumber;
-                    $dopEndAmountNumber = (10 ** self::LENGTH_AMOUNT_END_FIGURES) - \abs($endPassedAmount - $endOneDollarAmountInCurrentCurrency);
-                }
-            }
-        }
+
         if (0 !== $dopStartAmountNumber || 0 !== $dopEndAmountNumber) {
-            $dopAmountWithEndFigures = FiguresRepresentation::concatNumbersWithCorrectCountOfEndFigures(
+
+            $dopAmountWithEndFigures = FiguresRepresentation::concatStartEndPartsWithEndFigures(
                 $dopStartAmountNumber,
                 $dopEndAmountNumber,
                 self::LENGTH_AMOUNT_END_FIGURES,
@@ -741,6 +738,73 @@ class Telegram
 
         $responseContent = $response->getContent();
         return $this->serviceLocator->get('serializer')->decode($responseContent, 'json');
+    }
+
+    /**
+     * Helper
+     */
+    private function getStartEndOneDollarInCurrentCurrency(TelegramLabeledPrices $prices, string $currency, bool $forceMakeHttpRequestToCurrencyApi): array
+    {
+        /** @var Currency $currencyService */
+        $currencyService = $this->serviceLocator->get('currency');
+
+        $oneDollarToPassedCurrency = $currencyService->convertFromCurrencyToAnotherWithEndFigures(
+            '100',
+            'USD',
+            $currency,
+            self::LENGTH_AMOUNT_END_FIGURES,
+            $forceMakeHttpRequestToCurrencyApi,
+        );
+
+        return FiguresRepresentation::getStartEndNumbersWithEndFigures(
+            $oneDollarToPassedCurrency,
+            Telegram::LENGTH_AMOUNT_END_FIGURES,
+        );
+    }
+
+    /**
+     * Helper
+     *
+     * @internal
+     */
+    protected function getCalculatedDopStartEndNumbersToReachValidMinSumInvoice(TelegramLabeledPrices $prices, string $currency, bool $forceMakeHttpRequestToCurrencyApi): array
+    {
+        $dopStartAmountNumber = 0;
+        $dopEndAmountNumber = 0;
+
+        [$startPassedAmount, $endPassedAmount] = $prices->getStartEndSumNumbers();
+
+        [$startOneDollarAmountInCurrentCurrency, $endOneDollarAmountInCurrentCurrency]
+            = $this->getStartEndOneDollarInCurrentCurrency(
+            $prices,
+            $currency,
+            $forceMakeHttpRequestToCurrencyApi,
+        );
+
+        if ($startPassedAmount < $startOneDollarAmountInCurrentCurrency) {
+            $dopStartAmountNumber = $startOneDollarAmountInCurrentCurrency - $startPassedAmount;
+
+            // after start exactly (<=) because there is else
+            if ($endPassedAmount <= $endOneDollarAmountInCurrentCurrency) {
+                $dopEndAmountNumber = $endOneDollarAmountInCurrentCurrency - $endPassedAmount;
+            } else {
+                // Do nothing when can't apply reduction to the start part, because it won't be correct
+                // can't operate with 0.xx only with 1.xx
+                if (self::MIN_START_AMOUNT_PART < $dopStartAmountNumber) {
+                    // reduction
+                    --$dopStartAmountNumber;
+                    $dopEndAmountNumber = (10 ** static::LENGTH_AMOUNT_END_FIGURES) - ($endPassedAmount - $endOneDollarAmountInCurrentCurrency);
+                }
+            }
+            // can't operate with 0.xx only with 1.xx
+        } elseif ($startPassedAmount === $startOneDollarAmountInCurrentCurrency) {
+            // exactly (<) because if start equals and end equals to dollar do nothing
+            if ($endPassedAmount < $endOneDollarAmountInCurrentCurrency) {
+                ++$dopStartAmountNumber;
+            }
+        }
+
+        return [$dopStartAmountNumber, $dopEndAmountNumber];
     }
 
     /**

@@ -38,6 +38,8 @@ class GrinWayTelegramBundle extends AbstractBundle
     public const EXTENSION_ALIAS_KEBAB = 'grinway-telegram';
     public const TWIG_PREFIX_KEBAB = self::EXTENSION_ALIAS_KEBAB . ':';
 
+    public const GENERIC_CACHE_TAG = self::EXTENSION_ALIAS;
+
     protected string $extensionAlias = self::EXTENSION_ALIAS;
 
     public function configure(DefinitionConfigurator $definition): void
@@ -285,6 +287,7 @@ class GrinWayTelegramBundle extends AbstractBundle
         $container->import($this->absPath('config/packages/framework_translator.yaml'));
         $container->import($this->absPath('config/packages/framework_validation.yaml'));
         $container->import($this->absPath('config/packages/framework_test.yaml'));
+        $container->import($this->absPath('config/packages/framework_cache.yaml'));
     }
 
     /**

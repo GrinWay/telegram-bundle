@@ -1,0 +1,9 @@
+framework:
+    cache:
+        pools:
+
+            grinway_telegram.cache_pool.dop_figure:
+                adapters:
+                - 'cache.adapter.filesystem'
+                default_lifetime: 30000000
+                tags: true

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "17cda01a1bbd85d663ecb6010fab7fa7",
+    "content-hash": "bade4cc602623a627ab53eb77ea88694",
     "packages": [
         {
             "name": "behat/mink",
@@ -134,16 +134,16 @@
         },
         {
             "name": "grinway/service-bundle",
-            "version": "1.1.0",
+            "version": "dev-currency_realization",
             "source": {
                 "type": "git",
                 "url": "https://github.com/GrinWay/service-bundle.git",
-                "reference": "838904b85b118a690d444fc31486750992339df3"
+                "reference": "924168eeb1037bdc874aaf3c14ffcc3a08dccbc8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/GrinWay/service-bundle/zipball/838904b85b118a690d444fc31486750992339df3",
-                "reference": "838904b85b118a690d444fc31486750992339df3",
+                "url": "https://api.github.com/repos/GrinWay/service-bundle/zipball/924168eeb1037bdc874aaf3c14ffcc3a08dccbc8",
+                "reference": "924168eeb1037bdc874aaf3c14ffcc3a08dccbc8",
                 "shasum": ""
             },
             "require": {
@@ -200,22 +200,22 @@
             ],
             "support": {
                 "issues": "https://github.com/GrinWay/service-bundle/issues",
-                "source": "https://github.com/GrinWay/service-bundle/tree/v1.1.0"
+                "source": "https://github.com/GrinWay/service-bundle/tree/currency_realization"
             },
-            "time": "2025-02-03T19:20:01+00:00"
+            "time": "2025-02-03T19:03:33+00:00"
         },
         {
             "name": "guzzlehttp/uri-template",
-            "version": "v1.0.3",
+            "version": "v1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/uri-template.git",
-                "reference": "ecea8feef63bd4fef1f037ecb288386999ecc11c"
+                "reference": "30e286560c137526eccd4ce21b2de477ab0676d2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/uri-template/zipball/ecea8feef63bd4fef1f037ecb288386999ecc11c",
-                "reference": "ecea8feef63bd4fef1f037ecb288386999ecc11c",
+                "url": "https://api.github.com/repos/guzzle/uri-template/zipball/30e286560c137526eccd4ce21b2de477ab0676d2",
+                "reference": "30e286560c137526eccd4ce21b2de477ab0676d2",
                 "shasum": ""
             },
             "require": {
@@ -272,7 +272,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/uri-template/issues",
-                "source": "https://github.com/guzzle/uri-template/tree/v1.0.3"
+                "source": "https://github.com/guzzle/uri-template/tree/v1.0.4"
             },
             "funding": [
                 {
@@ -288,7 +288,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-12-03T19:50:20+00:00"
+            "time": "2025-02-03T10:55:03+00:00"
         },
         {
             "name": "masterminds/html5",
@@ -7142,7 +7142,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "grinway/service-bundle": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

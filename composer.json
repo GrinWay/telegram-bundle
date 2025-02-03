@@ -1,7 +1,7 @@
 {
   "name": "grinway/telegram-bundle",
   "type": "symfony-bundle",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "description": "This bundle is intended to create telegram bots",
   "keywords": [
     "grinway",
@@ -59,7 +59,9 @@
     "grinway/service-bundle": "1.1.0",
     "zenstruck/browser": "^1.9",
     "guzzlehttp/uri-template": "^1.0",
-    "symfony/ux-turbo": "^2.22"
+    "symfony/ux-turbo": "^2.22",
+    "symfony/cache": "^7.2",
+    "grinway/service-bundle": "dev-currency_realization"
   },
   "config": {
     "allow-plugins": {

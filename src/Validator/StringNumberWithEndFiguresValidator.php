@@ -7,11 +7,11 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use function Symfony\Component\String\u;
 
-class TelegramAmountWithEndFiguresValidator extends ConstraintValidator
+class StringNumberWithEndFiguresValidator extends ConstraintValidator
 {
     public function validate(mixed $amount, Constraint $constraint): void
     {
-        /* @var TelegramAmountWithEndFigures $constraint */
+        /* @var StringNumberWithEndFigures $constraint */
 
         if (null === $amount || '' === $amount) {
             return;
@@ -23,7 +23,7 @@ class TelegramAmountWithEndFiguresValidator extends ConstraintValidator
         );
         if (null === u($amount)->match($validTelegramAmountRegex)['valid_telegram_amount'] ?? null) {
             $this->context->buildViolation($constraint->message)
-                ->setParameter('{{ amount }}', $amount)
+                ->setParameter('{{ value }}', $amount)
                 ->addViolation();
         }
     }
