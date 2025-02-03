@@ -138,12 +138,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/GrinWay/service-bundle.git",
-                "reference": "132c67ebeb8ef2045c50385593d34cf73abae503"
+                "reference": "9fa1412914aa6060f8cf9c68275aac140c43f9f6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/GrinWay/service-bundle/zipball/132c67ebeb8ef2045c50385593d34cf73abae503",
-                "reference": "132c67ebeb8ef2045c50385593d34cf73abae503",
+                "url": "https://api.github.com/repos/GrinWay/service-bundle/zipball/9fa1412914aa6060f8cf9c68275aac140c43f9f6",
+                "reference": "9fa1412914aa6060f8cf9c68275aac140c43f9f6",
                 "shasum": ""
             },
             "require": {
@@ -202,7 +202,7 @@
                 "issues": "https://github.com/GrinWay/service-bundle/issues",
                 "source": "https://github.com/GrinWay/service-bundle/tree/currency_realization"
             },
-            "time": "2025-02-02T09:47:37+00:00"
+            "time": "2025-02-03T10:00:39+00:00"
         },
         {
             "name": "guzzlehttp/uri-template",

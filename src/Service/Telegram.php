@@ -748,7 +748,7 @@ class Telegram
         /** @var Currency $currencyService */
         $currencyService = $this->serviceLocator->get('currency');
 
-        $oneDollarToPassedCurrency = $currencyService->transferAmountFromToWithEndFigures(
+        $oneDollarToPassedCurrency = $currencyService->convertFromCurrencyToAnotherWithEndFigures(
             '100',
             'USD',
             $currency,

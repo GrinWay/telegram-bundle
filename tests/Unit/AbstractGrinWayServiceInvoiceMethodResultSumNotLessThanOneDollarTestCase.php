@@ -308,7 +308,7 @@ abstract class AbstractGrinWayServiceInvoiceMethodResultSumNotLessThanOneDollarT
      */
     protected function oneDollarWithEndFiguresIn(string $currency): string
     {
-        return $this->currencyService->transferAmountFromToWithEndFigures(
+        return $this->currencyService->convertFromCurrencyToAnotherWithEndFigures(
             '100',
             'USD',
             $currency,
