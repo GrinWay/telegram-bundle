@@ -51,5 +51,6 @@ jobs:
          APP_TELEGRAM_BOT_NAME: "${{ secrets.APP_TELEGRAM_BOT_NAME }}"
          APP_TEST_TELEGRAM_BOT_NAME: "${{ secrets.APP_TEST_TELEGRAM_BOT_NAME }}"
          APP_TEST_TELEGRAM_BOT_PAYMENT_PROVIDER_TOKEN: "${{ secrets.APP_TEST_TELEGRAM_BOT_PAYMENT_PROVIDER_TOKEN }}"
+         APP_CURRENCY_FIXER_API_KEY: "${{ secrets.APP_CURRENCY_FIXER_API_KEY }}"
       #  DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
       run: vendor/bin/phpunit
