@@ -12,28 +12,30 @@ GrinWay/telegram-bundle
   <img alt="dance gif" src="https://github.com/GrinWay/telegram-bundle/blob/main/docs/media/gif/dance.gif" />
 </p>
 
-### 1. 😗 [Abilities](https://github.com/GrinWay/telegram-bundle/blob/main/docs/abilities.md)
+### 😗 [Abilities](https://github.com/GrinWay/telegram-bundle/blob/main/docs/abilities.md)
 
-### 2. 🔰 [Installation](https://github.com/GrinWay/telegram-bundle/blob/main/docs/installation.md)
+### 🔰 [Installation](https://github.com/GrinWay/telegram-bundle/blob/main/docs/installation.md)
 
-### 3. 🥸 [After installation \(prerequisite\)](https://github.com/GrinWay/telegram-bundle/blob/main/docs/after-installation-prerequisite.md)
+### 🥸 [After installation \(prerequisite\)](https://github.com/GrinWay/telegram-bundle/blob/main/docs/after-installation-prerequisite.md)
 
-### 4. 😈 [Usage](https://github.com/GrinWay/telegram-bundle/blob/main/docs/usage.md)
+### 📝 [Configuration](https://github.com/GrinWay/telegram-bundle/blob/main/docs/configuration.md)
 
-### 5. 🥴 [Understand usage deeper](https://github.com/GrinWay/telegram-bundle/blob/main/docs/philosophy.md)
+### 😈 [Usage](https://github.com/GrinWay/telegram-bundle/blob/main/docs/usage.md)
 
-### 6. 🤔 [Bot understanding](https://github.com/GrinWay/telegram-bundle/blob/main/docs/bot-understanding.md)
+### 🥴 [Understand usage deeper](https://github.com/GrinWay/telegram-bundle/blob/main/docs/philosophy.md)
 
-### 7. 🗝️ [Understanding how to write `Handler::supports()`](https://github.com/GrinWay/telegram-bundle/blob/main/docs/understanding-how-to-write-supports.md)
+### 🤔 [Bot understanding](https://github.com/GrinWay/telegram-bundle/blob/main/docs/bot-understanding.md)
 
-### 8. 🔑 [Understanding how to assign `priority` attribute](https://github.com/GrinWay/telegram-bundle/blob/main/docs/understanding-how-to-assign-priority-attribute.md)
+### 🗝️ [Understanding how to write `Handler::supports()`](https://github.com/GrinWay/telegram-bundle/blob/main/docs/understanding-how-to-write-supports.md)
 
-### 9. 💳 [Payment process](https://github.com/GrinWay/telegram-bundle/blob/main/docs/payment-process.md)
+### 🔑 [Understanding how to assign `priority` attribute](https://github.com/GrinWay/telegram-bundle/blob/main/docs/understanding-how-to-assign-priority-attribute.md)
 
-### 10. 🎮 [UX stimulus controllers](https://github.com/GrinWay/telegram-bundle/blob/main/docs/ux-stimulus-controllers.md)
+### 💳 [Payment process](https://github.com/GrinWay/telegram-bundle/blob/main/docs/payment-process.md)
 
-### 11. 🔨 [Services](https://github.com/GrinWay/telegram-bundle/blob/main/docs/services.md)
+### 🎮 [UX stimulus controllers](https://github.com/GrinWay/telegram-bundle/blob/main/docs/ux-stimulus-controllers.md)
 
-### 12. 🔗 [Reference](https://github.com/GrinWay/telegram-bundle/blob/main/docs/reference.md)
+### 🔨 [Services](https://github.com/GrinWay/telegram-bundle/blob/main/docs/services.md)
 
-### 13. 🧪 [Test](https://github.com/GrinWay/telegram-bundle/blob/main/docs/test.md)
+### 🔗 [Reference](https://github.com/GrinWay/telegram-bundle/blob/main/docs/reference.md)
+
+### 🧪 [Test](https://github.com/GrinWay/telegram-bundle/blob/main/docs/test.md)
