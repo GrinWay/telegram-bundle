@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bade4cc602623a627ab53eb77ea88694",
+    "content-hash": "3a0acec49ea79d60fdba01a23f0520df",
     "packages": [
         {
             "name": "behat/mink",
@@ -134,16 +134,16 @@
         },
         {
             "name": "grinway/service-bundle",
-            "version": "dev-currency_realization",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/GrinWay/service-bundle.git",
-                "reference": "924168eeb1037bdc874aaf3c14ffcc3a08dccbc8"
+                "reference": "838904b85b118a690d444fc31486750992339df3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/GrinWay/service-bundle/zipball/924168eeb1037bdc874aaf3c14ffcc3a08dccbc8",
-                "reference": "924168eeb1037bdc874aaf3c14ffcc3a08dccbc8",
+                "url": "https://api.github.com/repos/GrinWay/service-bundle/zipball/838904b85b118a690d444fc31486750992339df3",
+                "reference": "838904b85b118a690d444fc31486750992339df3",
                 "shasum": ""
             },
             "require": {
@@ -200,9 +200,9 @@
             ],
             "support": {
                 "issues": "https://github.com/GrinWay/service-bundle/issues",
-                "source": "https://github.com/GrinWay/service-bundle/tree/currency_realization"
+                "source": "https://github.com/GrinWay/service-bundle/tree/v1.1.0"
             },
-            "time": "2025-02-03T19:03:33+00:00"
+            "time": "2025-02-03T19:20:01+00:00"
         },
         {
             "name": "guzzlehttp/uri-template",
@@ -7142,9 +7142,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "grinway/service-bundle": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
