@@ -16,7 +16,7 @@ To configure this bundle follow to the
 `%kernel.project_dir%/config/packages/grinway_telegram.yaml`
 and change this file.
 
-It the file above is not created automatically by the composer recipe
+If the file above is not created automatically by the composer recipe
 just copy the file
-`@GrinWayTelegram/.install/symfony/config/...`
+`@GrinWayTelegram/.install/symfony/config/packages/grinway_telegram.yaml`
 and paste it by the above path.
