@@ -55,4 +55,4 @@ jobs:
       #  DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
       run: |
           vendor/bin/phpunit tests/Unit
-          && vendor/bin/phpunit
+          vendor/bin/phpunit
