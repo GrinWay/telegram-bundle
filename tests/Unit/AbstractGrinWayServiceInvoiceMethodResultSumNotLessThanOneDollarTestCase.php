@@ -338,7 +338,7 @@ abstract class AbstractGrinWayServiceInvoiceMethodResultSumNotLessThanOneDollarT
             Telegram::LENGTH_AMOUNT_END_FIGURES,
         );
 
-        $this->rubOneDollarStartWithHalfEndDollar = FiguresRepresentation::concatNumbersWithCorrectCountOfEndFigures(
+        $this->rubOneDollarStartWithHalfEndDollar = FiguresRepresentation::concatStartEndPartsWithEndFigures(
             $this->rubStartOneDollarInt,
             (int)($this->rubEndOneDollarInt / 2),
             Telegram::LENGTH_AMOUNT_END_FIGURES,

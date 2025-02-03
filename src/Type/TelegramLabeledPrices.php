@@ -145,7 +145,7 @@ class TelegramLabeledPrices implements \ArrayAccess, \Countable, \Iterator
     {
         [$startSum, $endSum] = $this->getAddedStartEndSumNumbers($labeledPrice);
 
-        $this->sumFigures = FiguresRepresentation::concatNumbersWithCorrectCountOfEndFigures(
+        $this->sumFigures = FiguresRepresentation::concatStartEndPartsWithEndFigures(
             $startSum,
             $endSum,
             Telegram::LENGTH_AMOUNT_END_FIGURES,

@@ -684,7 +684,7 @@ class Telegram
 
         if (0 !== $dopStartAmountNumber || 0 !== $dopEndAmountNumber) {
 
-            $dopAmountWithEndFigures = FiguresRepresentation::concatNumbersWithCorrectCountOfEndFigures(
+            $dopAmountWithEndFigures = FiguresRepresentation::concatStartEndPartsWithEndFigures(
                 $dopStartAmountNumber,
                 $dopEndAmountNumber,
                 self::LENGTH_AMOUNT_END_FIGURES,
