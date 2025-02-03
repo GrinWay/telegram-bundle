@@ -12,6 +12,11 @@ To look at `actual` configuration execute:
 php bin/console debug:config grinway_telegram
 ```
 
-To configure this bundle explicitly follow to the
+To configure this bundle follow to the
 `%kernel.project_dir%/config/packages/grinway_telegram.yaml`
-and change this file
+and change this file.
+
+It the file above is not created automatically by the composer recipe
+just copy the file
+`@GrinWayTelegram/.install/symfony/config/...`
+and paste it by the above path.
