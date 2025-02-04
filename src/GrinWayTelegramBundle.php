@@ -53,9 +53,9 @@ class GrinWayTelegramBundle extends AbstractBundle
             ->defaultNull()
             ->end()//
 
-            //###> arrayNode bot ###
             ->arrayNode('bot')
             ->children()//
+            //###> bot array node ###
 
             ->scalarNode('name')
             ->cannotBeEmpty()
@@ -82,9 +82,9 @@ class GrinWayTelegramBundle extends AbstractBundle
             ->defaultNull()
             ->end()//
 
+            //###< bot array node ###
             ->end()
             ->end()
-            //###< arrayNode bot ###
 
             ->end()//
         ;
