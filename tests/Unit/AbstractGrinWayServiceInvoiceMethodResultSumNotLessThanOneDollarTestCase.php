@@ -308,7 +308,7 @@ abstract class AbstractGrinWayServiceInvoiceMethodResultSumNotLessThanOneDollarT
      */
     protected function oneDollarWithEndFiguresIn(string $currency): string
     {
-        return $this->currencyService->convertFromCurrencyToAnotherWithEndFigures(
+        return static::$currencyService->convertFromCurrencyToAnotherWithEndFigures(
             '100',
             'USD',
             $currency,

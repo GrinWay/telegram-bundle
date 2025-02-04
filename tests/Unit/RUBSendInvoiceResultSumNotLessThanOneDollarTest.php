@@ -15,7 +15,7 @@ class RUBSendInvoiceResultSumNotLessThanOneDollarTest extends AbstractGrinWaySer
     {
         $prices = $this->getTestPricesByPriceAmounts($priceAmounts);
 
-        $this->telegram->sendInvoice(
+        static::$telegram->sendInvoice(
             chatId: 'TEST',
             title: 'TEST',
             description: 'TEST',

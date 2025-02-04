@@ -22,13 +22,13 @@ class TelegramServiceTest extends AbstractTelegramTestCase
 
     public function testSetWebhookWithNotEmptyAppHost()
     {
-        $response = $this->telegram->setWebhook();
+        $response = static::$telegram->setWebhook();
         $this->assertSame(true, $response['ok'] ?? null);
     }
 
     public function testRemoveWebhook()
     {
-        $response = $this->telegram->removeWebhook();
+        $response = static::$telegram->removeWebhook();
         $this->assertSame(true, $response['ok'] ?? null);
     }
 
@@ -37,7 +37,7 @@ class TelegramServiceTest extends AbstractTelegramTestCase
         $absFilepath = \sprintf('%s/tg_test_file.txt', $this->cacheDir);
         \unlink($absFilepath);
 
-        $wasDownloaded = $this->telegram->downloadFile(
+        $wasDownloaded = static::$telegram->downloadFile(
             fileId: 'TEST_FILE_ID',
             absFilepathTo: $absFilepath,
             overwrite: true,
@@ -51,7 +51,7 @@ class TelegramServiceTest extends AbstractTelegramTestCase
     {
         $absFilepath = 'tg_test_file.txt';
 
-        $wasDownloaded = $this->telegram->downloadFile(
+        $wasDownloaded = static::$telegram->downloadFile(
             fileId: 'TEST_FILE_ID',
             absFilepathTo: $absFilepath,
             overwrite: true,
@@ -65,7 +65,7 @@ class TelegramServiceTest extends AbstractTelegramTestCase
     {
         $absDir = \sprintf('%s/stickers', $this->cacheDir);
 
-        $madeAbsPaths = $this->telegram->downloadStickers(
+        $madeAbsPaths = static::$telegram->downloadStickers(
             stickersName: 'TEST',
             absDirTo: $absDir,
             overwrite: true,
@@ -87,7 +87,7 @@ class TelegramServiceTest extends AbstractTelegramTestCase
     {
         $absDir = 'stickers';
 
-        $madeAbsPaths = $this->telegram->downloadStickers(
+        $madeAbsPaths = static::$telegram->downloadStickers(
             stickersName: 'TEST',
             absDirTo: $absDir,
             overwrite: true,
@@ -102,7 +102,7 @@ class TelegramServiceTest extends AbstractTelegramTestCase
 
     public function testDeleteMessage()
     {
-        $ok = $this->telegram->deleteMessage(
+        $ok = static::$telegram->deleteMessage(
             chatId: 'TEST',
             messageId: 'TEST',
             throw: false,
@@ -119,7 +119,7 @@ class TelegramServiceTest extends AbstractTelegramTestCase
          */
         $isValid = static fn() => true;
 
-        $ok = $this->telegram->answerPreCheckoutQuery(
+        $ok = static::$telegram->answerPreCheckoutQuery(
             preCheckoutQueryId: 'TEST', // in the webhook handler you will get a real pre_checkout_query_id in the payload
             preCheckoutQueryIsValid: $isValid(),
             throw: false,
@@ -139,7 +139,7 @@ class TelegramServiceTest extends AbstractTelegramTestCase
          */
         $isValid = static fn() => 'An error happened';
 
-        $ok = $this->telegram->answerPreCheckoutQuery(
+        $ok = static::$telegram->answerPreCheckoutQuery(
             preCheckoutQueryId: 'TEST', // in the webhook handler you will get a real pre_checkout_query_id in the payload
             preCheckoutQueryIsValid: $isValid(),
             throw: false,
@@ -153,7 +153,7 @@ class TelegramServiceTest extends AbstractTelegramTestCase
         /**
          * For you when webhook will be called you will get "inlineQueryId" in the payload
          */
-        $ok = $this->telegram->answerInlineQuery(
+        $ok = static::$telegram->answerInlineQuery(
             inlineQueryId: 'TEST',
             type: 'gif',
             results: [
@@ -175,7 +175,7 @@ class TelegramServiceTest extends AbstractTelegramTestCase
          *
          * I decided payload is valid
          */
-        $ok = $this->telegram->answerShippingQuery(
+        $ok = static::$telegram->answerShippingQuery(
             shippingQueryId: 'TEST',
             shippingOptions: [],
             shippingQueryIsValid: true,
@@ -192,7 +192,7 @@ class TelegramServiceTest extends AbstractTelegramTestCase
          *
          * I decided payload is not valid
          */
-        $ok = $this->telegram->answerShippingQuery(
+        $ok = static::$telegram->answerShippingQuery(
             shippingQueryId: 'TEST',
             shippingOptions: [],
             shippingQueryIsValid: 'ERROR',
@@ -204,7 +204,7 @@ class TelegramServiceTest extends AbstractTelegramTestCase
 
     public function testSendInvoice()
     {
-        $ok = $this->telegram->sendInvoice(
+        $ok = static::$telegram->sendInvoice(
             chatId: $this->telegramBotTestChatId,
             title: 'title',
             description: 'description',

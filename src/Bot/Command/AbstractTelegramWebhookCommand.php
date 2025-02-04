@@ -12,6 +12,10 @@ use Symfony\Component\DependencyInjection\ServiceLocator;
  */
 abstract class AbstractTelegramWebhookCommand extends Command
 {
+    public const NAME = '!CHANGE ME!';
+    public const HELP = '!CHANGE ME!';
+    public const DESCRIPTION = '!CHANGE ME!';
+
     public function __construct(
         protected readonly ServiceLocator $serviceLocator,
         ?string                           $name = null,
@@ -21,6 +25,16 @@ abstract class AbstractTelegramWebhookCommand extends Command
     }
 
     abstract protected function assignDopQuery(InputInterface $input, OutputInterface $output, array &$dopQuery): void;
+
+    protected function configure()
+    {
+        parent::configure();
+
+        $this
+            ->setDescription(static::DESCRIPTION)
+            ->setHelp(static::HELP)//
+        ;
+    }
 
     protected function execute(
         InputInterface  $input,

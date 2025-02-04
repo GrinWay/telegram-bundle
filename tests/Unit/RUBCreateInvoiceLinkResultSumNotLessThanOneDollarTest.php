@@ -11,9 +11,11 @@ class RUBCreateInvoiceLinkResultSumNotLessThanOneDollarTest extends AbstractGrin
 {
     public const CURRENCY = 'RUB';
 
+    protected static string $mockedGrinwayTelegramClientPlainResponse;
+
     protected function setUp(): void
     {
-        $this->mockedGrinwayTelegramClientPlainResponse = '{"ok": "true", "result": "https://fakeurl"}';
+        self::$mockedGrinwayTelegramClientPlainResponse = '{"ok": "true", "result": "https://fakeurl"}';
         parent::setUp();
     }
 
@@ -21,7 +23,7 @@ class RUBCreateInvoiceLinkResultSumNotLessThanOneDollarTest extends AbstractGrin
     {
         $prices = $this->getTestPricesByPriceAmounts($priceAmounts);
 
-        $this->telegram->createInvoiceLink(
+        static::$telegram->createInvoiceLink(
             title: 'TEST',
             description: 'TEST',
             prices: $prices,

@@ -19,16 +19,15 @@ class TelegramServiceTest extends AbstractTelegramTestCase
         parent::setUp();
         static::ensureKernelShutdown();
         // in order to use fixer API fake data always (fill in the cache with fake data)
-        $this->setUpMockedCurrencyService();
+        static::setUpCurrencyAndItsMockedDependencies();
+        static::$telegram = static::getContainer()->get('grinway_telegram');
 
-        $this->telegram = self::getContainer()->get('grinway_telegram');
-
-        $this->httpClient = self::getContainer()->get(HttpClientInterface::class);
+        $this->httpClient = static::getContainer()->get(HttpClientInterface::class);
     }
 
     public function testNotNullInvoiceLinkCreatedWithMinItemAmountIs1AndMinSumAmountNotLessThanOneDollar()
     {
-        $invoiceLink = $this->telegram->createInvoiceLink(
+        $invoiceLink = static::$telegram->createInvoiceLink(
             title: 'title',
             description: 'description',
             prices: new TelegramLabeledPrices(

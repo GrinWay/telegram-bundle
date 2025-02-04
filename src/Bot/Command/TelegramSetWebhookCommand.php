@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class TelegramSetWebhookCommand extends AbstractTelegramWebhookCommand
 {
     public const NAME = GrinWayTelegramBundle::COMMAND_PREFIX . 'bot:set_webhook';
-    public const HELP = 'Sets telegram bot webhook';
+    public const HELP = 'Sets the telegram bot webhook';
     public const DESCRIPTION = self::HELP;
 
     protected function assignDopQuery(InputInterface $input, OutputInterface $output, array &$dopQuery): void
@@ -26,6 +26,7 @@ class TelegramSetWebhookCommand extends AbstractTelegramWebhookCommand
     protected function configure()
     {
         parent::configure();
+
         $this
             ->addOption(
                 'drop-pending-updates',
