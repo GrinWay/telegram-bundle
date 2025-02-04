@@ -17,7 +17,9 @@ class TelegramServiceTest extends AbstractTelegramTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        self::ensureKernelShutdown();
+        static::ensureKernelShutdown();
+        // in order to use fixer API fake data always (fill in the cache with fake data)
+        $this->setUpMockedCurrencyService();
 
         $this->telegram = self::getContainer()->get('grinway_telegram');
 

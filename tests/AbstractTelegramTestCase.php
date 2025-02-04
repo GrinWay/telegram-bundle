@@ -52,14 +52,14 @@ abstract class AbstractTelegramTestCase extends WebTestCase
     {
         parent::setUp();
         $this->setUpMockedTelegramService();
-        $this->setUpCurrencyService();
+        $this->setUpMockedCurrencyService();
         $this->setUpState();
     }
 
     /**
      * @internal
      */
-    private function setUpMockedTelegramService(): void
+    protected function setUpMockedTelegramService(): void
     {
         $mockedGrinwayTelegramClientPlainResponse = $this->mockedGrinwayTelegramClientPlainResponse;
         $grinwayTelegramClientResponseGenerator = static function () use ($mockedGrinwayTelegramClientPlainResponse): \Generator {
@@ -85,7 +85,7 @@ abstract class AbstractTelegramTestCase extends WebTestCase
     /**
      * @internal
      */
-    private function setUpCurrencyService()
+    protected function setUpMockedCurrencyService()
     {
         $mockedFixerPlainPayload = $this->mockedGrinWayServiceFixerLatestClientPlainResponse;
         $grinwayTelegramFileClientResponseGenerator = static function () use ($mockedFixerPlainPayload): \Generator {
@@ -93,13 +93,12 @@ abstract class AbstractTelegramTestCase extends WebTestCase
                 yield new MockResponse($mockedFixerPlainPayload);
             }
         };
-        self::getContainer()->set(\sprintf('%s $grinwayServiceCurrencyFixerLatest', HttpClientInterface::class), new MockHttpClient(
+        self::getContainer()->set('grinway_service.currency.fixer_latest', new MockHttpClient(
             $grinwayTelegramFileClientResponseGenerator(),
         ));
-        $this->currencyService = self::getContainer()->get('GrinWay\Service\Service\Currency');
 
         $currencyFixerPayload = self::getContainer()
-            ->get(\sprintf('%s $grinwayServiceCurrencyFixerLatest', HttpClientInterface::class))
+            ->get('grinway_service.currency.fixer_latest')
             ->request('GET', '')
             ->getContent()//
         ;
@@ -112,12 +111,14 @@ abstract class AbstractTelegramTestCase extends WebTestCase
             echo $message . \PHP_EOL . \PHP_EOL;
             throw new \RuntimeException($message);
         }
+
+        $this->currencyService = self::getContainer()->get('grinway_service.currency');
     }
 
     /**
      * @internal
      */
-    private function setUpState()
+    protected function setUpState()
     {
         $this->getenv = self::getContainer()->get('container.getenv');
         $this->telegramBotName = ($this->getenv)(\sprintf(

@@ -14,9 +14,9 @@ services:
                 pa: '@Symfony\Component\PropertyAccess\PropertyAccessorInterface'
                 filesystem: '@Symfony\Component\Filesystem\Filesystem'
                 slugger: '@Symfony\Component\String\Slugger\SluggerInterface'
-                currency: '@GrinWay\Service\Service\Currency'
+                currency: '@grinway_service.currency'
                 t: '@.grinway_telegram.translator'
-            $telegramWebhookPath: '%env(default:grinway_telegram.bot.webhook_path:)%'
-            $appHost: '%env(default:grinway_telegram.app_host:)%'
+            $telegramWebhookPath: '%env(string:default:grinway_telegram.bot.webhook_path:)%'
+            $appHost: '%env(string:default:grinway_telegram.app_host:)%'
 
     grinway_telegram: '@GrinWay\Telegram\Service\Telegram'

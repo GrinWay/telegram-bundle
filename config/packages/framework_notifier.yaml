@@ -8,4 +8,4 @@ when@test:
         notifier:
 
             chatter_transports:
-                telegram: 'telegram://%env(default:grinway_telegram.bot.api_token:)%@default'
+                telegram: 'telegram://%env(string:default:grinway_telegram.bot.api_token:)%@default'
