@@ -18,9 +18,9 @@ class Telegram
 {
     public const LENGTH_AMOUNT_END_FIGURES = 2;
     /**
-     * Telegram API won't accept label like this in a payment:
-     * 0.99 or 0.01
-     * instead it should be at least 1.00 but not 0.99
+     * Telegram API won't accept amount like this in a payment:
+     * 099(0.99) or 001(0.01)
+     * instead it should be at least 100(1.00) but not 099(0.99)
      */
     public const MIN_START_AMOUNT_PART = 1;
     public const TELEGRAM_STARS_CURRENCY = 'XTR';
