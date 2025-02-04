@@ -25,3 +25,8 @@ when you create an invoice link or send invoices.
 With this feature if your sum of invoice less than `1$` it will be automatically increased to reach `$1`
 
 > Without minimum allowed summary price of the invoice there is no guarantee that an invoice link will be created or invoice will be sent
+
+> **IMPORTANT**: There is also the maximum invoice price restriction but this bundle doesn't process this situation
+> <br>
+> simply if your invoice sum exceeds the maximum possible amount invoice won't be sent or invoice link won't be created
+> because internally Telegram API will return `4xx` status code
