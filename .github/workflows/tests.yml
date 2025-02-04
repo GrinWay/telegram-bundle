@@ -2,8 +2,8 @@ name: tests
 
 on:
   workflow_dispatch: ~
-  #push:
-  #  branches: [ "main" ]
+  push:
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
@@ -53,6 +53,4 @@ jobs:
          APP_TEST_TELEGRAM_BOT_PAYMENT_PROVIDER_TOKEN: "${{ secrets.APP_TEST_TELEGRAM_BOT_PAYMENT_PROVIDER_TOKEN }}"
          APP_CURRENCY_FIXER_API_KEY: "${{ secrets.APP_CURRENCY_FIXER_API_KEY }}"
       #  DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
-      run: |
-          vendor/bin/phpunit tests/Unit
-          vendor/bin/phpunit
+      run: "vendor/bin/phpunit"
