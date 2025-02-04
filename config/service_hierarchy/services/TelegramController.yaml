@@ -4,7 +4,7 @@ services:
         autoconfigure: false
         autowire: false
 
-    GrinWay\Telegram\Bot\Controller\TelegramController:
+    .grinway_telegram.controller.bot_webhook:
         class: 'GrinWay\Telegram\Bot\Controller\TelegramController'
         tags:
         -   name: 'controller.service_arguments'

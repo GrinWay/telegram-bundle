@@ -23,7 +23,7 @@ class TelegramController
     {
     }
 
-    public function webhook(): Response
+    public function __invoke(): Response
     {
         $request = $this->serviceLocator->get('requestStack')->getCurrentRequest();
         if (null === $request) {
