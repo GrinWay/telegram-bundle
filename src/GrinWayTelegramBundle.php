@@ -14,6 +14,7 @@ use GrinWay\Telegram\Bot\Contract\Topic\PrivateChatMessageHandlerInterface;
 use GrinWay\Telegram\Bot\Contract\Topic\ReplyToMessageHandlerInterface;
 use GrinWay\Telegram\Bot\Contract\Topic\ShippingQueryHandlerInterface;
 use GrinWay\Telegram\Bot\Contract\Topic\SuccessfulPaymentMessageHandlerInterface;
+use GrinWay\Telegram\Bot\Contract\Topic\TopicHandlerInterface;
 use GrinWay\Telegram\Bot\Contract\Update\UpdateHandlerInterface;
 use GrinWay\Telegram\Bot\Controller\TelegramController;
 use GrinWay\Telegram\Bot\Trait\TelegramAwareTrait;
@@ -312,6 +313,11 @@ class GrinWayTelegramBundle extends AbstractBundle
     {
         foreach ([
                      //###> TopicHandler ###
+                     [
+                         'interface' => TopicHandlerInterface::class,
+                         'tag_name' => TopicHandlerInterface::TOPIC_HANDLER_TAG,
+                         'tag_attributes' => []
+                     ],
                      [
                          'interface' => ReplyToMessageHandlerInterface::class,
                          'tag_name' => ReplyToMessageHandlerInterface::TAG,

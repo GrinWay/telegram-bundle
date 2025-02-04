@@ -7,6 +7,8 @@ namespace GrinWay\Telegram\Bot\Contract\Topic;
  */
 interface TopicHandlerInterface
 {
+    public const TOPIC_HANDLER_TAG = 'grinway_telegram.bot.handler';
+
     public function beforeSupports(mixed $fieldValue): static;
 
     /**

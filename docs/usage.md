@@ -35,10 +35,24 @@ That's it! Done 🔥
 php bin/console debug:container --tag grinway_telegram.bot.message_handler
 ```
 
-or to find all `inline_query` handlers
+additionally you will see their priority attributes.
+
+Or to find all `inline_query` handlers execute:
 
 ```console
 php bin/console debug:container --tag grinway_telegram.bot.inline_query_handler
+```
+
+You can find even all existing handlers by executing `since v1.2.0`:
+
+```console
+php bin/console debug:container --tag grinway_telegram.bot.handler
+```
+
+And of course you can find all handlers in the test environment (test handlers of this bundle also will exist in this list):
+
+```console
+php bin/console debug:container --env test --tag grinway_telegram.bot.handler
 ```
 
 > ADVANCED: You can change any
