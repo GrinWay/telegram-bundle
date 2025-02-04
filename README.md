@@ -36,6 +36,8 @@ GrinWay/telegram-bundle
 
 ### 🔨 [Services](https://github.com/GrinWay/telegram-bundle/blob/main/docs/services.md)
 
+### 🔤 [Translations](https://github.com/GrinWay/telegram-bundle/blob/main/docs/translations.md)
+
 ### 🔗 [Reference](https://github.com/GrinWay/telegram-bundle/blob/main/docs/reference.md)
 
 ### 🧪 [Test](https://github.com/GrinWay/telegram-bundle/blob/main/docs/test.md)

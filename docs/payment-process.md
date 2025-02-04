@@ -12,3 +12,16 @@ Payment process
   extended handler)
 
 [Telegram Bot Api Payment process](https://core.telegram.org/bots/payments-stars#step-by-step-process)
+
+### Price auto-compensation to 1$ `since v1.1.0`
+
+Looking at the
+[Telegram Bot Api Currency](https://core.telegram.org/bots/payments#supported-currencies)
+section we can find the information that the minimum summary price of the invoice can't be less than `1$`
+
+Because of it this, auto-compensation feature was added to the `grinway_telegram` service
+when you create an invoice link or send invoices.
+
+With this feature if your sum of invoice less than `1$` it will be automatically increased to reach `$1`
+
+> Without minimum allowed summary price of the invoice there is no guarantee that an invoice link will be created or invoice will be sent
