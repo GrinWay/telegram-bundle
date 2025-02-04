@@ -29,6 +29,18 @@ php bin/console grinway_telegram:bot:set_webhook -d
 
 That's it! Done 🔥
 
+❤️‍🔥To find existing handlers (`message` handlers for instance) you can execute:
+
+```console
+php bin/console debug:container --tag grinway_telegram.bot.message_handler
+```
+
+or to find all `inline_query` handlers
+
+```console
+php bin/console debug:container --tag grinway_telegram.bot.inline_query_handler
+```
+
 > ADVANCED: You can change any
 > [telegram options](https://github.com/symfony/telegram-notifier/tree/7.2?tab=readme-ov-file#adding-interactions-to-a-message)
 > before the bot will
