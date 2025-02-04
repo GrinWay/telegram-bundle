@@ -41,3 +41,5 @@ GrinWay/telegram-bundle
 ### 🔗 [Reference](https://github.com/GrinWay/telegram-bundle/blob/main/docs/reference.md)
 
 ### 🧪 [Test](https://github.com/GrinWay/telegram-bundle/blob/main/docs/test.md)
+
+### ✅ [Supported versions](https://github.com/GrinWay/telegram-bundle/blob/main/docs/supported-versions.md)
