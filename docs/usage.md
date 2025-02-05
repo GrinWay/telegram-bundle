@@ -49,7 +49,8 @@ You can find even all existing handlers by executing `since v1.2.0`:
 php bin/console debug:container --tag grinway_telegram.bot.handler
 ```
 
-And of course you can find all handlers in the test environment (test handlers of this bundle also will exist in this list):
+And of course you can find all handlers in the test environment (test handlers of this bundle also will exist in this
+list):
 
 ```console
 php bin/console debug:container --env test --tag grinway_telegram.bot.handler
@@ -74,3 +75,9 @@ own collection (`Symfony\Component\DependencyInjection\ServiceLocator`) of so-ca
 including one of the topic handler you just created at the step `2.` when you extended a certain abstract class (
 actually your service got a special tag
 [see the Reference section](https://github.com/GrinWay/telegram-bundle/blob/main/docs/reference.md#handler-tags))
+
+> **PRO TIP**: With the help of built-in
+> [AbstractTopicHandler::beforeSupports\(\)](https://github.com/GrinWay/telegram-bundle/blob/main/src/Bot/Handler/Topic/AbstractTopicHandler.php#L83)
+> you can access some properties in your handlers
+> directly, without fetching this data from the received payload (`$fieldValue`)
+> <br>because it's already been fetched before the `Handler::supports()` method
