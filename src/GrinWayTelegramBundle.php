@@ -73,12 +73,12 @@ class GrinWayTelegramBundle extends AbstractBundle
             ->end()//
 
             ->scalarNode('chat_id')
-            ->info('REQUIRED ONLY FOR TEST (for some webhooks handlers don\'t have chat_id key in the payload, and it\'s ok because we don\'t need to reply as a message to the chat but this bundle should know if a message was handled and sent and for this chat_id used)')
+            ->info('REQUIRED ONLY WHEN TEST (for some webhooks handlers don\'t have chat_id key in the payload, and it\'s ok because we don\'t need to reply as a message to the chat but this bundle should know if a message was handled and sent and for this chat_id used)')
             ->defaultNull()
             ->end()//
 
             ->scalarNode('payment_provider_token')
-            ->info('REQUIRED ONLY FOR TEST (to send an invoice)')
+            ->info('REQUIRED ONLY WHEN TEST (to send an invoice)')
             ->defaultNull()
             ->end()//
 

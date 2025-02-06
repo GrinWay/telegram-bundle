@@ -14,5 +14,7 @@ when@test:
         bot:
             name: '%env(APP_TEST_TELEGRAM_BOT_NAME)%'
             api_token: '%env(APP_TEST_TELEGRAM_BOT_API_TOKEN)%'
+            # Required (only when test)
             chat_id: '%env(APP_TEST_TELEGRAM_BOT_CHAT_ID)%'
+            # Required (only when test)
             payment_provider_token: '%env(APP_TEST_TELEGRAM_BOT_PAYMENT_PROVIDER_TOKEN)%'
