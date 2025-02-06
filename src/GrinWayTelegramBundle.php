@@ -49,7 +49,7 @@ class GrinWayTelegramBundle extends AbstractBundle
             ->children()//
 
             ->stringNode('app_host')
-            ->info('To use a "grinway_telegram:bot:set_webhook" command')
+            ->info('Optional: used when executing command: php bin/console grinway_telegram:bot:set_webhook -d')
             ->defaultNull()
             ->end()//
 
@@ -68,7 +68,7 @@ class GrinWayTelegramBundle extends AbstractBundle
             ->end()//
 
             ->booleanNode('on_topic_supergroup_message_reply_directly_there')
-            ->info('When telegram supergroup topic message was sent you will get "is_topic_message" in the payload we heed to set "message_thread_id" equals to the topic_id from webhook payload, this option does this for you')
+            ->info('Optional: When telegram supergroup topic message was sent you will get "is_topic_message" in the payload we heed to set "message_thread_id" equals to the "topic_id" from webhook payload, this option does this for you')
             ->defaultTrue()
             ->end()//
 
