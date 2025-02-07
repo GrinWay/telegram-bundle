@@ -37,6 +37,42 @@ and add your new methods.
 |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | It's the httpClient that already contains [https://...bot...](https://core.telegram.org/bots/api#making-requests) base uri with configured bot token<br><br>Usage:<br>$grinwayTelegramClient->request('POST', 'getMe', []);<br><br>`getMe` is one of the [Telegram Bot Api methods](https://core.telegram.org/bots/api#available-methods) |
 
+Example:
+
+```php
+<?php
+
+//... inside a controller
+
+$this->grinwayTelegramClient->request('POST', 'sendMessage', [
+    'json' => [
+        'chat_id' => $this->testChatId,
+        'text' => 'my choice',
+
+        'reply_markup' => [
+            'one_time_keyboard' => true,
+            'resize_keyboard' => true,
+            'input_field_placeholder' => 'my input field placeholder',
+            'keyboard' => [
+                [
+                    [
+                        'text' => 'Contact',
+                        'request_contact' => true,
+                    ],
+                    [
+                        'text' => 'WebApp',
+                        'web_app' => [
+                            'url' => $url,
+                        ],
+                    ],
+                ],
+            ]
+        ],
+
+    ],
+]);
+```
+
 #### `Symfony\Contracts\HttpClient\HttpClientInterface $grinwayTelegramFileClient`
 
 | Service description                                                                                                                                                                                                                                                     |
