@@ -233,14 +233,13 @@ class TelegramWebApp extends Controller {
      * Stimulus connect process
      */
     setColorTheme() {
-        // object setters
         this.headerColor = this.tg?.headerColor
         this.backgroundColor = this.tg?.backgroundColor
         this.bottomBarColor = this.tg?.bottomBarColor
-
-        // actual color setting
         this.colorTheme = this.tg?.colorScheme
-        this.setTheme({ theme: this.colorTheme })
+        const color = this.tg?.themeParams?.text_color
+
+        this.setTheme({ bgColor: this.backgroundColor, color})
     }
 
     /**
@@ -382,9 +381,10 @@ class TelegramWebApp extends Controller {
      * https://core.telegram.org/bots/webapps#themeparams
      */
     themeChanged() {
-        const theme = this.tg?.colorScheme
+        // const theme = this.tg?.colorScheme
         const bgColor = this.tg?.themeParams?.bg_color
-        this.setTheme({ theme, bgColor })
+        const color = this.tg?.themeParams?.text_color
+        this.setTheme({ bgColor, color })
     }
 
     /**
