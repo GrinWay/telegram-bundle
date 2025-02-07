@@ -1,9 +1,5 @@
 grinway_telegram:
 
-    # your-domain.com[:PORT]
-    # Optional: used when executing command: php bin/console grinway_telegram:bot:set_webhook -d
-    app_host: '%env(resolve:APP_HOST)%'
-
     bot:
         # Required
         name: '%env(APP_TELEGRAM_BOT_NAME)%'
@@ -11,6 +7,12 @@ grinway_telegram:
         api_token: '%env(APP_TELEGRAM_BOT_API_TOKEN)%'
         # Optional: When telegram supergroup topic message was sent you will get "is_topic_message" in the payload we heed to set "message_thread_id" equals to the "topic_id" from webhook payload, this option does this for you
         on_topic_supergroup_message_reply_directly_there: true
+
+when@dev:
+    grinway_telegram:
+        # your-domain.com[:PORT]
+        # Optional: used when executing command: php bin/console grinway_telegram:bot:set_webhook -d
+        app_host: '%env(resolve:APP_HOST)%'
 
 when@test:
     grinway_telegram:
