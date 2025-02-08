@@ -85,7 +85,6 @@ class GrinWayTelegramBundle extends AbstractBundle
             //###< bot array node ###
             ->end()
             ->end()
-
             ->end()//
         ;
     }
@@ -98,14 +97,17 @@ class GrinWayTelegramBundle extends AbstractBundle
         $env = $container->env();
         $parameters = $container->parameters();
 
+        $apiToken = $config['bot']['api_token'];
         $parameters
             ->set(self::bundlePrefixed('app_host'), $config['app_host'])//
 
             ->set(self::bundlePrefixed('bot.webhook_path'), TelegramController::WEBHOOK_PATH)
-            ->set(self::bundlePrefixed('bot.api_token'), $config['bot']['api_token'])
+            ->set(self::bundlePrefixed('bot.api_token'), $apiToken)
             ->set(self::bundlePrefixed('bot.on_topic_supergroup_message_reply_directly_there'), $config['bot']['on_topic_supergroup_message_reply_directly_there'])//
 
             ->set(self::bundlePrefixed('bot.name'), $config['bot']['name'])//
+
+            ->set(self::bundlePrefixed('dsn'), \sprintf('telegram://%s@default', $apiToken))//
         ;
 
         if ('test' === $env) {
