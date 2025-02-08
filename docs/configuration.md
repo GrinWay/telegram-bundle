@@ -31,5 +31,5 @@ Example:
 framework:
     notifier:
         chatter_transports:
-            telegram: '%grinway_telegram.dsn%'
+            telegram: '%env(string:default:grinway_telegram.dsn:)%'
 ```
