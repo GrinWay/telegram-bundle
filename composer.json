@@ -1,7 +1,7 @@
 {
   "name": "grinway/telegram-bundle",
   "type": "symfony-bundle",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "This bundle is intended to create telegram bots",
   "keywords": [
     "grinway",

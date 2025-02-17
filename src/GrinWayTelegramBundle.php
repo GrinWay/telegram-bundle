@@ -49,7 +49,7 @@ class GrinWayTelegramBundle extends AbstractBundle
         $definition->rootNode()
             ->children()//
 
-            ->stringNode('app_host')
+            ->scalarNode('app_host')
             ->info('Optional: used when executing command: php bin/console grinway_telegram:bot:set_webhook -d')
             ->defaultNull()
             ->end()//
