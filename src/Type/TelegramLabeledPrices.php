@@ -56,6 +56,20 @@ class TelegramLabeledPrices implements \ArrayAccess, \Countable, \Iterator
         );
     }
 
+    /**
+     * Factory
+     */
+    public static function fromArray(array $telegramLabeledPrices): static
+    {
+        $transformedPrices = [];
+        foreach ($telegramLabeledPrices as $price) {
+            $label = $price['label'];
+            $amount = $price['amount'];
+            $transformedPrices[] = new TelegramLabeledPrice($label, $amount);
+        }
+        return new static(...$transformedPrices);
+    }
+
     public function toArray(): array
     {
         $prices = [];

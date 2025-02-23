@@ -604,7 +604,7 @@ class Telegram
             );
         }
         if (\is_array($prices)) {
-            $prices = $this->transformPricesArrayToTelegramLabeledPrices($prices);
+            $prices = TelegramLabeledPrices::fromArray($prices);
         }
         $this->appendDopPriceIfAmountLessThanPossibleLowestPrice(
             $prices,
@@ -697,20 +697,6 @@ class Telegram
 
             $prices[] = new TelegramLabeledPrice($label, $dopAmountWithEndFigures);
         }
-    }
-
-    /**
-     * @internal
-     */
-    protected function transformPricesArrayToTelegramLabeledPrices(array $prices): TelegramLabeledPrices
-    {
-        $transformedPrices = [];
-        foreach ($prices as $price) {
-            $label = $price['label'];
-            $amount = $price['amount'];
-            $transformedPrices[] = new TelegramLabeledPrice($label, $amount);
-        }
-        return new TelegramLabeledPrices(...$transformedPrices);
     }
 
     /**

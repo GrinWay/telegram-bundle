@@ -25,7 +25,7 @@
     "peerDependencies": {
         "@hotwired/stimulus": "^3.0.0",
         "@grinway/type-checker": "^1.0.0",
-        "@grinway/theme-manager": "^1.0.0"
+        "@grinway/theme-manager": "^2.0.0"
 	},
     "devDependencies": {
         "@hotwired/stimulus": "^3.0.0",
