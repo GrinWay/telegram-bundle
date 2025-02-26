@@ -13,6 +13,7 @@ grinway_telegram:
 
 when@test:
     grinway_telegram:
+        app_host: ~
 
         bot:
             # Required (when test becomes changed, because of you set here another value)
