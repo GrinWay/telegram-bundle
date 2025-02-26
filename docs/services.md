@@ -26,6 +26,13 @@ and add your new methods.
 > [Telegram](https://github.com/GrinWay/telegram-bundle/blob/main/src/Service/Telegram.php)
 > class pay a special attention to the reusable shortcut methods:
 
+> Since `1.3.3` `sendInvoice` and `createInvoiceLink` accept `pricesRef` 
+> instead of passing by value, to keep track of any possible changes happened with `pricesRef`
+> 
+> If you pass array, array will be assigned 
+> <br>
+> If you pass `TelegramLabeledPrices`, `TelegramLabeledPrices` will be assigned
+
 | helper methods                                                                                            |                                                                 Description                                                                  |
 |-----------------------------------------------------------------------------------------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------:|
 | [request](https://github.com/GrinWay/telegram-bundle/blob/main/src/Service/Telegram.php#L465)             | Makes a request with `Symfony\Contracts\HttpClient\HttpClientInterface $grinwayTelegramClient` service and decodes json payload to the array |

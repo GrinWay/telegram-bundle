@@ -216,7 +216,7 @@ class Telegram
     public function createInvoiceLink(
         string                      $title,
         string                      $description,
-        TelegramLabeledPrices|array $prices,
+        TelegramLabeledPrices|array &$prices,
         ?string                     $providerToken = null,
         ?string                     $currency = null,
         ?string                     $photoUri = null,
@@ -240,7 +240,7 @@ class Telegram
             $invoicePayload = $this->getInvoicePayload(
                 title: $title,
                 description: $description,
-                prices: $prices,
+                pricesRef: $prices,
                 providerToken: $providerToken,
                 currency: $currency,
                 photoUri: $photoUri,
@@ -283,7 +283,7 @@ class Telegram
         string                      $chatId,
         string                      $title,
         string                      $description,
-        TelegramLabeledPrices|array $prices,
+        TelegramLabeledPrices|array &$prices,
         ?string                     $providerToken = null,
         ?string                     $currency = null,
         ?string                     $photoUri = null,
@@ -307,7 +307,7 @@ class Telegram
             $invoicePayload = $this->getInvoicePayload(
                 title: $title,
                 description: $description,
-                prices: $prices,
+                pricesRef: $prices,
                 chatId: $chatId,
                 providerToken: $providerToken,
                 currency: $currency,
@@ -520,7 +520,7 @@ class Telegram
     protected function getInvoicePayload(
         string                      $title,
         string                      $description,
-        TelegramLabeledPrices|array $prices,
+        TelegramLabeledPrices|array &$pricesRef,
         ?string                     $chatId = null,
         ?string                     $providerToken = null,
         ?string                     $currency = null,
@@ -552,6 +552,8 @@ class Telegram
         $prependJsonRequest ??= [];
         $forceMakeHttpRequestToCurrencyApi ??= false;
         $throw ??= false;
+
+        $prices = $pricesRef;
 
         // At least these settings must exist by default
         $payload ??= '{}';
@@ -613,8 +615,18 @@ class Telegram
             $forceMakeHttpRequestToCurrencyApi,
         );
         if ($prices instanceof TelegramLabeledPrices) {
+            if ($pricesRef instanceof TelegramLabeledPrices) {
+                $pricesRef = $prices;
+            }
+
             $prices = $prices->toArray();
+
+            if (\is_array($pricesRef)) {
+                $pricesRef = $prices;
+            }
         }
+
+
 
         $invoicePayload = \array_merge($prependJsonRequest, [
             'title' => $title,
