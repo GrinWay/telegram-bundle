@@ -231,6 +231,7 @@ class Telegram
         ?string                     $startParameter = null,
         ?array                      $providerData = null,
         ?array                      $prependJsonRequest = null,
+        ?array                      $appendJsonRequest = null,
         ?string                     $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi = null,
         ?bool                       $forceMakeHttpRequestToCurrencyApi = null,
         ?bool                       $throw = null,
@@ -255,6 +256,7 @@ class Telegram
                 startParameter: $startParameter,
                 providerData: $providerData,
                 prependJsonRequest: $prependJsonRequest,
+                appendJsonRequest: $appendJsonRequest,
                 labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi: $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi,
                 forceMakeHttpRequestToCurrencyApi: $forceMakeHttpRequestToCurrencyApi,
                 throw: $throw,
@@ -298,6 +300,7 @@ class Telegram
         ?string                     $startParameter = null,
         ?array                      $providerData = null,
         ?array                      $prependJsonRequest = null,
+        ?array                      $appendJsonRequest = null,
         ?string                     $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi = null,
         ?bool                       $forceMakeHttpRequestToCurrencyApi = null,
         ?bool                       $throw = null,
@@ -323,6 +326,7 @@ class Telegram
                 startParameter: $startParameter,
                 providerData: $providerData,
                 prependJsonRequest: $prependJsonRequest,
+                appendJsonRequest: $appendJsonRequest,
                 labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi: $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi,
                 forceMakeHttpRequestToCurrencyApi: $forceMakeHttpRequestToCurrencyApi,
                 throw: $throw,
@@ -459,6 +463,40 @@ class Telegram
     }
 
     /**
+     * TELEGRAM BOT API METHOD
+     *
+     * https://core.telegram.org/bots/api#getchat
+     */
+    public function getChatLink(int|string|null $chatId, bool $throw = false): false|string
+    {
+        if (null === $chatId) {
+            return false;
+        }
+
+        $username = null;
+
+        try {
+            $responseJson = $this->request('POST', 'getChat', [
+                'chat_id' => $chatId,
+            ]);
+            if (\is_array($responseJson)) {
+                $username = $responseJson['result']['username'] ?? null;
+            }
+        } catch (\Exception $exception) {
+            if (true === $throw) {
+                throw $exception;
+            }
+            return false;
+        }
+
+        if (null === $username || !$this->isResponsePayloadOk($responseJson)) {
+            return false;
+        }
+
+        return \sprintf('https://t.me/%s', $username);
+    }
+
+    /**
      * Helper
      *
      * Makes a request with 'Symfony\Contracts\HttpClient\HttpClientInterface $grinwayTelegramClient' and decodes json payload to the array
@@ -508,6 +546,8 @@ class Telegram
      * https://yookassa.ru/docs/support/payments/onboarding/integration/cms-module/telegram#telegram__03
      * Yoo Kassa test cards: https://yookassa.ru/developers/payment-acceptance/testing-and-going-live/testing#test-bank-card-success
      *
+     * @param ?array $prependJsonRequest Other parameters have more priority
+     * @param ?array $appendJsonRequest Overwrites parameters
      * @param ?string $startParameter Has a string by default in order to start private conversation with the bot by '/start <parameter>'
      * @param ?array $providerData If your data is already got just set it straight away
      * @param bool $isFlexible Is the final price depends on shipping method
@@ -536,6 +576,7 @@ class Telegram
         ?string                     $startParameter = null,
         ?array                      $providerData = null,
         ?array                      $prependJsonRequest = null,
+        ?array                      $appendJsonRequest = null,
         ?string                     $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi = null,
         ?bool                       $forceMakeHttpRequestToCurrencyApi = null,
         ?bool                       $throw = null,
@@ -550,6 +591,7 @@ class Telegram
         $sendEmailToProvider ??= false;
         $isFlexible ??= false;
         $prependJsonRequest ??= [];
+        $appendJsonRequest ??= [];
         $forceMakeHttpRequestToCurrencyApi ??= false;
         $throw ??= false;
 
@@ -626,24 +668,26 @@ class Telegram
             }
         }
 
-
-
-        $invoicePayload = \array_merge($prependJsonRequest, [
-            'title' => $title,
-            'description' => $description,
-            'payload' => $payload,
-            'currency' => $currency,
-            'prices' => $prices,
-            'provider_token' => $providerToken,
-            'need_name' => $needName,
-            'need_phone_number' => $needPhoneNumber,
-            'need_email' => $needEmail,
-            'need_shipping_address' => $needShippingAddress,
-            'send_phone_number_to_provider' => $sendPhoneNumberToProvider,
-            'send_email_to_provider' => $sendEmailToProvider,
-            'is_flexible' => $isFlexible,
-            'start_parameter' => $startParameter,
-        ]);
+        $invoicePayload = \array_merge(
+            $prependJsonRequest,
+            [
+                'title' => $title,
+                'description' => $description,
+                'payload' => $payload,
+                'currency' => $currency,
+                'prices' => $prices,
+                'provider_token' => $providerToken,
+                'need_name' => $needName,
+                'need_phone_number' => $needPhoneNumber,
+                'need_email' => $needEmail,
+                'need_shipping_address' => $needShippingAddress,
+                'send_phone_number_to_provider' => $sendPhoneNumberToProvider,
+                'send_email_to_provider' => $sendEmailToProvider,
+                'is_flexible' => $isFlexible,
+                'start_parameter' => $startParameter,
+            ],
+            $appendJsonRequest,
+        );
 
         if (null !== $chatId) {
             $invoicePayload['chat_id'] = $chatId;

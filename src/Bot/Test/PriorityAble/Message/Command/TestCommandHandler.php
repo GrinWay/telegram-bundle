@@ -16,4 +16,14 @@ class TestCommandHandler extends AbstractCommandHandler
         $chatMessage->subject(self::SUBJECT);
         return true;
     }
+
+    protected static function getCommandName(): string
+    {
+        return self::COMMAND_NAME;
+    }
+
+    protected function getCommandDescription(): string
+    {
+        return 'test';
+    }
 }

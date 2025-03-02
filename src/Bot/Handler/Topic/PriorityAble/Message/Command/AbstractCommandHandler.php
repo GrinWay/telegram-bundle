@@ -13,14 +13,11 @@ use Symfony\Component\Notifier\Message\ChatMessage;
  */
 abstract class AbstractCommandHandler extends AbstractMessageTopicHandler implements CommandMessageHandlerInterface
 {
-    public const COMMAND_NAME = '!CHANGE_ME!';
-
     abstract protected function doCommandHandle(ChatMessage $chatMessage, TelegramOptions $telegramOptions, mixed $fieldValue): bool;
 
-    protected static function getCommandName(): string
-    {
-        return static::COMMAND_NAME;
-    }
+    abstract protected static function getCommandName(): string;
+
+    abstract protected function getCommandDescription(): string;
 
     public function supports(mixed $fieldValue): bool
     {
