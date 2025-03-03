@@ -17,7 +17,7 @@ class TestCommandHandler extends AbstractCommandHandler
         return true;
     }
 
-    public static function getCommandName(): string
+    public function getCommandName(): string
     {
         return self::COMMAND_NAME;
     }

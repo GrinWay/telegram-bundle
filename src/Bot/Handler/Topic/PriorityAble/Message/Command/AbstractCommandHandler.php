@@ -15,7 +15,7 @@ abstract class AbstractCommandHandler extends AbstractMessageTopicHandler implem
 {
     abstract protected function doCommandHandle(ChatMessage $chatMessage, TelegramOptions $telegramOptions, mixed $fieldValue): bool;
 
-    abstract public static function getCommandName(): string;
+    abstract public function getCommandName(): string;
 
     abstract public function getCommandDescription(): string;
 
