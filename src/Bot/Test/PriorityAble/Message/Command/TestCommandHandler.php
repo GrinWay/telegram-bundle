@@ -17,12 +17,12 @@ class TestCommandHandler extends AbstractCommandHandler
         return true;
     }
 
-    protected static function getCommandName(): string
+    public static function getCommandName(): string
     {
         return self::COMMAND_NAME;
     }
 
-    protected function getCommandDescription(): string
+    public function getCommandDescription(): string
     {
         return 'test';
     }
