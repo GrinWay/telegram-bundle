@@ -22,6 +22,8 @@ GrinWay/telegram-bundle
 
 ### 😈 [Usage](https://github.com/GrinWay/telegram-bundle/blob/main/docs/usage.md)
 
+### 🧨 [Dynamic Command (Database)](https://github.com/GrinWay/telegram-bundle/blob/main/docs/dynamic-command.md)
+
 ### 🥴 [Understand usage deeper](https://github.com/GrinWay/telegram-bundle/blob/main/docs/philosophy.md)
 
 ### 🤔 [Bot understanding](https://github.com/GrinWay/telegram-bundle/blob/main/docs/bot-understanding.md)
