@@ -14,7 +14,7 @@ use Symfony\Component\Notifier\Message\ChatMessage;
  */
 abstract class AbstractSuccessfulPaymentMessageHandler extends AbstractMessageTopicHandler implements SuccessfulPaymentMessageHandlerInterface
 {
-    private ?array $successfulPayment = null;
+    protected ?array $successfulPaymentPayload = null;
 
     public function supports(mixed $fieldValue): bool
     {
@@ -26,6 +26,8 @@ abstract class AbstractSuccessfulPaymentMessageHandler extends AbstractMessageTo
 
     protected function doHandle(ChatMessage $chatMessage, TelegramOptions $telegramOptions, mixed $fieldValue): bool
     {
+        \assert(null !== $this->successfulPaymentPayload);
+
         return $this->doSuccessfulPaymentHandle($chatMessage, $telegramOptions, $fieldValue);
     }
 
@@ -34,7 +36,7 @@ abstract class AbstractSuccessfulPaymentMessageHandler extends AbstractMessageTo
      */
     protected function guaranteePaymentIsSuccessful(mixed $fieldValue)
     {
-        $this->successfulPayment = $this->pa->getValue($fieldValue, '[successful_payment]');
-        return null !== $this->successfulPayment;
+        $this->successfulPaymentPayload = $this->pa->getValue($fieldValue, '[successful_payment]');
+        return null !== $this->successfulPaymentPayload;
     }
 }

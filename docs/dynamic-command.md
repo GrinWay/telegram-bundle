@@ -22,10 +22,6 @@ use Symfony\Component\Notifier\Message\ChatMessage;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-/**
- * A usual message handler WITH COMMAND PRIORITY
- */
-#[AutoconfigureTag(CommandMessageHandlerInterface::TAG, ['priority' => CommandMessageHandlerInterface::TAG])]
 class DynamicCommand extends AbstractPrivateChatHandler
 {
     public function __construct(PropertyAccessorInterface $pa, TranslatorInterface $t, Packages $asset, #[Autowire('%kernel.project_dir%')] string $projectDir, #[Autowire('%grinway_telegram.bot.name%')] string $telegramBotName, Telegram $telegram, #[Autowire('%grinway_telegram.bot.on_topic_supergroup_message_reply_directly_there%')] bool $replyOnTopicSuperGroupMessage, private readonly TgBotCommandReplyRepository $tgBotCommandReplyRepository, ?ChatterInterface $chatter = null)
@@ -48,8 +44,37 @@ class DynamicCommand extends AbstractPrivateChatHandler
         if (null === $tgBotCommandReplyEntity) {
             return false;
         }
-        $chatMessage->subject($tgBotCommandReplyEntity->getReplySubject());
+        $chatMessage->subject($tgBotCommandReplyEntity->getSubject());
         return true;
     }
 }
+```
+
+```yaml
+# %kernel.project_dir%/config/services.yaml
+services:
+    _defaults:
+        autowire: true
+        
+        # IMPORTANT to switch off default priority assignments
+        autoconfigure: false
+
+    # Actually extends the private message handler but has command priority 
+    App\TelegramBot\PriorityAble\Message\Command\DynamicCommand:
+        class: 'App\TelegramBot\PriorityAble\Message\Command\DynamicCommand'
+        tags:
+        -   name: !php/const GrinWay\Telegram\Bot\Contract\Topic\CommandMessageHandlerInterface::TAG
+            priority: !php/const GrinWay\Telegram\Bot\Contract\Topic\CommandMessageHandlerInterface::PRIORITY
+
+    App\TelegramBot\PriorityAble\Message\PrivateChat\KeywordPrivateChatHandler:
+        class: 'App\TelegramBot\PriorityAble\Message\PrivateChat\KeywordPrivateChatHandler'
+        tags:
+        -   name: !php/const GrinWay\Telegram\Bot\Contract\Topic\PrivateChatMessageHandlerInterface::TAG
+            priority: 21
+
+    App\TelegramBot\PriorityAble\Message\PrivateChat\DefMessPrivateChatHandler:
+        class: 'App\TelegramBot\PriorityAble\Message\PrivateChat\DefMessPrivateChatHandler'
+        tags:
+        -   name: !php/const GrinWay\Telegram\Bot\Contract\Topic\PrivateChatMessageHandlerInterface::TAG
+            priority: 20
 ```

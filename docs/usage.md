@@ -81,3 +81,38 @@ actually your service got a special tag
 > you can access some properties in your handlers
 > directly, without fetching this data from the received payload (`$fieldValue`)
 > <br>because it's already been fetched before the `Handler::supports()` method
+
+> **PRO TIP:** To ignore the default priority assignments take into account the following config:
+
+```yaml
+# %kernel.project_dir%/config/services.yaml
+services:
+    _defaults:
+        autowire: true
+        
+        # TAKE INTO ACCOUNT THIS
+        # IMPORTANT to switch off default priority assignments
+        autoconfigure: false
+
+    # Actually extends the private message handler but has command priority 
+    App\TelegramBot\PriorityAble\Message\Command\DynamicCommand:
+        class: 'App\TelegramBot\PriorityAble\Message\Command\DynamicCommand'
+        tags:
+        -   name: !php/const GrinWay\Telegram\Bot\Contract\Topic\TopicHandlerInterface::TOPIC_HANDLER_TAG
+        -   name: !php/const GrinWay\Telegram\Bot\Contract\Topic\CommandMessageHandlerInterface::TAG
+            priority: !php/const GrinWay\Telegram\Bot\Contract\Topic\CommandMessageHandlerInterface::PRIORITY
+
+    App\TelegramBot\PriorityAble\Message\PrivateChat\KeywordPrivateChatHandler:
+        class: 'App\TelegramBot\PriorityAble\Message\PrivateChat\KeywordPrivateChatHandler'
+        tags:
+        -   name: !php/const GrinWay\Telegram\Bot\Contract\Topic\TopicHandlerInterface::TOPIC_HANDLER_TAG
+        -   name: !php/const GrinWay\Telegram\Bot\Contract\Topic\PrivateChatMessageHandlerInterface::TAG
+            priority: 21
+
+    App\TelegramBot\PriorityAble\Message\PrivateChat\DefMessPrivateChatHandler:
+        class: 'App\TelegramBot\PriorityAble\Message\PrivateChat\DefMessPrivateChatHandler'
+        tags:
+        -   name: !php/const GrinWay\Telegram\Bot\Contract\Topic\TopicHandlerInterface::TOPIC_HANDLER_TAG
+        -   name: !php/const GrinWay\Telegram\Bot\Contract\Topic\PrivateChatMessageHandlerInterface::TAG
+            priority: 20
+```
