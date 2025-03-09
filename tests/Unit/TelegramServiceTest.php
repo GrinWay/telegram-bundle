@@ -204,13 +204,14 @@ class TelegramServiceTest extends AbstractTelegramTestCase
 
     public function testSendInvoice()
     {
+        $prices = new TelegramLabeledPrices(
+            new TelegramLabeledPrice('label 1', '100'),
+        );
         $ok = static::$telegram->sendInvoice(
             chatId: $this->telegramBotTestChatId,
             title: 'title',
             description: 'description',
-            prices: new TelegramLabeledPrices(
-                new TelegramLabeledPrice('label 1', '100'),
-            ),
+            prices: $prices,
             providerToken: $this->telegramTestPaymentProviderToken,
             currency: 'RUB',
             needName: true,

@@ -7,6 +7,8 @@ use GrinWay\Service\Service\FiguresRepresentation;
 use GrinWay\Service\Validator\AbsolutePath;
 use GrinWay\Telegram\Type\TelegramLabeledPrice;
 use GrinWay\Telegram\Type\TelegramLabeledPrices;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\Emoji\EmojiTransliterator;
 use Symfony\Component\Filesystem\Path;
@@ -31,8 +33,22 @@ class Telegram
     private array $updateHandlerIterators = [];
 
     public function __construct(
+        #[AutowireLocator([
+            'grinwayTelegramClient' => new Autowire('@Symfony\Contracts\HttpClient\HttpClientInterface $grinwayTelegramClient'),
+            'grinwayTelegramFileClient' => new Autowire('@Symfony\Contracts\HttpClient\HttpClientInterface $grinwayTelegramFileClient'),
+            'serializer' => new Autowire('@Symfony\Component\Serializer\SerializerInterface'),
+            'pa' => new Autowire('@Symfony\Component\PropertyAccess\PropertyAccessorInterface'),
+            'filesystem' => new Autowire('@Symfony\Component\Filesystem\Filesystem'),
+            'slugger' => new Autowire('@Symfony\Component\String\Slugger\SluggerInterface'),
+            'currency' => new Autowire('@grinway_service.currency'),
+            't' => new Autowire('@.grinway_telegram.translator'),
+        ])]
         protected readonly ServiceLocator $serviceLocator,
+
+        #[Autowire('%env(string:default:grinway_telegram.bot.webhook_path:)%')]
         protected readonly string         $telegramWebhookPath,
+
+        #[Autowire('%env(string:default:grinway_telegram.app_host:)%')]
         protected readonly string         $appHost,
     )
     {
@@ -205,6 +221,44 @@ class Telegram
             }
             return false;
         }
+        return $this->isResponsePayloadOk($responsePayload);
+    }
+
+    /**
+     * TELEGRAM BOT API METHOD
+     *
+     * https://core.telegram.org/bots/api#sendmessage
+     */
+    public function sendMessage(
+        string $chatId,
+        string $text,
+        ?array $prependJsonRequest = null,
+        ?array $appendJsonRequest = null,
+        ?bool  $throw = null,
+    ): bool
+    {
+        $throw ??= false;
+        $prependJsonRequest ??= [];
+        $appendJsonRequest ??= [];
+
+        $jsonRequest = \array_merge(
+            $prependJsonRequest,
+            [
+                'chat_id' => $chatId,
+                'text' => $text,
+            ],
+            $appendJsonRequest,
+        );
+
+        try {
+            $responsePayload = $this->request('POST', 'sendMessage', $jsonRequest);
+        } catch (\Exception $exception) {
+            if (true === $throw) {
+                throw $exception;
+            }
+            return false;
+        }
+
         return $this->isResponsePayloadOk($responsePayload);
     }
 
@@ -602,7 +656,6 @@ class Telegram
         $currency ??= self::TELEGRAM_STARS_CURRENCY;
         $providerToken ??= '';
         $startParameter ??= 'service';
-        $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi ??= 'label_dop_price_to_achieve_min_one';
 
         // currency, provider token VALIDATION
         if (self::TELEGRAM_STARS_CURRENCY === $currency) {
@@ -650,11 +703,11 @@ class Telegram
         if (\is_array($prices)) {
             $prices = TelegramLabeledPrices::fromArray($prices);
         }
-        $this->appendDopPriceIfAmountLessThanPossibleLowestPrice(
-            $prices,
-            $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi,
-            $currency,
-            $forceMakeHttpRequestToCurrencyApi,
+        $prices = $this->getPriceWithDopIfAmountLessThanPossibleLowestPrice(
+            prices: $prices,
+            currency: $currency,
+            labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi: $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi,
+            forceMakeHttpRequestToCurrencyApi: $forceMakeHttpRequestToCurrencyApi,
         );
         if ($prices instanceof TelegramLabeledPrices) {
             if ($pricesRef instanceof TelegramLabeledPrices) {
@@ -727,11 +780,21 @@ class Telegram
      * Telegram Bot Api restricts the possible minimum price for the invoice as 1$
      *
      * https://core.telegram.org/bots/payments#supported-currencies
-     *
-     * @internal
      */
-    protected function appendDopPriceIfAmountLessThanPossibleLowestPrice(TelegramLabeledPrices $prices, string $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi, string $currency, bool $forceMakeHttpRequestToCurrencyApi = false): void
+    public function getPriceWithDopIfAmountLessThanPossibleLowestPrice(
+        TelegramLabeledPrices|array $prices,
+        string                      $currency,
+        ?string                     $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi = null,
+        ?bool                       $forceMakeHttpRequestToCurrencyApi = null,
+    ): TelegramLabeledPrices
     {
+        $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi ??= 'label_dop_price_to_achieve_min_one';
+        $forceMakeHttpRequestToCurrencyApi ??= false;
+
+        if (\is_array($prices)) {
+            $prices = TelegramLabeledPrices::fromArray($prices);
+        }
+
         [$dopStartAmountNumber, $dopEndAmountNumber] = $this->getCalculatedDopStartEndNumbersToReachValidMinSumInvoice(
             $prices,
             $currency,
@@ -753,6 +816,7 @@ class Telegram
 
             $prices[] = new TelegramLabeledPrice($label, $dopAmountWithEndFigures);
         }
+        return $prices;
     }
 
     /**
@@ -809,7 +873,11 @@ class Telegram
      *
      * @internal
      */
-    protected function getCalculatedDopStartEndNumbersToReachValidMinSumInvoice(TelegramLabeledPrices $prices, string $currency, bool $forceMakeHttpRequestToCurrencyApi): array
+    protected function getCalculatedDopStartEndNumbersToReachValidMinSumInvoice(
+        TelegramLabeledPrices $prices,
+        string                $currency,
+        bool                  $forceMakeHttpRequestToCurrencyApi,
+    ): array
     {
         $dopStartAmountNumber = 0;
         $dopEndAmountNumber = 0;
