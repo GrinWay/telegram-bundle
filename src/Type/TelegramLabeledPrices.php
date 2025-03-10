@@ -6,6 +6,7 @@ use GrinWay\Service\Service\FiguresRepresentation;
 use GrinWay\Telegram\Service\Telegram;
 use GrinWay\Telegram\Validator\StringNumberWithEndFigures;
 use Symfony\Component\Validator\Validation;
+use Traversable;
 
 /**
  * https://core.telegram.org/bots/api#labeledprice
@@ -16,17 +17,15 @@ use Symfony\Component\Validator\Validation;
  *
  * Imagined amount 1.00 writes as 100
  */
-class TelegramLabeledPrices implements \ArrayAccess, \Countable, \Iterator
+class TelegramLabeledPrices implements \ArrayAccess, \Countable, \IteratorAggregate
 {
     private array $labeledPrices;
-    private int $labeledPricesIdx;
     private string $sumFigures;
 
     public function __construct(TelegramLabeledPrice...$labeledPrices)
     {
         $this->labeledPrices = [];
         $this->sumFigures = '000';
-        $this->labeledPricesIdx = 0;
 
         foreach ($labeledPrices as $labeledPrice) {
             $this[] = $labeledPrice;
@@ -130,36 +129,6 @@ class TelegramLabeledPrices implements \ArrayAccess, \Countable, \Iterator
         $this->labeledPrices = \array_values($this->labeledPrices);
     }
 
-    public function count(): int
-    {
-        return \count($this->labeledPrices);
-    }
-
-    public function current(): mixed
-    {
-        return $this->labeledPrices[$this->labeledPricesIdx];
-    }
-
-    public function next(): void
-    {
-        $this->labeledPricesIdx++;
-    }
-
-    public function key(): mixed
-    {
-        return $this->labeledPricesIdx;
-    }
-
-    public function valid(): bool
-    {
-        return isset($this->labeledPrices[$this->labeledPricesIdx]);
-    }
-
-    public function rewind(): void
-    {
-        $this->labeledPricesIdx = 0; // array values needs when remove
-    }
-
     public function addSum(TelegramLabeledPrice $labeledPrice): static
     {
         [$startSum, $endSum] = $this->getAddSumStartEndSumNumbers($labeledPrice);
@@ -241,5 +210,15 @@ class TelegramLabeledPrices implements \ArrayAccess, \Countable, \Iterator
         $endSum %= $part;
 
         return [$startSum, $endSum];
+    }
+
+    public function getIterator(): Traversable
+    {
+        return new \ArrayIterator($this->labeledPrices);
+    }
+
+    public function count(): int
+    {
+        return \count($this->labeledPrices);
     }
 }

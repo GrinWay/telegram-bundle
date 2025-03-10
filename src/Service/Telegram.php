@@ -820,7 +820,6 @@ class Telegram
             allowDopPriceIfLessThanLowestPossible: $allowDopPriceIfLessThanLowestPossible,
             allowFallbackIncrementStartNumberIfLowestPriceIsNotEnough: $allowFallbackIncrementStartNumberIfLowestPriceIsNotEnough,
         );
-        \dump($prices);
         if ($prices instanceof TelegramLabeledPrices) {
             if ($pricesRef instanceof TelegramLabeledPrices) {
                 $pricesRef = $prices;
