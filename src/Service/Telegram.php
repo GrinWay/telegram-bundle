@@ -895,7 +895,7 @@ class Telegram
         ?bool                       $throw = null,
     ): mixed
     {
-        $httpClientExceptionRecursionMethod = function () use ($functionPhpConstOrUrl, $chatId, $allowFallbackIncrementStartNumberIfLowestPriceIsNotEnough, $allowDopPriceIfLessThanLowestPossible, $allowNonRemovableCache, &$prices, $payload, $throw, $forceMakeHttpRequestToCurrencyApi, $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi, $appendJsonRequest, $prependJsonRequest, $providerData, $startParameter, $isFlexible, $sendEmailToProvider, $sendPhoneNumberToProvider, $needShippingAddress, $needEmail, $needPhoneNumber, $needName, $photoUri, $currency, $providerToken, $description, $title) {
+        $httpClientExceptionRecursionMethod = function () use (&$prices, $functionPhpConstOrUrl, $chatId, $allowFallbackIncrementStartNumberIfLowestPriceIsNotEnough, $allowDopPriceIfLessThanLowestPossible, $allowNonRemovableCache, $payload, $throw, $forceMakeHttpRequestToCurrencyApi, $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi, $appendJsonRequest, $prependJsonRequest, $providerData, $startParameter, $isFlexible, $sendEmailToProvider, $sendPhoneNumberToProvider, $needShippingAddress, $needEmail, $needPhoneNumber, $needName, $photoUri, $currency, $providerToken, $description, $title) {
             return $this->getRetryableInvoiceResponsePayload(
                 functionPhpConstOrUrl: $functionPhpConstOrUrl,
                 title: $title,
@@ -1016,6 +1016,10 @@ class Telegram
             $prices = TelegramLabeledPrices::fromArray($prices);
         }
 
+        if (true === $allowFallbackIncrementStartNumberIfLowestPriceIsNotEnough) {
+            $dopStartAmountNumber = $this->invoiceDopIncrementStartNumber;
+        }
+
         if (true === $allowDopPriceIfLessThanLowestPossible) {
             [$dopStartAmountNumber, $dopEndAmountNumber] = $this->getCalculatedDopStartEndNumbersToReachValidLowestInvoicePrice(
                 $prices,
@@ -1023,10 +1027,6 @@ class Telegram
                 $forceMakeHttpRequestToCurrencyApi,
                 allowNonRemovableCache: $allowNonRemovableCache,
             );
-        }
-
-        if (true === $allowFallbackIncrementStartNumberIfLowestPriceIsNotEnough) {
-            $dopStartAmountNumber = $this->invoiceDopIncrementStartNumber;
         }
 
         if (0 !== $dopStartAmountNumber || 0 !== $dopEndAmountNumber) {

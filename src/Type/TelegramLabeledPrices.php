@@ -17,14 +17,16 @@ use Traversable;
  *
  * Imagined amount 1.00 writes as 100
  */
-class TelegramLabeledPrices implements \ArrayAccess, \Countable, \IteratorAggregate
+class TelegramLabeledPrices implements \ArrayAccess, \Countable, \Iterator
 {
     private array $labeledPrices;
+    private int $labeledPricesIdx;
     private string $sumFigures;
 
     public function __construct(TelegramLabeledPrice...$labeledPrices)
     {
         $this->labeledPrices = [];
+        $this->labeledPricesIdx = 0;
         $this->sumFigures = '000';
 
         foreach ($labeledPrices as $labeledPrice) {
@@ -212,9 +214,29 @@ class TelegramLabeledPrices implements \ArrayAccess, \Countable, \IteratorAggreg
         return [$startSum, $endSum];
     }
 
-    public function getIterator(): Traversable
+    public function current(): mixed
     {
-        return new \ArrayIterator($this->labeledPrices);
+        return $this->labeledPrices[$this->labeledPricesIdx];
+    }
+
+    public function next(): void
+    {
+        $this->labeledPricesIdx++;
+    }
+
+    public function key(): mixed
+    {
+        return $this->labeledPricesIdx;
+    }
+
+    public function valid(): bool
+    {
+        return isset($this->labeledPrices[$this->labeledPricesIdx]);
+    }
+
+    public function rewind(): void
+    {
+        $this->labeledPricesIdx = 0;
     }
 
     public function count(): int
