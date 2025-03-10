@@ -1,38 +1,26 @@
 <?php
 
-namespace GrinWay\Telegram\Tests\Functional;
+namespace GrinWay\Telegram\Tests\Functional\Telegram;
 
 use GrinWay\Telegram\Service\Telegram;
-use GrinWay\Telegram\Tests\AbstractTelegramTestCase;
+use GrinWay\Telegram\Tests\Functional\AbstractTelegramServiceTestCase;
 use GrinWay\Telegram\Type\TelegramLabeledPrice;
 use GrinWay\Telegram\Type\TelegramLabeledPrices;
 use PHPUnit\Framework\Attributes\CoversClass;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 #[CoversClass(Telegram::class)]
-class TelegramServiceTest extends AbstractTelegramTestCase
+class TelegramServiceTest extends AbstractTelegramServiceTestCase
 {
-    private HttpClientInterface $httpClient;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        static::ensureKernelShutdown();
-        // in order to use fixer API fake data always (fill in the cache with fake data)
-        static::setUpCurrencyAndItsMockedDependencies();
-        static::$telegram = static::getContainer()->get('grinway_telegram');
-
-        $this->httpClient = static::getContainer()->get(HttpClientInterface::class);
-    }
-
     public function testNotNullInvoiceLinkCreatedWithMinItemAmountIs1AndMinSumAmountNotLessThanOneDollar()
     {
+        $prices = new TelegramLabeledPrices(
+            new TelegramLabeledPrice('label 1', '100'), // min available item amount
+        );
+
         $invoiceLink = static::$telegram->createInvoiceLink(
             title: 'title',
             description: 'description',
-            prices: new TelegramLabeledPrices(
-                new TelegramLabeledPrice('label 1', '100'), // min available item amount
-            ),
+            prices: $prices,
             providerToken: $this->telegramTestPaymentProviderToken,
             currency: 'RUB',
             needName: true,

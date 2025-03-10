@@ -60,7 +60,9 @@
     "zenstruck/browser": "^1.9",
     "guzzlehttp/uri-template": "^1.0",
     "symfony/ux-turbo": "^2.22",
-    "symfony/cache": "^7.2|^6"
+    "symfony/cache": "^7.2|^6",
+    "symfony/orm-pack": "^2.4",
+    "doctrine/orm": "^3.3"
   },
   "config": {
     "allow-plugins": {

@@ -14,6 +14,9 @@ use Symfony\Component\Emoji\EmojiTransliterator;
 use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validation;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Contracts\HttpClient\ResponseInterface;
+use Symfony\Contracts\Service\Attribute\Required;
 use function Symfony\Component\String\u;
 
 class Telegram
@@ -27,12 +30,22 @@ class Telegram
     public const MIN_START_AMOUNT_PART = 1;
     public const TELEGRAM_STARS_CURRENCY = 'XTR';
 
+    public const INVOICE_DOP_START_NUMBER_MAX_ATTEMPTS = 3;
+
     /**
      * @var array Array of ServiceLocator
      */
     private array $updateHandlerIterators = [];
 
-    public function __construct(
+    private int $invoiceDopIncrementStartNumber = 0;
+    private int $invoiceDopStartNumberAttemptsCount = 0;
+
+    protected ServiceLocator $serviceLocator;
+    protected string $telegramWebhookPath;
+    protected string $appHost;
+
+    #[Required]
+    public function _setRequired_telegram(
         #[AutowireLocator([
             'grinwayTelegramClient' => new Autowire('@Symfony\Contracts\HttpClient\HttpClientInterface $grinwayTelegramClient'),
             'grinwayTelegramFileClient' => new Autowire('@Symfony\Contracts\HttpClient\HttpClientInterface $grinwayTelegramFileClient'),
@@ -43,15 +56,18 @@ class Telegram
             'currency' => new Autowire('@grinway_service.currency'),
             't' => new Autowire('@.grinway_telegram.translator'),
         ])]
-        protected readonly ServiceLocator $serviceLocator,
+        ServiceLocator $serviceLocator,
 
         #[Autowire('%env(string:default:grinway_telegram.bot.webhook_path:)%')]
-        protected readonly string         $telegramWebhookPath,
+        string         $telegramWebhookPath,
 
         #[Autowire('%env(string:default:grinway_telegram.app_host:)%')]
-        protected readonly string         $appHost,
+        string         $appHost,
     )
     {
+        $this->serviceLocator = $serviceLocator;
+        $this->telegramWebhookPath = $telegramWebhookPath;
+        $this->appHost = $appHost;
     }
 
     /**
@@ -288,40 +304,39 @@ class Telegram
         ?array                      $appendJsonRequest = null,
         ?string                     $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi = null,
         ?bool                       $forceMakeHttpRequestToCurrencyApi = null,
+        ?bool                       $allowDopPriceIfLessThanLowestPossible = null,
+        ?bool                       $allowNonRemovableCache = null,
+        ?bool                       $allowFallbackIncrementStartNumberIfLowestPriceIsNotEnough = null,
         ?bool                       $throw = null,
     ): ?string
     {
-        try {
-            $invoicePayload = $this->getInvoicePayload(
-                title: $title,
-                description: $description,
-                pricesRef: $prices,
-                providerToken: $providerToken,
-                currency: $currency,
-                photoUri: $photoUri,
-                needName: $needName,
-                needPhoneNumber: $needPhoneNumber,
-                needEmail: $needEmail,
-                needShippingAddress: $needShippingAddress,
-                sendPhoneNumberToProvider: $sendPhoneNumberToProvider,
-                sendEmailToProvider: $sendEmailToProvider,
-                isFlexible: $isFlexible,
-                payload: $payload,
-                startParameter: $startParameter,
-                providerData: $providerData,
-                prependJsonRequest: $prependJsonRequest,
-                appendJsonRequest: $appendJsonRequest,
-                labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi: $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi,
-                forceMakeHttpRequestToCurrencyApi: $forceMakeHttpRequestToCurrencyApi,
-                throw: $throw,
-            );
-            $responsePayload = $this->request('POST', 'createInvoiceLink', $invoicePayload);
-        } catch (\Exception $exception) {
-            if (true === $throw) {
-                throw $exception;
-            }
-            return null;
-        }
+        $responsePayload = $this->getRetryableInvoiceResponsePayload(
+            functionPhpConstOrUrl: __FUNCTION__,
+            title: $title,
+            description: $description,
+            prices: $prices,
+            providerToken: $providerToken,
+            currency: $currency,
+            photoUri: $photoUri,
+            needName: $needName,
+            needPhoneNumber: $needPhoneNumber,
+            needEmail: $needEmail,
+            needShippingAddress: $needShippingAddress,
+            sendPhoneNumberToProvider: $sendPhoneNumberToProvider,
+            sendEmailToProvider: $sendEmailToProvider,
+            isFlexible: $isFlexible,
+            payload: $payload,
+            startParameter: $startParameter,
+            providerData: $providerData,
+            prependJsonRequest: $prependJsonRequest,
+            appendJsonRequest: $appendJsonRequest,
+            labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi: $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi,
+            forceMakeHttpRequestToCurrencyApi: $forceMakeHttpRequestToCurrencyApi,
+            allowDopPriceIfLessThanLowestPossible: $allowDopPriceIfLessThanLowestPossible,
+            allowNonRemovableCache: $allowNonRemovableCache,
+            allowFallbackIncrementStartNumberIfLowestPriceIsNotEnough: $allowFallbackIncrementStartNumberIfLowestPriceIsNotEnough,
+            throw: $throw,
+        );
 
         if ($this->isResponsePayloadOk($responsePayload)) {
             return $this->serviceLocator->get('pa')->getValue($responsePayload, '[result]');
@@ -357,41 +372,40 @@ class Telegram
         ?array                      $appendJsonRequest = null,
         ?string                     $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi = null,
         ?bool                       $forceMakeHttpRequestToCurrencyApi = null,
+        ?bool                       $allowDopPriceIfLessThanLowestPossible = null,
+        ?bool                       $allowNonRemovableCache = null,
+        ?bool                       $allowFallbackIncrementStartNumberIfLowestPriceIsNotEnough = null,
         ?bool                       $throw = null,
     ): bool
     {
-        try {
-            $invoicePayload = $this->getInvoicePayload(
-                title: $title,
-                description: $description,
-                pricesRef: $prices,
-                chatId: $chatId,
-                providerToken: $providerToken,
-                currency: $currency,
-                photoUri: $photoUri,
-                needName: $needName,
-                needPhoneNumber: $needPhoneNumber,
-                needEmail: $needEmail,
-                needShippingAddress: $needShippingAddress,
-                sendPhoneNumberToProvider: $sendPhoneNumberToProvider,
-                sendEmailToProvider: $sendEmailToProvider,
-                isFlexible: $isFlexible,
-                payload: $payload,
-                startParameter: $startParameter,
-                providerData: $providerData,
-                prependJsonRequest: $prependJsonRequest,
-                appendJsonRequest: $appendJsonRequest,
-                labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi: $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi,
-                forceMakeHttpRequestToCurrencyApi: $forceMakeHttpRequestToCurrencyApi,
-                throw: $throw,
-            );
-            $responsePayload = $this->request('POST', 'sendInvoice', $invoicePayload);
-        } catch (\Exception $exception) {
-            if (true === $throw) {
-                throw $exception;
-            }
-            return false;
-        }
+        $responsePayload = $this->getRetryableInvoiceResponsePayload(
+            functionPhpConstOrUrl: __FUNCTION__,
+            title: $title,
+            description: $description,
+            prices: $prices,
+            chatId: $chatId,
+            providerToken: $providerToken,
+            currency: $currency,
+            photoUri: $photoUri,
+            needName: $needName,
+            needPhoneNumber: $needPhoneNumber,
+            needEmail: $needEmail,
+            needShippingAddress: $needShippingAddress,
+            sendPhoneNumberToProvider: $sendPhoneNumberToProvider,
+            sendEmailToProvider: $sendEmailToProvider,
+            isFlexible: $isFlexible,
+            payload: $payload,
+            startParameter: $startParameter,
+            providerData: $providerData,
+            prependJsonRequest: $prependJsonRequest,
+            appendJsonRequest: $appendJsonRequest,
+            labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi: $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi,
+            forceMakeHttpRequestToCurrencyApi: $forceMakeHttpRequestToCurrencyApi,
+            allowDopPriceIfLessThanLowestPossible: $allowDopPriceIfLessThanLowestPossible,
+            allowNonRemovableCache: $allowNonRemovableCache,
+            allowFallbackIncrementStartNumberIfLowestPriceIsNotEnough: $allowFallbackIncrementStartNumberIfLowestPriceIsNotEnough,
+            throw: $throw,
+        );
 
         return $this->isResponsePayloadOk($responsePayload);
     }
@@ -567,12 +581,100 @@ class Telegram
      *     ...
      * @return mixed response payload
      */
-    protected function request(string $method, string $url, array $json): mixed
+    protected function request(
+        string    $method,
+        string    $url,
+        array     $json,
+        bool      $httpClientThrow = true,
+        ?callable $httpClientExceptionCallbackReturnWhenHttpClientThrowFalse = null,
+        ?callable $httpClientNoExceptionCallback = null,
+    ): mixed
     {
-        $response = $this->serviceLocator->get('grinwayTelegramClient')->request($method, $url, [
-            'json' => $json,
-        ]);
-        return $this->serviceLocator->get('serializer')->decode($response->getContent(), 'json');
+        $httpClientExceptionCallbackReturnWhenHttpClientThrowFalse ??= static fn(\Exception $exception): mixed => null;
+        $httpClientNoExceptionCallback ??= static fn() => null;
+
+        try {
+            $response = $this->getResponse(
+                method: $method,
+                url: $url,
+                json: $json,
+            );
+            $content = $response->getContent();
+            $httpClientNoExceptionCallback();
+        } catch (\Exception $exception) {
+            $callbackReturn = $httpClientExceptionCallbackReturnWhenHttpClientThrowFalse($exception);
+            if (false === $httpClientThrow) {
+                return $callbackReturn;
+            } else {
+                throw $exception;
+            }
+        }
+
+        return $this->serviceLocator->get('serializer')->decode($content, 'json');
+    }
+
+    private function requestHttpClientRetryable(
+        string   $method,
+        string   $url,
+        array    $json,
+        callable $httpClientExceptionCallbackReturn,
+        callable $httpClientNoExceptionCallback,
+    ): mixed
+    {
+        $httpClientExceptionCallbackReturnWhenHttpClientThrowFalse = static function (\Exception $exception) use ($httpClientExceptionCallbackReturn): mixed {
+            return $httpClientExceptionCallbackReturn($exception);
+        };
+        return $this->request(
+            method: $method,
+            url: $url,
+            json: $json,
+            httpClientThrow: false,
+            httpClientExceptionCallbackReturnWhenHttpClientThrowFalse: $httpClientExceptionCallbackReturnWhenHttpClientThrowFalse,
+            httpClientNoExceptionCallback: $httpClientNoExceptionCallback,
+        );
+    }
+
+    private function requestInvoiceHttpClientRetryable(
+        string   $method,
+        string   $url,
+        array    $json,
+        callable $httpClientExceptionRecursionMethod,
+    ): mixed
+    {
+        $clearStateCallback = function (): void {
+            $this->invoiceDopIncrementStartNumber = 0;
+            $this->invoiceDopStartNumberAttemptsCount = 0;
+        };
+        $httpClientExceptionCallbackReturn = function (\Exception $exception) use ($clearStateCallback, $httpClientExceptionRecursionMethod): mixed {
+            if (static::INVOICE_DOP_START_NUMBER_MAX_ATTEMPTS > $this->invoiceDopStartNumberAttemptsCount) {
+                $this->invoiceDopIncrementStartNumber += 10;
+                ++$this->invoiceDopStartNumberAttemptsCount;
+                return $httpClientExceptionRecursionMethod();
+            }
+            $clearStateCallback();
+            return null;
+        };
+        return $this->requestHttpClientRetryable(
+            method: $method,
+            url: $url,
+            json: $json,
+            httpClientExceptionCallbackReturn: $httpClientExceptionCallbackReturn,
+            httpClientNoExceptionCallback: $clearStateCallback,
+        );
+    }
+
+    private function getResponse(string $method, string $url, array $json): ResponseInterface
+    {
+        /** @var HttpClientInterface $grinwayTelegramClient */
+        $grinwayTelegramClient = $this->serviceLocator->get('grinwayTelegramClient');
+
+        return $grinwayTelegramClient->request(
+            method: $method,
+            url: $url,
+            options: [
+                'json' => $json,
+            ],
+        );
     }
 
     /**
@@ -633,6 +735,9 @@ class Telegram
         ?array                      $appendJsonRequest = null,
         ?string                     $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi = null,
         ?bool                       $forceMakeHttpRequestToCurrencyApi = null,
+        ?bool                       $allowDopPriceIfLessThanLowestPossible = null,
+        ?bool                       $allowNonRemovableCache = null,
+        ?bool                       $allowFallbackIncrementStartNumberIfLowestPriceIsNotEnough = null,
         ?bool                       $throw = null,
     ): array
     {
@@ -647,6 +752,9 @@ class Telegram
         $prependJsonRequest ??= [];
         $appendJsonRequest ??= [];
         $forceMakeHttpRequestToCurrencyApi ??= false;
+        $allowDopPriceIfLessThanLowestPossible ??= true;
+        $allowNonRemovableCache ??= true;
+        $allowFallbackIncrementStartNumberIfLowestPriceIsNotEnough ??= true;
         $throw ??= false;
 
         $prices = $pricesRef;
@@ -708,7 +816,11 @@ class Telegram
             currency: $currency,
             labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi: $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi,
             forceMakeHttpRequestToCurrencyApi: $forceMakeHttpRequestToCurrencyApi,
+            allowNonRemovableCache: $allowNonRemovableCache,
+            allowDopPriceIfLessThanLowestPossible: $allowDopPriceIfLessThanLowestPossible,
+            allowFallbackIncrementStartNumberIfLowestPriceIsNotEnough: $allowFallbackIncrementStartNumberIfLowestPriceIsNotEnough,
         );
+        \dump($prices);
         if ($prices instanceof TelegramLabeledPrices) {
             if ($pricesRef instanceof TelegramLabeledPrices) {
                 $pricesRef = $prices;
@@ -755,6 +867,107 @@ class Telegram
         return $invoicePayload;
     }
 
+    public function getRetryableInvoiceResponsePayload(
+        string                      $functionPhpConstOrUrl,
+        string                      $title,
+        string                      $description,
+        TelegramLabeledPrices|array &$prices,
+        ?string                     $chatId = null,
+        ?string                     $providerToken = null,
+        ?string                     $currency = null,
+        ?string                     $photoUri = null,
+        ?bool                       $needName = null,
+        ?bool                       $needPhoneNumber = null,
+        ?bool                       $needEmail = null,
+        ?bool                       $needShippingAddress = null,
+        ?bool                       $sendPhoneNumberToProvider = null,
+        ?bool                       $sendEmailToProvider = null,
+        ?bool                       $isFlexible = null,
+        ?string                     $payload = null,
+        ?string                     $startParameter = null,
+        ?array                      $providerData = null,
+        ?array                      $prependJsonRequest = null,
+        ?array                      $appendJsonRequest = null,
+        ?string                     $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi = null,
+        ?bool                       $forceMakeHttpRequestToCurrencyApi = null,
+        ?bool                       $allowDopPriceIfLessThanLowestPossible = null,
+        ?bool                       $allowNonRemovableCache = null,
+        ?bool                       $allowFallbackIncrementStartNumberIfLowestPriceIsNotEnough = null,
+        ?bool                       $throw = null,
+    ): mixed
+    {
+        $httpClientExceptionRecursionMethod = function () use ($functionPhpConstOrUrl, $chatId, $allowFallbackIncrementStartNumberIfLowestPriceIsNotEnough, $allowDopPriceIfLessThanLowestPossible, $allowNonRemovableCache, &$prices, $payload, $throw, $forceMakeHttpRequestToCurrencyApi, $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi, $appendJsonRequest, $prependJsonRequest, $providerData, $startParameter, $isFlexible, $sendEmailToProvider, $sendPhoneNumberToProvider, $needShippingAddress, $needEmail, $needPhoneNumber, $needName, $photoUri, $currency, $providerToken, $description, $title) {
+            return $this->getRetryableInvoiceResponsePayload(
+                functionPhpConstOrUrl: $functionPhpConstOrUrl,
+                title: $title,
+                description: $description,
+                prices: $prices,
+                chatId: $chatId,
+                providerToken: $providerToken,
+                currency: $currency,
+                photoUri: $photoUri,
+                needName: $needName,
+                needPhoneNumber: $needPhoneNumber,
+                needEmail: $needEmail,
+                needShippingAddress: $needShippingAddress,
+                sendPhoneNumberToProvider: $sendPhoneNumberToProvider,
+                sendEmailToProvider: $sendEmailToProvider,
+                isFlexible: $isFlexible,
+                payload: $payload,
+                startParameter: $startParameter,
+                providerData: $providerData,
+                prependJsonRequest: $prependJsonRequest,
+                appendJsonRequest: $appendJsonRequest,
+                labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi: $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi,
+                forceMakeHttpRequestToCurrencyApi: $forceMakeHttpRequestToCurrencyApi,
+                allowDopPriceIfLessThanLowestPossible: $allowDopPriceIfLessThanLowestPossible,
+                allowNonRemovableCache: $allowNonRemovableCache,
+                allowFallbackIncrementStartNumberIfLowestPriceIsNotEnough: $allowFallbackIncrementStartNumberIfLowestPriceIsNotEnough,
+                throw: $throw,
+            );
+        };
+        try {
+            $invoicePayload = $this->getInvoicePayload(
+                title: $title,
+                description: $description,
+                pricesRef: $prices,
+                chatId: $chatId,
+                providerToken: $providerToken,
+                currency: $currency,
+                photoUri: $photoUri,
+                needName: $needName,
+                needPhoneNumber: $needPhoneNumber,
+                needEmail: $needEmail,
+                needShippingAddress: $needShippingAddress,
+                sendPhoneNumberToProvider: $sendPhoneNumberToProvider,
+                sendEmailToProvider: $sendEmailToProvider,
+                isFlexible: $isFlexible,
+                payload: $payload,
+                startParameter: $startParameter,
+                providerData: $providerData,
+                prependJsonRequest: $prependJsonRequest,
+                appendJsonRequest: $appendJsonRequest,
+                labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi: $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi,
+                forceMakeHttpRequestToCurrencyApi: $forceMakeHttpRequestToCurrencyApi,
+                allowDopPriceIfLessThanLowestPossible: $allowDopPriceIfLessThanLowestPossible,
+                allowNonRemovableCache: $allowNonRemovableCache,
+                allowFallbackIncrementStartNumberIfLowestPriceIsNotEnough: $allowFallbackIncrementStartNumberIfLowestPriceIsNotEnough,
+                throw: $throw,
+            );
+            return $this->requestInvoiceHttpClientRetryable(
+                'POST',
+                $functionPhpConstOrUrl,
+                $invoicePayload,
+                httpClientExceptionRecursionMethod: $httpClientExceptionRecursionMethod,
+            );
+        } catch (\Exception $exception) {
+            if (true === $throw) {
+                throw $exception;
+            }
+            return null;
+        }
+    }
+
     /**
      * @internal
      */
@@ -786,20 +999,36 @@ class Telegram
         string                      $currency,
         ?string                     $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi = null,
         ?bool                       $forceMakeHttpRequestToCurrencyApi = null,
+        ?bool                       $allowNonRemovableCache = null,
+        ?bool                       $allowDopPriceIfLessThanLowestPossible = null,
+        ?bool                       $allowFallbackIncrementStartNumberIfLowestPriceIsNotEnough = null,
     ): TelegramLabeledPrices
     {
         $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi ??= 'label_dop_price_to_achieve_min_one';
         $forceMakeHttpRequestToCurrencyApi ??= false;
+        $allowNonRemovableCache ??= true;
+        $allowDopPriceIfLessThanLowestPossible ??= true;
+        $allowFallbackIncrementStartNumberIfLowestPriceIsNotEnough ??= true;
+
+        $dopStartAmountNumber = 0;
+        $dopEndAmountNumber = 0;
 
         if (\is_array($prices)) {
             $prices = TelegramLabeledPrices::fromArray($prices);
         }
 
-        [$dopStartAmountNumber, $dopEndAmountNumber] = $this->getCalculatedDopStartEndNumbersToReachValidMinSumInvoice(
-            $prices,
-            $currency,
-            $forceMakeHttpRequestToCurrencyApi,
-        );
+        if (true === $allowDopPriceIfLessThanLowestPossible) {
+            [$dopStartAmountNumber, $dopEndAmountNumber] = $this->getCalculatedDopStartEndNumbersToReachValidLowestInvoicePrice(
+                $prices,
+                $currency,
+                $forceMakeHttpRequestToCurrencyApi,
+                allowNonRemovableCache: $allowNonRemovableCache,
+            );
+        }
+
+        if (true === $allowFallbackIncrementStartNumberIfLowestPriceIsNotEnough) {
+            $dopStartAmountNumber = $this->invoiceDopIncrementStartNumber;
+        }
 
         if (0 !== $dopStartAmountNumber || 0 !== $dopEndAmountNumber) {
 
@@ -809,13 +1038,27 @@ class Telegram
                 self::LENGTH_AMOUNT_END_FIGURES,
             );
 
-            $label = $this->serviceLocator->get('t')->trans(
+            $labelDopPrice = $this->serviceLocator->get('t')->trans(
                 $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi,
             );
-            $label = (string)u($label)->title();
+            $labelDopPrice = (string)u($labelDopPrice)->title();
 
-            $prices[] = new TelegramLabeledPrice($label, $dopAmountWithEndFigures);
+            $dopTelegramLabeledPrice = new TelegramLabeledPrice(
+                $labelDopPrice,
+                $dopAmountWithEndFigures,
+            );
+
+            foreach ($prices as $k => $price) {
+                \assert($price instanceof TelegramLabeledPrice);
+
+                if ($labelDopPrice === $price->getLabel()) {
+                    unset($prices[$k]);
+                    break;
+                }
+            }
+            $prices[] = $dopTelegramLabeledPrice;
         }
+
         return $prices;
     }
 
@@ -849,7 +1092,7 @@ class Telegram
     /**
      * Helper
      */
-    private function getStartEndOneDollarInCurrentCurrency(TelegramLabeledPrices $prices, string $currency, bool $forceMakeHttpRequestToCurrencyApi): array
+    private function getStartEndOneDollarInCurrentCurrency(TelegramLabeledPrices $prices, string $currency, bool $forceMakeHttpRequestToCurrencyApi, bool $allowNonRemovableCache): array
     {
         /** @var Currency $currencyService */
         $currencyService = $this->serviceLocator->get('currency');
@@ -859,7 +1102,8 @@ class Telegram
             'USD',
             $currency,
             self::LENGTH_AMOUNT_END_FIGURES,
-            $forceMakeHttpRequestToCurrencyApi,
+            forceMakeHttpRequestToFixer: $forceMakeHttpRequestToCurrencyApi,
+            allowNonRemovableCache: $allowNonRemovableCache,
         );
 
         return FiguresRepresentation::getStartEndNumbersWithEndFigures(
@@ -873,10 +1117,11 @@ class Telegram
      *
      * @internal
      */
-    protected function getCalculatedDopStartEndNumbersToReachValidMinSumInvoice(
+    protected function getCalculatedDopStartEndNumbersToReachValidLowestInvoicePrice(
         TelegramLabeledPrices $prices,
         string                $currency,
         bool                  $forceMakeHttpRequestToCurrencyApi,
+        bool                  $allowNonRemovableCache,
     ): array
     {
         $dopStartAmountNumber = 0;
@@ -889,6 +1134,7 @@ class Telegram
             $prices,
             $currency,
             $forceMakeHttpRequestToCurrencyApi,
+            allowNonRemovableCache: $allowNonRemovableCache,
         );
 
         if ($startPassedAmount < $startOneDollarAmountInCurrentCurrency) {

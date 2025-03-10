@@ -113,6 +113,7 @@ class TelegramLabeledPrices implements \ArrayAccess, \Countable, \Iterator
         }
 
         $this->addSum($labeledPrice);
+
         if (null === $offset) {
             $this->labeledPrices[] = $labeledPrice;
         } else {
@@ -122,7 +123,11 @@ class TelegramLabeledPrices implements \ArrayAccess, \Countable, \Iterator
 
     public function offsetUnset(mixed $offset): void
     {
+        $this->subSum($this->labeledPrices[$offset]);
+
         unset($this->labeledPrices[$offset]);
+
+        $this->labeledPrices = \array_values($this->labeledPrices);
     }
 
     public function count(): int
@@ -152,12 +157,25 @@ class TelegramLabeledPrices implements \ArrayAccess, \Countable, \Iterator
 
     public function rewind(): void
     {
-        $this->labeledPricesIdx = 0;
+        $this->labeledPricesIdx = 0; // array values needs when remove
     }
 
-    private function addSum(TelegramLabeledPrice $labeledPrice): static
+    public function addSum(TelegramLabeledPrice $labeledPrice): static
     {
-        [$startSum, $endSum] = $this->getAddedStartEndSumNumbers($labeledPrice);
+        [$startSum, $endSum] = $this->getAddSumStartEndSumNumbers($labeledPrice);
+
+        $this->sumFigures = FiguresRepresentation::concatStartEndPartsWithEndFigures(
+            $startSum,
+            $endSum,
+            Telegram::LENGTH_AMOUNT_END_FIGURES,
+        );
+
+        return $this;
+    }
+
+    public function subSum(TelegramLabeledPrice $labeledPrice): static
+    {
+        [$startSum, $endSum] = $this->getSubSumStartEndSumNumbers($labeledPrice);
 
         $this->sumFigures = FiguresRepresentation::concatStartEndPartsWithEndFigures(
             $startSum,
@@ -175,7 +193,29 @@ class TelegramLabeledPrices implements \ArrayAccess, \Countable, \Iterator
         return $stringPriceWithEndFigures;
     }
 
-    private function getAddedStartEndSumNumbers(TelegramLabeledPrice $price): array
+    private function getAddSumStartEndSumNumbers(TelegramLabeledPrice $price): array
+    {
+        return $this->getProcessedStartEndSumNumbers(
+            price: $price,
+            startNumberCallback: static fn($startSumNumber, $startPriceNumber) => $startSumNumber + $startPriceNumber,
+            endNumberCallback: static fn($endSumNumber, $endPriceNumber) => $endSumNumber + $endPriceNumber,
+        );
+    }
+
+    private function getSubSumStartEndSumNumbers(TelegramLabeledPrice $price): array
+    {
+        return $this->getProcessedStartEndSumNumbers(
+            price: $price,
+            startNumberCallback: static fn($startSumNumber, $startPriceNumber) => $startSumNumber - $startPriceNumber,
+            endNumberCallback: static fn($endSumNumber, $endPriceNumber) => $endSumNumber - $endPriceNumber,
+        );
+    }
+
+    private function getProcessedStartEndSumNumbers(
+        TelegramLabeledPrice $price,
+        callable             $startNumberCallback,
+        callable             $endNumberCallback,
+    ): array
     {
         $stringPriceWithEndFigures = $this->getConvertedToStringWithEndFigures($price);
 
@@ -188,8 +228,8 @@ class TelegramLabeledPrices implements \ArrayAccess, \Countable, \Iterator
             Telegram::LENGTH_AMOUNT_END_FIGURES,
         );
 
-        $startSum = $startSumNumber + $startPriceNumber;
-        $endSum = $endSumNumber + $endPriceNumber;
+        $startSum = $startNumberCallback($startSumNumber, $startPriceNumber);
+        $endSum = $endNumberCallback($endSumNumber, $endPriceNumber);
 
         $part = 10 ** Telegram::LENGTH_AMOUNT_END_FIGURES;
 
