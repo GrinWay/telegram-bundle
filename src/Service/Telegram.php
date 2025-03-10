@@ -1016,10 +1016,12 @@ class Telegram
             $prices = TelegramLabeledPrices::fromArray($prices);
         }
 
+        // in order not to override the below I type it here
         if (true === $allowFallbackIncrementStartNumberIfLowestPriceIsNotEnough) {
             $dopStartAmountNumber = $this->invoiceDopIncrementStartNumber;
         }
 
+        // DON'T OVERRIDE IT (IT'S A MAIN ALGO TO GET CORRECT 1$ SUM PRICE)
         if (true === $allowDopPriceIfLessThanLowestPossible) {
             [$dopStartAmountNumber, $dopEndAmountNumber] = $this->getCalculatedDopStartEndNumbersToReachValidLowestInvoicePrice(
                 $prices,
