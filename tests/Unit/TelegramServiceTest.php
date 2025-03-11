@@ -102,12 +102,12 @@ class TelegramServiceTest extends AbstractTelegramTestCase
 
     public function testDeleteMessage()
     {
-        $ok = static::$telegram->deleteMessage(
+        $payload = static::$telegram->deleteMessage(
             chatId: 'TEST',
             messageId: 'TEST',
             throw: false,
         );
-        $this->assertTrue($ok);
+        $this->assertTrue(Telegram::isResponseOk($payload));
     }
 
     public function testPreCheckoutQuerySuccessfulOnValidPayload()
@@ -119,13 +119,13 @@ class TelegramServiceTest extends AbstractTelegramTestCase
          */
         $isValid = static fn() => true;
 
-        $ok = static::$telegram->answerPreCheckoutQuery(
+        $payload = static::$telegram->answerPreCheckoutQuery(
             preCheckoutQueryId: 'TEST', // in the webhook handler you will get a real pre_checkout_query_id in the payload
             preCheckoutQueryIsValid: $isValid(),
             throw: false,
         );
 
-        $this->assertTrue($ok);
+        $this->assertTrue(Telegram::isResponseOk($payload));
     }
 
     public function testPreCheckoutQueryNotSuccessfulOnInvalidPayload()
@@ -139,13 +139,13 @@ class TelegramServiceTest extends AbstractTelegramTestCase
          */
         $isValid = static fn() => 'An error happened';
 
-        $ok = static::$telegram->answerPreCheckoutQuery(
+        $payload = static::$telegram->answerPreCheckoutQuery(
             preCheckoutQueryId: 'TEST', // in the webhook handler you will get a real pre_checkout_query_id in the payload
             preCheckoutQueryIsValid: $isValid(),
             throw: false,
         );
 
-        $this->assertFalse($ok);
+        $this->assertFalse(Telegram::isResponseOk($payload));
     }
 
     public function testAnswerInlineQuery()
@@ -153,7 +153,7 @@ class TelegramServiceTest extends AbstractTelegramTestCase
         /**
          * For you when webhook will be called you will get "inlineQueryId" in the payload
          */
-        $ok = static::$telegram->answerInlineQuery(
+        $payload = static::$telegram->answerInlineQuery(
             inlineQueryId: 'TEST',
             type: 'gif',
             results: [
@@ -162,7 +162,7 @@ class TelegramServiceTest extends AbstractTelegramTestCase
             throw: false,
         );
 
-        $this->assertTrue($ok);
+        $this->assertTrue(Telegram::isResponseOk($payload));
     }
 
     public function testAnswerShippingQuerySuccessfulOnValidPayload()
@@ -175,14 +175,14 @@ class TelegramServiceTest extends AbstractTelegramTestCase
          *
          * I decided payload is valid
          */
-        $ok = static::$telegram->answerShippingQuery(
+        $payload = static::$telegram->answerShippingQuery(
             shippingQueryId: 'TEST',
             shippingOptions: [],
             shippingQueryIsValid: true,
             throw: false,
         );
 
-        $this->assertTrue($ok);
+        $this->assertTrue(Telegram::isResponseOk($payload));
     }
 
     public function testAnswerShippingQueryNotSuccessfulOnInvalidPayload()
@@ -192,14 +192,14 @@ class TelegramServiceTest extends AbstractTelegramTestCase
          *
          * I decided payload is not valid
          */
-        $ok = static::$telegram->answerShippingQuery(
+        $payload = static::$telegram->answerShippingQuery(
             shippingQueryId: 'TEST',
             shippingOptions: [],
             shippingQueryIsValid: 'ERROR',
             throw: false,
         );
 
-        $this->assertFalse($ok);
+        $this->assertFalse(Telegram::isResponseOk($payload));
     }
 
     public function testSendInvoice()
@@ -207,7 +207,7 @@ class TelegramServiceTest extends AbstractTelegramTestCase
         $prices = new TelegramLabeledPrices(
             new TelegramLabeledPrice('label 1', '100'),
         );
-        $ok = static::$telegram->sendInvoice(
+        $payload = static::$telegram->sendInvoice(
             chatId: $this->telegramBotTestChatId,
             title: 'title',
             description: 'description',
@@ -225,6 +225,6 @@ class TelegramServiceTest extends AbstractTelegramTestCase
             throw: false,
         );
 
-        $this->assertSame(true, $ok);
+        $this->assertSame(true, Telegram::isResponseOk($payload));
     }
 }

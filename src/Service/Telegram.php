@@ -32,6 +32,8 @@ class Telegram
 
     public const INVOICE_DOP_START_NUMBER_MAX_ATTEMPTS = 3;
 
+    public const FAILURE_RESPONSE = ['ok' => false];
+
     /**
      * @var array Array of ServiceLocator
      */
@@ -97,7 +99,12 @@ class Telegram
      *
      * @return bool True if made, false if not
      */
-    public function downloadFile(string $fileId, string $absFilepathTo, bool $overwrite = false, bool $throw = false): bool
+    public function downloadFile(
+        string $fileId,
+        string $absFilepathTo,
+        bool $overwrite = false,
+        bool $throw = false,
+    ): bool
     {
         if (!Validation::createIsValidCallable(new AbsolutePath())($absFilepathTo)) {
             if (true === $throw) {
@@ -159,7 +166,15 @@ class Telegram
      *
      * @return array A collection of absolute file paths to the downloaded stickers
      */
-    public function downloadStickers(string $stickersName, string $absDirTo, bool $overwrite = false, string $prefixFilename = '', ?int $limit = null, ?string $stickerFileExtension = null, bool $throw = false): array
+    public function downloadStickers(
+        string $stickersName,
+        string $absDirTo,
+        bool $overwrite = false,
+        string $prefixFilename = '',
+        ?int $limit = null,
+        ?string $stickerFileExtension = null,
+        bool $throw = false,
+    ): array
     {
         $stickerFileExtension ??= 'webp';
 
@@ -220,10 +235,14 @@ class Telegram
      *
      * https://core.telegram.org/bots/api#deletemessage
      */
-    public function deleteMessage(?string $chatId, ?string $messageId, bool $throw = false): bool
+    public function deleteMessage(
+        ?string $chatId,
+        ?string $messageId,
+        bool $throw = false,
+    ): array
     {
         if (null === $chatId || null === $messageId) {
-            return false;
+            return static::FAILURE_RESPONSE;
         }
 
         try {
@@ -235,9 +254,10 @@ class Telegram
             if (true === $throw) {
                 throw $exception;
             }
-            return false;
+            return static::FAILURE_RESPONSE;
         }
-        return $this->isResponsePayloadOk($responsePayload);
+
+        return $responsePayload;
     }
 
     /**
@@ -251,7 +271,7 @@ class Telegram
         ?array $prependJsonRequest = null,
         ?array $appendJsonRequest = null,
         ?bool  $throw = null,
-    ): bool
+    ): array
     {
         $throw ??= false;
         $prependJsonRequest ??= [];
@@ -272,10 +292,10 @@ class Telegram
             if (true === $throw) {
                 throw $exception;
             }
-            return false;
+            return static::FAILURE_RESPONSE;
         }
 
-        return $this->isResponsePayloadOk($responsePayload);
+        return $responsePayload;
     }
 
     /**
@@ -338,7 +358,7 @@ class Telegram
             throw: $throw,
         );
 
-        if ($this->isResponsePayloadOk($responsePayload)) {
+        if (static::isResponseOk($responsePayload)) {
             return $this->serviceLocator->get('pa')->getValue($responsePayload, '[result]');
         }
 
@@ -376,9 +396,9 @@ class Telegram
         ?bool                       $allowNonRemovableCache = null,
         ?bool                       $allowFallbackIncrementStartNumberIfLowestPriceIsNotEnough = null,
         ?bool                       $throw = null,
-    ): bool
+    ): array
     {
-        $responsePayload = $this->getRetryableInvoiceResponsePayload(
+        return $this->getRetryableInvoiceResponsePayload(
             functionPhpConstOrUrl: __FUNCTION__,
             title: $title,
             description: $description,
@@ -406,8 +426,6 @@ class Telegram
             allowFallbackIncrementStartNumberIfLowestPriceIsNotEnough: $allowFallbackIncrementStartNumberIfLowestPriceIsNotEnough,
             throw: $throw,
         );
-
-        return $this->isResponsePayloadOk($responsePayload);
     }
 
     /**
@@ -418,7 +436,13 @@ class Telegram
      * @param ?string $id https://core.telegram.org/bots/api#inlinequeryresult
      * @param array $results https://core.telegram.org/bots/api#inlinequeryresult
      */
-    public function answerInlineQuery(string $inlineQueryId, string $type, array $results, ?string $id = null, bool $throw = false): bool
+    public function answerInlineQuery(
+        string $inlineQueryId,
+        string $type,
+        array $results,
+        ?string $id = null,
+        bool $throw = false,
+    ): array
     {
         // https://core.telegram.org/bots/api#inlinequeryresultgif
         $id ??= (string)\substr(\uniqid('', true), 0, 64);
@@ -437,9 +461,9 @@ class Telegram
             if (true === $throw) {
                 throw $exception;
             }
-            return false;
+            return static::FAILURE_RESPONSE;
         }
-        return $this->isResponsePayloadOk($responsePayload);
+        return $responsePayload;
     }
 
     /**
@@ -448,9 +472,13 @@ class Telegram
      * https://core.telegram.org/bots/api#answershippingquery
      *
      * @param array $shippingOptions Array of https://core.telegram.org/bots/api#shippingoption
-     * @return bool
      */
-    public function answerShippingQuery(string $shippingQueryId, array $shippingOptions, true|string $shippingQueryIsValid, bool $throw = false): bool
+    public function answerShippingQuery(
+        string $shippingQueryId,
+        array $shippingOptions,
+        true|string $shippingQueryIsValid,
+        bool $throw = false,
+    ): array
     {
         $ok = null;
         $okJson = [
@@ -478,12 +506,12 @@ class Telegram
             if (true === $throw) {
                 throw $exception;
             }
-            return false;
+            return static::FAILURE_RESPONSE;
         }
 
         $responsePayload = ['ok' => $ok];
 
-        return $this->isResponsePayloadOk($responsePayload);
+        return $responsePayload;
     }
 
     /**
@@ -494,7 +522,11 @@ class Telegram
      * https://core.telegram.org/bots/api#answerprecheckoutquery
      * https://core.telegram.org/bots/payments
      */
-    public function answerPreCheckoutQuery(string $preCheckoutQueryId, true|string $preCheckoutQueryIsValid, bool $throw = false): bool
+    public function answerPreCheckoutQuery(
+        string $preCheckoutQueryId,
+        true|string $preCheckoutQueryIsValid,
+        bool $throw = false,
+    ): array
     {
         $ok = null;
         $okJson = [
@@ -522,12 +554,12 @@ class Telegram
             if (true === $throw) {
                 throw $exception;
             }
-            return false;
+            return static::FAILURE_RESPONSE;
         }
 
         $responseJson = ['ok' => $ok];
 
-        return $this->isResponsePayloadOk($responseJson);
+        return $responseJson;
     }
 
     /**
@@ -535,7 +567,10 @@ class Telegram
      *
      * https://core.telegram.org/bots/api#getchat
      */
-    public function getChatLink(int|string|null $chatId, bool $throw = false): false|string
+    public function getChatLink(
+        int|string|null $chatId,
+        bool $throw = false,
+    ): false|string
     {
         if (null === $chatId) {
             return false;
@@ -557,11 +592,32 @@ class Telegram
             return false;
         }
 
-        if (null === $username || !$this->isResponsePayloadOk($responseJson)) {
+        if (null === $username || static::isResponseNotOk($responseJson)) {
             return false;
         }
 
         return \sprintf('https://t.me/%s', $username);
+    }
+
+    /**
+     * API
+     *
+     * Response is ok checker
+     */
+    public static function isResponseOk(array $responsePayload): bool
+    {
+        $ok = $responsePayload['ok'] ?? null;
+        return true === $ok;
+    }
+
+    /**
+     * API
+     *
+     * Response is ok checker
+     */
+    public static function isResponseNotOk(array $responsePayload): bool
+    {
+        return !static::isResponseOk($responsePayload);
     }
 
     /**
@@ -571,6 +627,7 @@ class Telegram
      *
      * May throw exceptions (because of bad request and invalid json data decoding)
      *
+     * @param ?callable $httpClientExceptionCallbackReturnWhenHttpClientThrowFalse MUST ALWAYS return an array
      * @param string $method Usually almost always 'POST' but 'GET' for 'getMe' url for instance
      * @param string $url Any valid Telegram Bot Api method:
      *     https://core.telegram.org/bots/api#available-methods
@@ -588,9 +645,9 @@ class Telegram
         bool      $httpClientThrow = true,
         ?callable $httpClientExceptionCallbackReturnWhenHttpClientThrowFalse = null,
         ?callable $httpClientNoExceptionCallback = null,
-    ): mixed
+    ): array
     {
-        $httpClientExceptionCallbackReturnWhenHttpClientThrowFalse ??= static fn(\Exception $exception): mixed => null;
+        $httpClientExceptionCallbackReturnWhenHttpClientThrowFalse ??= static fn(\Exception $exception): array => [];
         $httpClientNoExceptionCallback ??= static fn() => null;
 
         try {
@@ -619,7 +676,7 @@ class Telegram
         array    $json,
         callable $httpClientExceptionCallbackReturn,
         callable $httpClientNoExceptionCallback,
-    ): mixed
+    ): array
     {
         $httpClientExceptionCallbackReturnWhenHttpClientThrowFalse = static function (\Exception $exception) use ($httpClientExceptionCallbackReturn): mixed {
             return $httpClientExceptionCallbackReturn($exception);
@@ -639,7 +696,7 @@ class Telegram
         string   $url,
         array    $json,
         callable $httpClientExceptionRecursionMethod,
-    ): mixed
+    ): array
     {
         $clearStateCallback = function (): void {
             $this->invoiceDopIncrementStartNumber = 0;
@@ -649,10 +706,11 @@ class Telegram
             if (static::INVOICE_DOP_START_NUMBER_MAX_ATTEMPTS > $this->invoiceDopStartNumberAttemptsCount) {
                 $this->invoiceDopIncrementStartNumber += 10;
                 ++$this->invoiceDopStartNumberAttemptsCount;
-                return $httpClientExceptionRecursionMethod();
+                $response = $httpClientExceptionRecursionMethod();
+                return $response;
             }
             $clearStateCallback();
-            return null;
+            return static::FAILURE_RESPONSE;
         };
         return $this->requestHttpClientRetryable(
             method: $method,
@@ -675,19 +733,6 @@ class Telegram
                 'json' => $json,
             ],
         );
-    }
-
-    /**
-     * Helper
-     *
-     * Telegram Bot Api response checker
-     */
-    protected function isResponsePayloadOk(mixed $responsePayload): bool
-    {
-        if (!\is_array($responsePayload)) {
-            return false;
-        }
-        return true === $this->serviceLocator->get('pa')->getValue($responsePayload, '[ok]');
     }
 
     /**
@@ -761,12 +806,12 @@ class Telegram
 
         // At least these settings must exist by default
         $payload ??= '{}';
-        $currency ??= self::TELEGRAM_STARS_CURRENCY;
+        $currency ??= static::TELEGRAM_STARS_CURRENCY;
         $providerToken ??= '';
         $startParameter ??= 'service';
 
         // currency, provider token VALIDATION
-        if (self::TELEGRAM_STARS_CURRENCY === $currency) {
+        if (static::TELEGRAM_STARS_CURRENCY === $currency) {
             $needName = false;
             $needPhoneNumber = false;
             $needEmail = false;
@@ -774,23 +819,23 @@ class Telegram
             $sendEmailToProvider = false;
             $sendPhoneNumberToProvider = false;
         }
-        if (self::TELEGRAM_STARS_CURRENCY === $currency && '' !== $providerToken) {
+        if (static::TELEGRAM_STARS_CURRENCY === $currency && '' !== $providerToken) {
             if (true === $throw) {
                 throw new \LogicException(\sprintf('If currency is "%s", provider token MUST be \'\' (empty string) but you passed "%s"', $currency, $providerToken));
             } else {
                 $providerToken = '';
             }
         }
-        if (self::TELEGRAM_STARS_CURRENCY !== $currency && '' === $providerToken) {
-            throw new \LogicException(\sprintf('Currency is not "%s" you MUST point out the provider token', self::TELEGRAM_STARS_CURRENCY));
+        if (static::TELEGRAM_STARS_CURRENCY !== $currency && '' === $providerToken) {
+            throw new \LogicException(\sprintf('Currency is not "%s" you MUST point out the provider token', static::TELEGRAM_STARS_CURRENCY));
         }
-        if (self::TELEGRAM_STARS_CURRENCY === $currency && !Validation::createIsValidCallable(
+        if (static::TELEGRAM_STARS_CURRENCY === $currency && !Validation::createIsValidCallable(
                 new Assert\Count(exactly: 1)
             )($prices)
         ) {
             throw new \LogicException(\sprintf(
                 'When your currency is "%s" you have to have exactly 1 $prices item',
-                self::TELEGRAM_STARS_CURRENCY,
+                static::TELEGRAM_STARS_CURRENCY,
             ));
         }
 
@@ -893,7 +938,7 @@ class Telegram
         ?bool                       $allowNonRemovableCache = null,
         ?bool                       $allowFallbackIncrementStartNumberIfLowestPriceIsNotEnough = null,
         ?bool                       $throw = null,
-    ): mixed
+    ): array
     {
         $httpClientExceptionRecursionMethod = function () use (&$prices, $functionPhpConstOrUrl, $chatId, $allowFallbackIncrementStartNumberIfLowestPriceIsNotEnough, $allowDopPriceIfLessThanLowestPossible, $allowNonRemovableCache, $payload, $throw, $forceMakeHttpRequestToCurrencyApi, $labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi, $appendJsonRequest, $prependJsonRequest, $providerData, $startParameter, $isFlexible, $sendEmailToProvider, $sendPhoneNumberToProvider, $needShippingAddress, $needEmail, $needPhoneNumber, $needName, $photoUri, $currency, $providerToken, $description, $title) {
             return $this->getRetryableInvoiceResponsePayload(
@@ -963,7 +1008,7 @@ class Telegram
             if (true === $throw) {
                 throw $exception;
             }
-            return null;
+            return static::FAILURE_RESPONSE;
         }
     }
 
@@ -1036,7 +1081,7 @@ class Telegram
             $dopAmountWithEndFigures = FiguresRepresentation::concatStartEndPartsWithEndFigures(
                 $dopStartAmountNumber,
                 $dopEndAmountNumber,
-                self::LENGTH_AMOUNT_END_FIGURES,
+                static::LENGTH_AMOUNT_END_FIGURES,
             );
 
             $labelDopPrice = $this->serviceLocator->get('t')->trans(
@@ -1102,7 +1147,7 @@ class Telegram
             '100',
             'USD',
             $currency,
-            self::LENGTH_AMOUNT_END_FIGURES,
+            static::LENGTH_AMOUNT_END_FIGURES,
             forceMakeHttpRequestToFixer: $forceMakeHttpRequestToCurrencyApi,
             allowNonRemovableCache: $allowNonRemovableCache,
         );
@@ -1147,7 +1192,7 @@ class Telegram
             } else {
                 // Do nothing when can't apply reduction to the start part, because it won't be correct
                 // can't operate with 0.xx only with 1.xx
-                if (self::MIN_START_AMOUNT_PART < $dopStartAmountNumber) {
+                if (static::MIN_START_AMOUNT_PART < $dopStartAmountNumber) {
                     // reduction
                     --$dopStartAmountNumber;
                     $dopEndAmountNumber = (10 ** static::LENGTH_AMOUNT_END_FIGURES) - ($endPassedAmount - $endOneDollarAmountInCurrentCurrency);
