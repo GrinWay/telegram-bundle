@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "567e5f449a54e236ec57a565c803c03d",
+    "content-hash": "b24e3d96d330fcff7c644e7627817e33",
     "packages": [
         {
             "name": "behat/mink",
@@ -1586,11 +1586,17 @@
         },
         {
             "name": "grinway/service-bundle",
-            "version": "1.7.0",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/GrinWay/service-bundle.git",
+                "reference": "1010274044dc6ad68b09cfdfa80139ba9e939863"
+            },
             "dist": {
-                "type": "path",
-                "url": "../../../bundles/grinway/service-bundle",
-                "reference": "5c1f48c544c7539e06a892b1d7d8025aab4b192f"
+                "type": "zip",
+                "url": "https://api.github.com/repos/GrinWay/service-bundle/zipball/1010274044dc6ad68b09cfdfa80139ba9e939863",
+                "reference": "1010274044dc6ad68b09cfdfa80139ba9e939863",
+                "shasum": ""
             },
             "require": {
                 "doctrine/dbal": "^3.9",
@@ -1636,11 +1642,7 @@
                     "GrinWay\\Service\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "GrinWay\\Service\\Tests\\": "tests/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1659,9 +1661,11 @@
                 "symfony-services",
                 "symfony-ux"
             ],
-            "transport-options": {
-                "relative": true
-            }
+            "support": {
+                "issues": "https://github.com/GrinWay/service-bundle/issues",
+                "source": "https://github.com/GrinWay/service-bundle/tree/v2.0.0"
+            },
+            "time": "2025-03-14T10:00:31+00:00"
         },
         {
             "name": "guzzlehttp/uri-template",

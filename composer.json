@@ -1,7 +1,7 @@
 {
   "name": "grinway/telegram-bundle",
   "type": "symfony-bundle",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "This bundle is intended to create telegram bots",
   "keywords": [
     "grinway",
@@ -11,12 +11,6 @@
     "telegram-bot-api",
     "bundle",
     "symfony-ux"
-  ],
-  "repositories": [
-    {
-      "type": "path",
-      "url": "../../../bundles/grinway/service-bundle"
-    }
   ],
   "license": "MIT",
   "require-dev": {
@@ -62,7 +56,7 @@
     "symfony/stimulus-bundle": "^2.22",
     "symfony/webpack-encore-bundle": "^2.2",
     "endroid/installer": "^1",
-    "grinway/service-bundle": "^1.7",
+    "grinway/service-bundle": "^2.0",
     "zenstruck/browser": "^1.9",
     "guzzlehttp/uri-template": "^1.0",
     "symfony/ux-turbo": "^2.22",
