@@ -27,9 +27,9 @@ abstract class AbstractGrinWayServiceInvoiceMethodResultSumNotLessThanOneDollarT
     protected int $rubOneDollarWithEndFigures;
     protected float $floatOneDollar;
     protected int $rubStartOneDollarInt;
-    protected int $rubEndOneDollarInt;
-    protected int $halfEndDollarWithEndFigures;
-    protected int $endDollarWithEndFigures;
+    protected string $rubEndOneDollarInt;
+    protected string $halfEndDollarWithEndFigures;
+    protected string $endDollarWithEndFigures;
     protected int $rubOneDollarStartWithHalfEndDollar;
     protected int $halfDollarWithEndFigures;
 
@@ -195,7 +195,7 @@ abstract class AbstractGrinWayServiceInvoiceMethodResultSumNotLessThanOneDollarT
         $this->assertStartEndPricesSum(
             $prices,
             $this->rubStartOneDollarInt + 1,
-            0,
+            '00',
         );
     }
 
@@ -229,7 +229,7 @@ abstract class AbstractGrinWayServiceInvoiceMethodResultSumNotLessThanOneDollarT
         $this->assertStartEndPricesSum(
             $prices,
             $this->rubStartOneDollarInt,
-            99,
+            '99',
         );
     }
 
@@ -246,7 +246,7 @@ abstract class AbstractGrinWayServiceInvoiceMethodResultSumNotLessThanOneDollarT
         $this->assertStartEndPricesSum(
             $prices,
             $this->rubStartOneDollarInt + 1,
-            0,
+            '00',
         );
     }
 
@@ -290,7 +290,7 @@ abstract class AbstractGrinWayServiceInvoiceMethodResultSumNotLessThanOneDollarT
      *
      * @internal
      */
-    protected function assertStartEndPricesSum(TelegramLabeledPrices $prices, int $startSum, int $endSum): void
+    protected function assertStartEndPricesSum(TelegramLabeledPrices $prices, int $startSum, string $endSum): void
     {
         [$startSumNumber, $endSumNumber] = FiguresRepresentation::getStartEndNumbersWithEndFigures(
             $prices->getSumFigures(),

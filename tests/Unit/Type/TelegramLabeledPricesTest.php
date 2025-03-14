@@ -7,13 +7,8 @@ use GrinWay\Telegram\Type\TelegramLabeledPrices;
 use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(TelegramLabeledPrices::class)]
-class TelegramLabeledPricesSumFiguresIsValidTest extends AbstractTypeTestCase
+class TelegramLabeledPricesTest extends AbstractTypeTestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-    }
-
     public function testSumAndCountViaArrayAccess()
     {
         $telegramLabeledPrices = new TelegramLabeledPrices();
