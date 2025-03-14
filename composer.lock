@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4368b8f01ffbe2f6023031dba451dfee",
+    "content-hash": "567e5f449a54e236ec57a565c803c03d",
     "packages": [
         {
             "name": "behat/mink",
@@ -1586,17 +1586,11 @@
         },
         {
             "name": "grinway/service-bundle",
-            "version": "1.6.8",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/GrinWay/service-bundle.git",
-                "reference": "09ee67197479869a7c3c6efc88f6ea4b11a3d793"
-            },
+            "version": "1.7.0",
             "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/GrinWay/service-bundle/zipball/09ee67197479869a7c3c6efc88f6ea4b11a3d793",
-                "reference": "09ee67197479869a7c3c6efc88f6ea4b11a3d793",
-                "shasum": ""
+                "type": "path",
+                "url": "../../../bundles/grinway/service-bundle",
+                "reference": "5c1f48c544c7539e06a892b1d7d8025aab4b192f"
             },
             "require": {
                 "doctrine/dbal": "^3.9",
@@ -1642,7 +1636,11 @@
                     "GrinWay\\Service\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "GrinWay\\Service\\Tests\\": "tests/"
+                }
+            },
             "license": [
                 "MIT"
             ],
@@ -1661,11 +1659,9 @@
                 "symfony-services",
                 "symfony-ux"
             ],
-            "support": {
-                "issues": "https://github.com/GrinWay/service-bundle/issues",
-                "source": "https://github.com/GrinWay/service-bundle/tree/v1.6.8"
-            },
-            "time": "2025-03-10T09:48:34+00:00"
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "guzzlehttp/uri-template",

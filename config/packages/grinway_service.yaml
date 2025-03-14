@@ -1,3 +1,16 @@
 grinway_service:
     currency:
         fixer_api_key: '%env(APP_CURRENCY_FIXER_API_KEY)%'
+
+    database:
+        ip: '%env(APP_DATABASE_IP)%'
+        database_name: '%env(APP_DATABASE_NAME)%'
+        port: '%env(APP_DATABASE_PORT)%'
+        user: '%env(APP_DATABASE_USER)%'
+        backup_abs_dir: '%env(resolve:APP_DATABASE_BACKUP_ABS_PATH)%'
+
+when@test:
+    grinway_service:
+        database:
+            # REQUIRED ONLY WHEN TEST
+            password: '%env(APP_TEST_DATABASE_PASSWORD)%'
