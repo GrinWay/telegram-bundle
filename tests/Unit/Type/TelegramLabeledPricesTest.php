@@ -152,4 +152,15 @@ class TelegramLabeledPricesTest extends AbstractTypeTestCase
         $array = $telegramLabeledPrices->toArray();
         $this->assertSame($fromArray, $array);
     }
+
+    public function testEmptyTelegramLabeledPricesConvertsTo000()
+    {
+        $telegramLabeledPrices = TelegramLabeledPrices::fromArray(
+            [],
+        );
+        $this->assertSame('000', $telegramLabeledPrices->getSumFigures());
+
+        $telegramLabeledPrices = new TelegramLabeledPrices();
+        $this->assertSame('000', $telegramLabeledPrices->getSumFigures());
+    }
 }
