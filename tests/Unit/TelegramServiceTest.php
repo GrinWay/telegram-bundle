@@ -202,6 +202,16 @@ class TelegramServiceTest extends AbstractTelegramTestCase
         $this->assertFalse(Telegram::isResponseOk($payload));
     }
 
+    public function testAnswerCallbackQuery()
+    {
+        $payload = static::$telegram->answerCallbackQuery(
+            callbackQueryId: 'TEST',
+            throw: false,
+        );
+
+        $this->assertTrue(Telegram::isResponseOk($payload));
+    }
+
     public function testSendInvoice()
     {
         $prices = new TelegramLabeledPrices(

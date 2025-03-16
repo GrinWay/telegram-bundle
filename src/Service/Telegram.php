@@ -102,8 +102,8 @@ class Telegram
     public function downloadFile(
         string $fileId,
         string $absFilepathTo,
-        bool $overwrite = false,
-        bool $throw = false,
+        bool   $overwrite = false,
+        bool   $throw = false,
     ): bool
     {
         if (!Validation::createIsValidCallable(new AbsolutePath())($absFilepathTo)) {
@@ -167,13 +167,13 @@ class Telegram
      * @return array A collection of absolute file paths to the downloaded stickers
      */
     public function downloadStickers(
-        string $stickersName,
-        string $absDirTo,
-        bool $overwrite = false,
-        string $prefixFilename = '',
-        ?int $limit = null,
+        string  $stickersName,
+        string  $absDirTo,
+        bool    $overwrite = false,
+        string  $prefixFilename = '',
+        ?int    $limit = null,
         ?string $stickerFileExtension = null,
-        bool $throw = false,
+        bool    $throw = false,
     ): array
     {
         $stickerFileExtension ??= 'webp';
@@ -238,7 +238,7 @@ class Telegram
     public function deleteMessage(
         ?string $chatId,
         ?string $messageId,
-        bool $throw = false,
+        bool    $throw = false,
     ): array
     {
         if (null === $chatId || null === $messageId) {
@@ -437,11 +437,11 @@ class Telegram
      * @param array $results https://core.telegram.org/bots/api#inlinequeryresult
      */
     public function answerInlineQuery(
-        string $inlineQueryId,
-        string $type,
-        array $results,
+        string  $inlineQueryId,
+        string  $type,
+        array   $results,
         ?string $id = null,
-        bool $throw = false,
+        bool    $throw = false,
     ): array
     {
         // https://core.telegram.org/bots/api#inlinequeryresultgif
@@ -469,15 +469,56 @@ class Telegram
     /**
      * TELEGRAM BOT API METHOD
      *
+     * https://core.telegram.org/bots/api#answercallbackquery
+     */
+    public function answerCallbackQuery(
+        string  $callbackQueryId,
+        ?string $text = null,
+        ?bool   $showAlert = null,
+        ?array  $prependJsonRequest = null,
+        ?array  $appendJsonRequest = null,
+        bool    $throw = false,
+    ): array
+    {
+        $showAlert ??= true; // allow a client to close an alert by (her/him)self
+        $prependJsonRequest ??= [];
+        $appendJsonRequest ??= [];
+
+        try {
+            $json = [
+                'callback_query_id' => $callbackQueryId,
+                'show_alert' => $showAlert,
+            ];
+            if (!empty($text)) {
+                $json['text'] = $text;
+            }
+            $json = \array_merge(
+                $prependJsonRequest,
+                $json,
+                $appendJsonRequest,
+            );
+            $responsePayload = $this->request('POST', 'answerCallbackQuery', $json);
+        } catch (\Exception $exception) {
+            if (true === $throw) {
+                throw $exception;
+            }
+            return static::FAILURE_RESPONSE;
+        }
+        return $responsePayload;
+    }
+
+    /**
+     * TELEGRAM BOT API METHOD
+     *
      * https://core.telegram.org/bots/api#answershippingquery
      *
      * @param array $shippingOptions Array of https://core.telegram.org/bots/api#shippingoption
      */
     public function answerShippingQuery(
-        string $shippingQueryId,
-        array $shippingOptions,
+        string      $shippingQueryId,
+        array       $shippingOptions,
         true|string $shippingQueryIsValid,
-        bool $throw = false,
+        bool        $throw = false,
     ): array
     {
         $ok = null;
@@ -523,9 +564,9 @@ class Telegram
      * https://core.telegram.org/bots/payments
      */
     public function answerPreCheckoutQuery(
-        string $preCheckoutQueryId,
+        string      $preCheckoutQueryId,
         true|string $preCheckoutQueryIsValid,
-        bool $throw = false,
+        bool        $throw = false,
     ): array
     {
         $ok = null;
@@ -569,7 +610,7 @@ class Telegram
      */
     public function getChatLink(
         int|string|null $chatId,
-        bool $throw = false,
+        bool            $throw = false,
     ): false|string
     {
         if (null === $chatId) {
