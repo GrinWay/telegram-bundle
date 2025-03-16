@@ -20,14 +20,14 @@ abstract class AbstractCallbackQueryHandler extends AbstractTopicHandler impleme
 
     public function supports(mixed $fieldValue): bool
     {
+        $this->callbackQueryId = $this->pa->getValue($fieldValue, '[id]');
+        $this->data = $this->pa->getValue($fieldValue, '[data]');
+
         return true;
     }
 
     protected function doHandle(ChatMessage $chatMessage, TelegramOptions $telegramOptions, mixed $fieldValue): bool
     {
-        $this->callbackQueryId = $this->pa->getValue($fieldValue, '[id]');
-        $this->data = $this->pa->getValue($fieldValue, '[data]');
-
         if (null === $this->chatId || null === $this->callbackQueryId) {
             return false;
         }

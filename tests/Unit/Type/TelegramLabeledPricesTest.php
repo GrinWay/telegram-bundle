@@ -153,7 +153,7 @@ class TelegramLabeledPricesTest extends AbstractTypeTestCase
         $this->assertSame($fromArray, $array);
     }
 
-    public function testEmptyTelegramLabeledPricesConvertsTo000()
+    public function testSumFiguresIs000ForEmptyTelegramLabeledPrices()
     {
         $telegramLabeledPrices = TelegramLabeledPrices::fromArray(
             [],
