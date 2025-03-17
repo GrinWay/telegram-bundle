@@ -3,6 +3,7 @@
 namespace GrinWay\Telegram;
 
 use GrinWay\Service\Pass\TagServiceLocatorsPass;
+use GrinWay\Telegram\Bot\Command\TelegramSetWebhookCommand;
 use GrinWay\Telegram\Bot\Contract\Topic\CallbackQueryHandlerInterface;
 use GrinWay\Telegram\Bot\Contract\Topic\CommandMessageHandlerInterface;
 use GrinWay\Telegram\Bot\Contract\Topic\GroupMessageHandlerInterface;
@@ -49,7 +50,7 @@ class GrinWayTelegramBundle extends AbstractBundle
             ->children()//
 
             ->scalarNode('app_host')
-            ->info('Optional: used when executing command: php bin/console grinway_telegram:bot:set_webhook -d')
+            ->info(\sprintf('Optional: used when executing command: php bin/console %s -d', TelegramSetWebhookCommand::NAME))
             ->defaultNull()
             ->end()//
 

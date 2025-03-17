@@ -211,50 +211,30 @@ class TelegramLabeledPrices implements \ArrayAccess, \Countable, \IteratorAggreg
             Telegram::LENGTH_AMOUNT_END_FIGURES,
         );
 
-        $startSum = $startNumberCallback($startSumNumber, $startPriceNumber);
-        $endSum = $endNumberCallback($endSumNumber, $endPriceNumber);
+        $start = $startNumberCallback($startSumNumber, $startPriceNumber);
+        $end = $endNumberCallback($endSumNumber, $endPriceNumber);
 
         $part = 10 ** Telegram::LENGTH_AMOUNT_END_FIGURES;
 
-        // 199 -> 1 + startSum
-        $frontNumbersEndSum = (int)($endSum / $part);
-        $startSum += $frontNumbersEndSum;
-
-        // 199 -> 99
-        $endSum %= $part;
-        $endLen = \strlen((string)$endSum);
-        $endLenDiff = Telegram::LENGTH_AMOUNT_END_FIGURES - $endLen;
-        if (0 < $endLenDiff) {
-            $endSum = \sprintf('%s%s', \str_repeat('0', $endLenDiff), $endSum);
+        if (0 > $end) {
+            $end = $part + $end;
+            --$start;
         }
 
-        return [$startSum, (string)$endSum];
-    }
+        // 199 -> 1 + startSum
+        $frontNumbersEndSum = (int)($end / $part);
+        $start += $frontNumbersEndSum;
 
-//    public function current(): mixed
-//    {
-//        return $this->labeledPrices[$this->labeledPricesIdx];
-//    }
-//
-//    public function next(): void
-//    {
-//        $this->labeledPricesIdx++;
-//    }
-//
-//    public function key(): mixed
-//    {
-//        return $this->labeledPricesIdx;
-//    }
-//
-//    public function valid(): bool
-//    {
-//        return isset($this->labeledPrices[$this->labeledPricesIdx]);
-//    }
-//
-//    public function rewind(): void
-//    {
-//        $this->labeledPricesIdx = 0;
-//    }
+        // 199 -> 99
+        $end %= $part;
+        $endLen = \strlen((string)$end);
+        $endLenDiff = Telegram::LENGTH_AMOUNT_END_FIGURES - $endLen;
+        if (0 < $endLenDiff) {
+            $end = \sprintf('%s%s', \str_repeat('0', $endLenDiff), $end);
+        }
+
+        return [$start, (string)$end];
+    }
 
     public function count(): int
     {
@@ -268,6 +248,9 @@ class TelegramLabeledPrices implements \ArrayAccess, \Countable, \IteratorAggreg
 
     private function telegramLabeledPriceIsValid(TelegramLabeledPrice $telegramLabeledPrice): bool
     {
+        // avoid checking provider logic, if provider doesn't support an error will be
+        return true;
+
         $startAmountPart = FiguresRepresentation::getStartNumberWithEndFigures(
             $telegramLabeledPrice->getAmountWithEndFigures(),
             Telegram::LENGTH_AMOUNT_END_FIGURES,

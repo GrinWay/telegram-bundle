@@ -16,10 +16,10 @@ class TelegramSetWebhookCommand extends AbstractTelegramWebhookCommand
     public const HELP = 'Sets the telegram bot webhook';
     public const DESCRIPTION = self::HELP;
 
-    protected function assignDopQuery(InputInterface $input, OutputInterface $output, array &$dopQuery): void
+    protected function assignPrependRequestOptions(InputInterface $input, OutputInterface $output, array &$prependRequestOptions): void
     {
         if (null !== $dropPendingUpdates = $input->getOption('drop-pending-updates')) {
-            $dopQuery['drop_pending_updates'] = (bool)$dropPendingUpdates;
+            $prependRequestOptions['query']['drop_pending_updates'] = (bool)$dropPendingUpdates;
         }
     }
 

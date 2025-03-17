@@ -24,19 +24,19 @@ class TelegramServiceRequestInvoiceHttpClientRetryableTest extends AbstractTeleg
             title: 'title',
             description: 'description',
             prices: $prices,
-            providerToken: $this->telegramTestPaymentProviderToken,
+            providerToken: static::$telegramTestPaymentProviderToken,
             currency: 'RUB',
             forceMakeHttpRequestToCurrencyApi: true,
             allowDopPriceIfLessThanLowestPossible: false,
             allowNonRemovableCache: false,
-            allowFallbackIncrementStartNumberIfLowestPriceIsNotEnough: true,
+            retryOnRequestException: true,
             throw: false, // don't reveal secrets of http client
         );
 
 //        $this->assertNotNull($invoiceLink, 'Invoice link successfully created');
 //        $response = $this->httpClient->request('GET', $invoiceLink);
 //        $this->assertMatchesRegularExpression('~^2\d{2}$~', $response->getStatusCode());
-        $n = Telegram::INVOICE_DOP_START_NUMBER_MAX_ATTEMPTS;
+        $n = Telegram::INVOICE_DOP_START_NUMBER_RETRY_ATTEMPTS;
         $this->assertSame($n . '100', $prices->getSumFigures());
     }
 }

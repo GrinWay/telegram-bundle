@@ -15,7 +15,7 @@ class TelegramRemoveWebhookCommand extends AbstractTelegramWebhookCommand
     public const HELP = 'Removes the telegram bot webhook';
     public const DESCRIPTION = self::HELP;
 
-    protected function assignDopQuery(InputInterface $input, OutputInterface $output, array &$dopQuery): void
+    protected function assignPrependRequestOptions(InputInterface $input, OutputInterface $output, array &$prependRequestOptions): void
     {
     }
 }

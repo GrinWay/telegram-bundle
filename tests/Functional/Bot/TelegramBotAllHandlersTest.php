@@ -38,7 +38,7 @@ class TelegramBotAllHandlersTest extends AbstractTopicHandlerTestCase
     public function testCallbackQueryHandled()
     {
         $this->assertTelegramBotHandledPayload(
-            $this->callbackQueryPayload,
+            static::$callbackQueryPayload,
             1,
             TestCallbackQueryHandler::SUBJECT,
         );
@@ -47,7 +47,7 @@ class TelegramBotAllHandlersTest extends AbstractTopicHandlerTestCase
     public function testInlineQueryHandled()
     {
         $this->assertTelegramBotHandledPayload(
-            $this->inlineQueryPayload,
+            static::$inlineQueryPayload,
             1,
             TestInlineQueryHandler::SUBJECT,
         );
@@ -56,7 +56,7 @@ class TelegramBotAllHandlersTest extends AbstractTopicHandlerTestCase
     public function testPaymentShippingQueryMeansAddressRequiredHandled()
     {
         $this->assertTelegramBotHandledPayload(
-            $this->paymentShippingQueryPayload,
+            static::$paymentShippingQueryPayload,
             1,
             TestShippingQueryHandler::SUBJECT,
         );
@@ -65,7 +65,7 @@ class TelegramBotAllHandlersTest extends AbstractTopicHandlerTestCase
     public function testPaymentPayButtonPushedMeansPreCheckoutQueryHandled()
     {
         $this->assertTelegramBotHandledPayload(
-            $this->paymentPreCheckoutQueryPayload,
+            static::$paymentPreCheckoutQueryPayload,
             1,
             TestPreCheckoutQueryHandler::SUBJECT,
         );
@@ -74,7 +74,7 @@ class TelegramBotAllHandlersTest extends AbstractTopicHandlerTestCase
     public function testExistentNotFullNamedCommandMessageFromPrivateChatHandled()
     {
         $this->assertTelegramBotHandledPayload(
-            $this->existentNotFullNamedCommandFromPrivateChatPayload,
+            static::$existentNotFullNamedCommandFromPrivateChatPayload,
             1,
             TestCommandHandler::SUBJECT,
         );
@@ -83,7 +83,7 @@ class TelegramBotAllHandlersTest extends AbstractTopicHandlerTestCase
     public function testExistentNotFullNamedCommandMessageFromChatNotHandled()
     {
         $this->assertTelegramBotHandledPayload(
-            $this->existentNotFullNamedCommandFromChatPayload,
+            static::$existentNotFullNamedCommandFromChatPayload,
             0,
         );
     }
@@ -91,7 +91,7 @@ class TelegramBotAllHandlersTest extends AbstractTopicHandlerTestCase
     public function testExistentFullCommandMessageFromPrivateChatHandled()
     {
         $this->assertTelegramBotHandledPayload(
-            $this->existentFullCommandFromPrivateChatPayload,
+            static::$existentFullCommandFromPrivateChatPayload,
             1,
             TestCommandHandler::SUBJECT,
         );
@@ -100,7 +100,7 @@ class TelegramBotAllHandlersTest extends AbstractTopicHandlerTestCase
     public function testExistentFullCommandMessageFromChatHandled()
     {
         $this->assertTelegramBotHandledPayload(
-            $this->existentFullCommandFromChatPayload,
+            static::$existentFullCommandFromChatPayload,
             1,
             TestCommandHandler::SUBJECT,
         );
@@ -109,7 +109,7 @@ class TelegramBotAllHandlersTest extends AbstractTopicHandlerTestCase
     public function testNonExistentCommandMessageFromChatNotHandled()
     {
         $this->assertTelegramBotHandledPayload(
-            $this->nonExistentCommandFromChatPayload,
+            static::$nonExistentCommandFromChatPayload,
             0,
         );
     }
@@ -117,7 +117,7 @@ class TelegramBotAllHandlersTest extends AbstractTopicHandlerTestCase
     public function testNonExistentCommandMessageFromPrivateChatNotHandled()
     {
         $this->assertTelegramBotHandledPayload(
-            $this->nonExistentCommandFromPrivateChatPayload,
+            static::$nonExistentCommandFromPrivateChatPayload,
             0,
         );
     }
@@ -125,7 +125,7 @@ class TelegramBotAllHandlersTest extends AbstractTopicHandlerTestCase
     public function testGroupMessageHandled()
     {
         $this->assertTelegramBotHandledPayload(
-            $this->groupPayload,
+            static::$groupPayload,
             1,
             TestGroupMessageHandler::SUBJECT,
         );
@@ -134,7 +134,7 @@ class TelegramBotAllHandlersTest extends AbstractTopicHandlerTestCase
     public function testPrivateChatMessageHandled()
     {
         $this->assertTelegramBotHandledPayload(
-            $this->privateChatPayload,
+            static::$privateChatPayload,
             1,
             TestPrivateChatHandler::SUBJECT,
         );
@@ -143,7 +143,7 @@ class TelegramBotAllHandlersTest extends AbstractTopicHandlerTestCase
     public function testReplyToMessageFromPrivateChatHandled()
     {
         $this->assertTelegramBotHandledPayload(
-            $this->replyToMessageFromPrivateChatPayload,
+            static::$replyToMessageFromPrivateChatPayload,
             1,
             TestReplyToMessageHandler::SUBJECT,
         );
@@ -152,7 +152,7 @@ class TelegramBotAllHandlersTest extends AbstractTopicHandlerTestCase
     public function testReplyToMessageFromChatHandled()
     {
         $this->assertTelegramBotHandledPayload(
-            $this->replyToMessageFromChatPayload,
+            static::$replyToMessageFromChatPayload,
             1,
             TestReplyToMessageHandler::SUBJECT,
         );

@@ -13,47 +13,25 @@ class TelegramLabeledPricesTest extends AbstractTypeTestCase
     {
         $telegramLabeledPrices = new TelegramLabeledPrices();
         $telegramLabeledPrices[] = new TelegramLabeledPrice(label: 't', amountWithEndFigures: '101');
-        $telegramLabeledPrices[] = new TelegramLabeledPrice(label: 't', amountWithEndFigures: '208');
-        $telegramLabeledPrices[] = new TelegramLabeledPrice(label: 't', amountWithEndFigures: '001');
+        $telegramLabeledPrices[] = new TelegramLabeledPrice(label: 't', amountWithEndFigures: '207');
         $telegramLabeledPrices[] = new TelegramLabeledPrice(label: 't', amountWithEndFigures: '099');
+        $telegramLabeledPrices[] = new TelegramLabeledPrice(label: 't', amountWithEndFigures: '002');
         $telegramLabeledPrices[] = new TelegramLabeledPrice(label: 't', amountWithEndFigures: '10000');
 
-        $this->assertCount(3, $telegramLabeledPrices);
-        $this->assertSame('10309', $telegramLabeledPrices->getSumFigures());
-        [$startNumber, $endNumber] = $telegramLabeledPrices->getStartEndSumNumbers();
-        $this->assertSame(103, $startNumber);
-        $this->assertSame('09', $endNumber);
-
-        unset($telegramLabeledPrices[0]);
-        unset($telegramLabeledPrices[0]);
-        $this->assertSame('10000', $telegramLabeledPrices->getSumFigures());
-
-        unset($telegramLabeledPrices[0]);
-        $this->assertSame('000', $telegramLabeledPrices->getSumFigures());
+        $this->assertTelegramLabeledPricesSumCountStartEndNumbers($telegramLabeledPrices);
     }
 
-    public function testSumAndCountViaConstructor()
+    public function testSumCountStartEndNumbers()
     {
         $telegramLabeledPrices = new TelegramLabeledPrices(
             new TelegramLabeledPrice(label: 't', amountWithEndFigures: '101'),
-            new TelegramLabeledPrice(label: 't', amountWithEndFigures: '208'),
-            new TelegramLabeledPrice(label: 't', amountWithEndFigures: '001'),
+            new TelegramLabeledPrice(label: 't', amountWithEndFigures: '207'),
             new TelegramLabeledPrice(label: 't', amountWithEndFigures: '099'),
+            new TelegramLabeledPrice(label: 't', amountWithEndFigures: '002'),
             new TelegramLabeledPrice(label: 't', amountWithEndFigures: '10000'),
         );
 
-        $this->assertCount(3, $telegramLabeledPrices);
-        $this->assertSame('10309', $telegramLabeledPrices->getSumFigures());
-        [$startNumber, $endNumber] = $telegramLabeledPrices->getStartEndSumNumbers();
-        $this->assertSame(103, $startNumber);
-        $this->assertSame('09', $endNumber);
-
-        unset($telegramLabeledPrices[0]);
-        unset($telegramLabeledPrices[0]);
-        $this->assertSame('10000', $telegramLabeledPrices->getSumFigures());
-
-        unset($telegramLabeledPrices[0]);
-        $this->assertSame('000', $telegramLabeledPrices->getSumFigures());
+        $this->assertTelegramLabeledPricesSumCountStartEndNumbers($telegramLabeledPrices);
     }
 
     public function testUnsetExcessive()
@@ -67,51 +45,17 @@ class TelegramLabeledPricesTest extends AbstractTypeTestCase
         $this->assertSame('000', $telegramLabeledPrices->getSumFigures());
     }
 
-    public function testGetStartEndNumbers()
-    {
-        $telegramLabeledPrices = new TelegramLabeledPrices(
-            new TelegramLabeledPrice(label: 't', amountWithEndFigures: '101'),
-            new TelegramLabeledPrice(label: 't', amountWithEndFigures: '208'),
-            new TelegramLabeledPrice(label: 't', amountWithEndFigures: '001'),
-            new TelegramLabeledPrice(label: 't', amountWithEndFigures: '099'),
-            new TelegramLabeledPrice(label: 't', amountWithEndFigures: '10000'),
-        );
-
-        $this->assertCount(3, $telegramLabeledPrices);
-        [$startNumber, $endNumber] = $telegramLabeledPrices->getStartEndSumNumbers();
-        $this->assertSame(103, $startNumber);
-        $this->assertSame('09', $endNumber);
-
-        unset($telegramLabeledPrices[0]);
-        $this->assertCount(2, $telegramLabeledPrices);
-        [$startNumber, $endNumber] = $telegramLabeledPrices->getStartEndSumNumbers();
-        $this->assertSame(102, $startNumber);
-        $this->assertSame('08', $endNumber);
-
-        unset($telegramLabeledPrices[0]);
-        $this->assertCount(1, $telegramLabeledPrices);
-        [$startNumber, $endNumber] = $telegramLabeledPrices->getStartEndSumNumbers();
-        $this->assertSame(100, $startNumber);
-        $this->assertSame('00', $endNumber);
-
-        unset($telegramLabeledPrices[0]);
-        $this->assertCount(0, $telegramLabeledPrices);
-        [$startNumber, $endNumber] = $telegramLabeledPrices->getStartEndSumNumbers();
-        $this->assertSame(0, $startNumber);
-        $this->assertSame('00', $endNumber);
-    }
-
     public function testToArray()
     {
         $telegramLabeledPrices = new TelegramLabeledPrices(
             new TelegramLabeledPrice(label: 't1', amountWithEndFigures: '101'),
             new TelegramLabeledPrice(label: 't2', amountWithEndFigures: '208'),
-            new TelegramLabeledPrice(label: 'tn1', amountWithEndFigures: '001'),
-            new TelegramLabeledPrice(label: 'tn2', amountWithEndFigures: '099'),
-            new TelegramLabeledPrice(label: 't3', amountWithEndFigures: '10000'),
+            new TelegramLabeledPrice(label: 't3', amountWithEndFigures: '001'),
+            new TelegramLabeledPrice(label: 't4', amountWithEndFigures: '099'),
+            new TelegramLabeledPrice(label: 't5', amountWithEndFigures: '10000'),
         );
 
-        $this->assertCount(3, $telegramLabeledPrices);
+        $this->assertCount(5, $telegramLabeledPrices);
         $array = $telegramLabeledPrices->toArray();
         $this->assertSame([
             [
@@ -124,6 +68,14 @@ class TelegramLabeledPricesTest extends AbstractTypeTestCase
             ],
             [
                 'label' => 't3',
+                'amount' => '001',
+            ],
+            [
+                'label' => 't4',
+                'amount' => '099',
+            ],
+            [
+                'label' => 't5',
                 'amount' => '10000',
             ],
         ], $array);
@@ -133,22 +85,30 @@ class TelegramLabeledPricesTest extends AbstractTypeTestCase
     {
         $fromArray = [
             [
-                'label' => 't1',
+                'label' => 'test',
                 'amount' => '101',
             ],
             [
-                'label' => 't2',
+                'label' => 'test',
                 'amount' => '208',
             ],
             [
-                'label' => 't3',
+                'label' => 'test',
+                'amount' => '001',
+            ],
+            [
+                'label' => 'test',
+                'amount' => '099',
+            ],
+            [
+                'label' => 'test',
                 'amount' => '10000',
             ],
         ];
 
         $telegramLabeledPrices = TelegramLabeledPrices::fromArray($fromArray);
 
-        $this->assertCount(3, $telegramLabeledPrices);
+        $this->assertCount(5, $telegramLabeledPrices);
         $array = $telegramLabeledPrices->toArray();
         $this->assertSame($fromArray, $array);
     }
@@ -162,5 +122,57 @@ class TelegramLabeledPricesTest extends AbstractTypeTestCase
 
         $telegramLabeledPrices = new TelegramLabeledPrices();
         $this->assertSame('000', $telegramLabeledPrices->getSumFigures());
+    }
+
+    private function assertTelegramLabeledPricesSumCountStartEndNumbers(
+        TelegramLabeledPrices $telegramLabeledPrices,
+    ): void
+    {
+        foreach ([
+                     [
+                         'expectedCount' => 5,
+                         'expectedSum' => '10409',
+                         'expectedStart' => 104,
+                         'expectedEnd' => '09',
+                     ],
+                     [
+                         'expectedCount' => 4,
+                         'expectedSum' => '10308',
+                         'expectedStart' => 103,
+                         'expectedEnd' => '08',
+                     ],
+                     [
+                         'expectedCount' => 3,
+                         'expectedSum' => '10101',
+                         'expectedStart' => 101,
+                         'expectedEnd' => '01',
+                     ],
+                     [
+                         'expectedCount' => 2,
+                         'expectedSum' => '10002',
+                         'expectedStart' => 100,
+                         'expectedEnd' => '02',
+                     ],
+                     [
+                         'expectedCount' => 1,
+                         'expectedSum' => '10000',
+                         'expectedStart' => 100,
+                         'expectedEnd' => '00',
+                     ],
+                     [
+                         'expectedCount' => 0,
+                         'expectedSum' => '000',
+                         'expectedStart' => 0,
+                         'expectedEnd' => '00',
+                     ],
+                 ] as ['expectedCount' => $expectedCount, 'expectedSum' => $expectedSum, 'expectedStart' => $expectedStart, 'expectedEnd' => $expectedEnd]) {
+            [$startNumber, $endNumber] = $telegramLabeledPrices->getStartEndSumNumbers();
+
+            $this->assertCount($expectedCount, $telegramLabeledPrices);
+            $this->assertSame($expectedSum, $telegramLabeledPrices->getSumFigures());
+            $this->assertSame($expectedStart, $startNumber);
+            $this->assertSame($expectedEnd, $endNumber);
+            unset($telegramLabeledPrices[0]);
+        }
     }
 }

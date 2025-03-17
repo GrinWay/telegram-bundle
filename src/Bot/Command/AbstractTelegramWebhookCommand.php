@@ -2,6 +2,7 @@
 
 namespace GrinWay\Telegram\Bot\Command;
 
+use GrinWay\Telegram\Service\Telegram;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -24,7 +25,7 @@ abstract class AbstractTelegramWebhookCommand extends Command
         parent::__construct(name: $name);
     }
 
-    abstract protected function assignDopQuery(InputInterface $input, OutputInterface $output, array &$dopQuery): void;
+    abstract protected function assignPrependRequestOptions(InputInterface $input, OutputInterface $output, array &$prependRequestOptions): void;
 
     protected function configure()
     {
@@ -41,18 +42,18 @@ abstract class AbstractTelegramWebhookCommand extends Command
         OutputInterface $output,
     ): int
     {
+        /** @var Telegram $telegram */
         $telegram = $this->serviceLocator->get('telegram');
         $pa = $this->serviceLocator->get('pa');
 
-        $dopQuery = [];
-        $this->assignDopQuery($input, $output, $dopQuery);
+        $prependRequestOptions = [];
+        $this->assignPrependRequestOptions($input, $output, $prependRequestOptions);
 
-        $dumpActionInfo = '';
         if ($this instanceof TelegramRemoveWebhookCommand) {
-            $responseContent = $telegram->removeWebhook($dopQuery);
+            $responseContent = $telegram->removeWebhook(prependRequestOptions: $prependRequestOptions);
             $dumpActionInfo = 'REMOVED';
         } elseif ($this instanceof TelegramSetWebhookCommand) {
-            $responseContent = $telegram->setWebhook($dopQuery);
+            $responseContent = $telegram->setWebhook(prependRequestOptions: $prependRequestOptions);
             $dumpActionInfo = 'SET';
         } else {
             throw new \LogicException('There is no appropriate action');

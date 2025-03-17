@@ -21,7 +21,7 @@ class TelegramServiceTest extends AbstractTelegramServiceTestCase
             title: 'title',
             description: 'description',
             prices: $prices,
-            providerToken: $this->telegramTestPaymentProviderToken,
+            providerToken: static::$telegramTestPaymentProviderToken,
             currency: 'RUB',
             needName: true,
             needPhoneNumber: true,
