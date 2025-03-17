@@ -1,12 +1,13 @@
 <?php
 
-namespace GrinWay\Telegram\Tests\Unit\TelegramService\DownloadStickers;
+namespace GrinWay\Telegram\Tests\Unit\TelegramService\DownloadStickers\DownloadStickers;
 
 use GrinWay\Telegram\Service\Telegram;
+use GrinWay\Telegram\Tests\Unit\TelegramService\DownloadStickers\AbstractTelegramServiceDownloadStickersTestCase;
 use PHPUnit\Framework\Attributes\CoversMethod;
 
 #[CoversMethod(Telegram::class, 'downloadStickers')]
-class TelegramServiceDownloadStickersTestCase extends AbstractTelegramServiceDownloadStickersTestCase
+class TelegramServiceDownloadStickersTest extends AbstractTelegramServiceDownloadStickersTestCase
 {
     public function testSuccessfulDownloadingStickersWithAbsoluteDir()
     {

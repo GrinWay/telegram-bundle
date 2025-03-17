@@ -1,13 +1,14 @@
 <?php
 
-namespace GrinWay\Telegram\Tests\Unit\TelegramService;
+namespace GrinWay\Telegram\Tests\Unit\TelegramService\RemoveWebhook;
 
 use GrinWay\Telegram\Service\Telegram;
 use GrinWay\Telegram\Tests\Trait\TelegramService\TelegramGrinWayHttpClientRequestTestAware;
+use GrinWay\Telegram\Tests\Unit\TelegramService\AbstractTelegramServiceTestCase;
 use PHPUnit\Framework\Attributes\CoversMethod;
 
 #[CoversMethod(Telegram::class, 'removeWebhook')]
-class TelegramServiceRemoveWebhookTest extends AbstractTelegramServiceTestCase
+class TelegramServiceRemoveWebhookByDefaultTest extends AbstractTelegramServiceTestCase
 {
     use TelegramGrinWayHttpClientRequestTestAware;
 
@@ -25,7 +26,6 @@ class TelegramServiceRemoveWebhookTest extends AbstractTelegramServiceTestCase
     {
         return [
             'query' => [
-                'non_existent_parameter' => false,
                 'url' => '',
             ],
             'timeout' => 30,
@@ -35,11 +35,6 @@ class TelegramServiceRemoveWebhookTest extends AbstractTelegramServiceTestCase
     protected function makeMethodCall(Telegram $telegram, string $method, bool $throw): mixed
     {
         return $telegram->removeWebhook(
-            prependRequestOptions: [
-                'query' => [
-                    'non_existent_parameter' => false,
-                ],
-            ],
             throw: $throw,
         );
     }

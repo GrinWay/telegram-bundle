@@ -1,9 +1,10 @@
 <?php
 
-namespace GrinWay\Telegram\Tests\Unit\TelegramService;
+namespace GrinWay\Telegram\Tests\Unit\TelegramService\DeleteMessage;
 
 use GrinWay\Telegram\Service\Telegram;
 use GrinWay\Telegram\Tests\Trait\TelegramService\TelegramGrinWayHttpClientRequestTestAware;
+use GrinWay\Telegram\Tests\Unit\TelegramService\AbstractTelegramServiceTestCase;
 use PHPUnit\Framework\Attributes\CoversMethod;
 
 #[CoversMethod(Telegram::class, 'deleteMessage')]

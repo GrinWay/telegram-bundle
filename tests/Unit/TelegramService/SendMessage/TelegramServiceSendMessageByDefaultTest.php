@@ -1,41 +1,37 @@
 <?php
 
-namespace GrinWay\Telegram\Tests\Unit\TelegramService;
+namespace GrinWay\Telegram\Tests\Unit\TelegramService\SendMessage;
 
 use GrinWay\Telegram\Service\Telegram;
 use GrinWay\Telegram\Tests\Trait\TelegramService\TelegramGrinWayHttpClientRequestTestAware;
+use GrinWay\Telegram\Tests\Unit\TelegramService\AbstractTelegramServiceTestCase;
 use PHPUnit\Framework\Attributes\CoversMethod;
 
-#[CoversMethod(Telegram::class, 'answerPreCheckoutQuery')]
-class TelegramServiceSuccessfullyAnswerPreCheckoutQueryTest extends AbstractTelegramServiceTestCase
+#[CoversMethod(Telegram::class, 'sendMessage')]
+class TelegramServiceSendMessageByDefaultTest extends AbstractTelegramServiceTestCase
 {
     use TelegramGrinWayHttpClientRequestTestAware;
 
     protected function getTelegramApiMethodGrinWayHttpClientTestAware(): string
     {
-        return 'answerPreCheckoutQuery';
+        return 'sendMessage';
     }
 
     protected function getRequestJsonGrinWayHttpClientTestAware(): array
     {
         return [
             'json' => [
-                'pre_checkout_query_id' => 'TEST',
-                'ok' => true,
+                'chat_id' => 'TEST',
+                'text' => 'text',
             ],
         ];
     }
 
     protected function makeMethodCall(Telegram $telegram, string $method, bool $throw): mixed
     {
-        /*
-         * Depending on payload you decide this payment successful or not
-         *
-         * I decided payload is valid
-         */
         return $telegram->$method(
-            preCheckoutQueryId: 'TEST', // in the webhook handler you will get a real pre_checkout_query_id in the payload
-            preCheckoutQueryIsValid: true,
+            chatId: 'TEST',
+            text: 'text',
             throw: $throw,
         );
     }

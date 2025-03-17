@@ -1,9 +1,10 @@
 <?php
 
-namespace GrinWay\Telegram\Tests\Unit\TelegramService;
+namespace GrinWay\Telegram\Tests\Unit\TelegramService\SetWebhook;
 
 use GrinWay\Telegram\Service\Telegram;
 use GrinWay\Telegram\Tests\Trait\TelegramService\TelegramGrinWayHttpClientRequestTestAware;
+use GrinWay\Telegram\Tests\Unit\TelegramService\AbstractTelegramServiceTestCase;
 use PHPUnit\Framework\Attributes\CoversMethod;
 
 #[CoversMethod(Telegram::class, 'setWebhook')]
@@ -25,7 +26,6 @@ class TelegramServiceSetWebhookTest extends AbstractTelegramServiceTestCase
     {
         return [
             'query' => [
-                'drop_pending_updates' => true,
                 'url' => \sprintf('https://%s%s', 'example.com:80', static::WEBHOOK),
             ],
             'timeout' => 30,
@@ -35,11 +35,6 @@ class TelegramServiceSetWebhookTest extends AbstractTelegramServiceTestCase
     protected function makeMethodCall(Telegram $telegram, string $method, bool $throw): mixed
     {
         return $telegram->$method(
-            prependRequestOptions: [
-                'query' => [
-                    'drop_pending_updates' => true,
-                ],
-            ],
             throw: $throw,
         );
     }

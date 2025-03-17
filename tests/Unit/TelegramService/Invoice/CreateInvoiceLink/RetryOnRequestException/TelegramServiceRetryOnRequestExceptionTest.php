@@ -1,6 +1,6 @@
 <?php
 
-namespace GrinWay\Telegram\Tests\Unit\TelegramService\Invoice\CreateInvoiceLink;
+namespace GrinWay\Telegram\Tests\Unit\TelegramService\Invoice\CreateInvoiceLink\RetryOnRequestException;
 
 use GrinWay\Telegram\Service\Telegram;
 use GrinWay\Telegram\Tests\Trait\TelegramService\TelegramGrinWayHttpClientRequestTestAware;

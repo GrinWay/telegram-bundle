@@ -1,6 +1,6 @@
 <?php
 
-namespace GrinWay\Telegram\Tests\Unit\TelegramService\Invoice\SendInvoice;
+namespace GrinWay\Telegram\Tests\Unit\TelegramService\Invoice\SendInvoice\PricesAreTelegramLabeledPricesAfterProcessing;
 
 use GrinWay\Telegram\Service\Telegram;
 use GrinWay\Telegram\Tests\Trait\TelegramService\TelegramGrinWayHttpClientRequestTestAware;
@@ -10,7 +10,7 @@ use GrinWay\Telegram\Type\TelegramLabeledPrices;
 use PHPUnit\Framework\Attributes\CoversMethod;
 
 #[CoversMethod(Telegram::class, 'sendInvoice')]
-class TelegramServicePricesTelegramLabeledPricesAfterProcessingTest extends AbstractTelegramServiceTestCase
+class TelegramServicePricesAreTelegramLabeledPricesAfterProcessingTest extends AbstractTelegramServiceTestCase
 {
     use TelegramGrinWayHttpClientRequestTestAware;
 

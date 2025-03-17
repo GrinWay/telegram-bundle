@@ -1,6 +1,6 @@
 <?php
 
-namespace GrinWay\Telegram\Tests\Unit\TelegramService\Invoice\SendInvoice;
+namespace GrinWay\Telegram\Tests\Unit\TelegramService\Invoice\CreateInvoiceLink\PricesIsArrayAfterProcessing;
 
 use GrinWay\Telegram\Service\Telegram;
 use GrinWay\Telegram\Tests\Trait\TelegramService\TelegramGrinWayHttpClientRequestTestAware;
@@ -8,9 +8,10 @@ use GrinWay\Telegram\Tests\Unit\TelegramService\AbstractTelegramServiceTestCase;
 use GrinWay\Telegram\Type\TelegramLabeledPrice;
 use GrinWay\Telegram\Type\TelegramLabeledPrices;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\MockObject\MockObject;
 
-#[CoversMethod(Telegram::class, 'sendInvoice')]
-class TelegramServicePricesArrayAfterProcessingTest extends AbstractTelegramServiceTestCase
+#[CoversMethod(Telegram::class, 'createInvoiceLink')]
+class TelegramServicePricesIsArrayAfterProcessingTest extends AbstractTelegramServiceTestCase
 {
     use TelegramGrinWayHttpClientRequestTestAware;
 
@@ -27,14 +28,32 @@ class TelegramServicePricesArrayAfterProcessingTest extends AbstractTelegramServ
 
     protected function getTelegramApiMethodGrinWayHttpClientTestAware(): string
     {
-        return 'sendInvoice';
+        return 'createInvoiceLink';
+    }
+
+    protected function assertSuccessfulPayload(mixed $payload): void
+    {
+        static::assertTrue(\is_string($payload));
+    }
+
+    protected function assertFailedPayload(mixed $payload): void
+    {
+        $this->assertNull($payload);
+    }
+
+    protected function processGetContentResponseMock(MockObject $responseMock): void
+    {
+        $responseMock
+            ->expects($this->once())
+            ->method('getContent')
+            ->willReturn('{"ok":true,"result":"invoice link"}')//
+        ;
     }
 
     protected function getRequestJsonGrinWayHttpClientTestAware(): array
     {
         return [
             'json' => [
-                'chat_id' => 'TEST',
                 'title' => 'title',
                 'description' => 'description',
                 'payload' => 'payload',
@@ -62,7 +81,6 @@ class TelegramServicePricesArrayAfterProcessingTest extends AbstractTelegramServ
     protected function makeMethodCall(Telegram $telegram, string $method, bool $throw): mixed
     {
         $response = $telegram->$method(
-            chatId: 'TEST',
             title: 'title',
             description: 'description',
             prices: static::$prices,

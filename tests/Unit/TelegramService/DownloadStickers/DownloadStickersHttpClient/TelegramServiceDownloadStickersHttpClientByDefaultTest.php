@@ -1,15 +1,16 @@
 <?php
 
-namespace GrinWay\Telegram\Tests\Unit\TelegramService\DownloadStickers;
+namespace GrinWay\Telegram\Tests\Unit\TelegramService\DownloadStickers\DownloadStickersHttpClient;
 
 use GrinWay\Telegram\Service\Telegram;
 use GrinWay\Telegram\Tests\Trait\TelegramService\TelegramGrinWayHttpClientRequestTestAware;
+use GrinWay\Telegram\Tests\Unit\TelegramService\DownloadStickers\AbstractTelegramServiceDownloadStickersTestCase;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\MockObject\Builder\InvocationMocker;
 use PHPUnit\Framework\MockObject\MockObject;
 
 #[CoversMethod(Telegram::class, 'downloadStickers')]
-class TelegramServiceDownloadStickersHttpClientTestCase extends AbstractTelegramServiceDownloadStickersTestCase
+class TelegramServiceDownloadStickersHttpClientByDefaultTest extends AbstractTelegramServiceDownloadStickersTestCase
 {
     use TelegramGrinWayHttpClientRequestTestAware;
 
@@ -18,7 +19,7 @@ class TelegramServiceDownloadStickersHttpClientTestCase extends AbstractTelegram
     ): InvocationMocker
     {
         return $responseMock
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(5))
             ->method('getContent')
             ->willReturn('{"ok":true,"result":{"file_path":"fake","stickers":[{"file_id":"fake", "emoji":"🧪"},{"file_id":"fake", "emoji":"🧪"},{"file_id":"fake", "emoji":"🧪"},{"file_id":"fake", "emoji":"🧪"}]}}')//
             ;
@@ -30,7 +31,7 @@ class TelegramServiceDownloadStickersHttpClientTestCase extends AbstractTelegram
     ): InvocationMocker
     {
         return $grinwayTelegramClientMock
-            ->expects(self::exactly(2))
+            ->expects(self::exactly(5))
             ->method('request')
             ->with(
                 self::identicalTo($this->getMethodMethodGrinwayTelegramClient()),
@@ -79,7 +80,6 @@ class TelegramServiceDownloadStickersHttpClientTestCase extends AbstractTelegram
             stickersName: 'TEST',
             absDirTo: static::$existingAbsDir,
             overwrite: true,
-            limit: 1,
             throw: $throw,
         );
     }

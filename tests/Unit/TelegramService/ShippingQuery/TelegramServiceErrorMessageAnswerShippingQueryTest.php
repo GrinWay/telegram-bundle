@@ -1,13 +1,14 @@
 <?php
 
-namespace GrinWay\Telegram\Tests\Unit\TelegramService;
+namespace GrinWay\Telegram\Tests\Unit\TelegramService\ShippingQuery;
 
 use GrinWay\Telegram\Service\Telegram;
 use GrinWay\Telegram\Tests\Trait\TelegramService\TelegramGrinWayHttpClientRequestTestAware;
+use GrinWay\Telegram\Tests\Unit\TelegramService\AbstractTelegramServiceTestCase;
 use PHPUnit\Framework\Attributes\CoversMethod;
 
 #[CoversMethod(Telegram::class, 'answerShippingQuery')]
-class TelegramServiceSuccessfullyAnswerShippingQueryTest extends AbstractTelegramServiceTestCase
+class TelegramServiceErrorMessageAnswerShippingQueryTest extends AbstractTelegramServiceTestCase
 {
     use TelegramGrinWayHttpClientRequestTestAware;
 
@@ -21,17 +22,8 @@ class TelegramServiceSuccessfullyAnswerShippingQueryTest extends AbstractTelegra
         return [
             'json' => [
                 'shipping_query_id' => 'TEST',
-                'shipping_options' => [
-                    'id' => 'id',
-                    'title' => 'title',
-                    'prices' => [
-                        [
-                            'label' => 'l',
-                            'amount' => '000',
-                        ],
-                    ],
-                ],
-                'ok' => true,
+                'error_message' => 'TEST FALSE',
+                'ok' => false,
             ],
         ];
     }
@@ -58,7 +50,7 @@ class TelegramServiceSuccessfullyAnswerShippingQueryTest extends AbstractTelegra
                     ],
                 ],
             ],
-            shippingQueryIsValid: true,
+            shippingQueryIsValid: 'TEST FALSE',
             throw: $throw,
         );
     }

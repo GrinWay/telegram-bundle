@@ -116,174 +116,6 @@ class Telegram
     }
 
     /**
-     * API
-     *
-     * Automatically makes a directory if it doesn't exist
-     *
-     * @return bool True if made, false if not
-     */
-    public function downloadFile(
-        string $fileId,
-        string $absFilepathTo,
-        bool   $overwrite = false,
-        bool   $throw = false,
-    ): bool
-    {
-        if (!Validation::createIsValidCallable(new AbsolutePath())($absFilepathTo)) {
-            if (true === $throw) {
-                throw new \InvalidArgumentException(\sprintf('You passed not an absolute path: "%s"', $absFilepathTo));
-            }
-            return false;
-        }
-
-        if (\is_file($absFilepathTo) && false === $overwrite) {
-            return false;
-        }
-
-        try {
-            $content = $this->request('POST', 'getFile', [
-                'json' => [
-                    'file_id' => $fileId,
-                ],
-            ]);
-        } catch (\Exception $exception) {
-            if (true === $throw) {
-                throw $exception;
-            }
-            return false;
-        }
-
-        /** @var PropertyAccessorInterface $pa */
-        $pa = $this->serviceLocator->get('pa');
-
-        $ok = $pa->getValue($content, '[ok]');
-        if (true !== $ok) {
-            return false;
-        }
-
-        $filepath = $pa->getValue($content, '[result][file_path]');
-        if (empty($filepath)) {
-            return false;
-        }
-
-        /** @var HttpClientInterface $grinwayHttpFileClient */
-        $grinwayHttpFileClient = $this->serviceLocator->get('grinwayTelegramFileClient');
-
-        $url = \ltrim($filepath, '/\\');
-        try {
-            $response = $this->request(
-                'GET',
-                $url,
-                httpClient: $grinwayHttpFileClient,
-            );
-        } catch (\Exception $exception) {
-            if (true === $throw) {
-                throw $exception;
-            }
-            return false;
-        }
-
-        $absPathTo = Path::getDirectory($absFilepathTo);
-        if (!\is_dir($absPathTo)) {
-            $this->serviceLocator->get('filesystem')->mkdir($absPathTo);
-        }
-        $handler = \fopen($absFilepathTo, 'wb');
-        foreach ($grinwayHttpFileClient->stream($response) as $chunk) {
-            \fwrite($handler, $chunk->getContent());
-        }
-        \fclose($handler);
-        return true;
-    }
-
-    /**
-     * API
-     *
-     * https://core.telegram.org/bots/api#getstickerset
-     *
-     * @return array A collection of absolute file paths to the downloaded stickers
-     */
-    public function downloadStickers(
-        string  $stickersName,
-        string  $absDirTo,
-        bool    $overwrite = false,
-        string  $prefixFilename = '',
-        ?int    $limit = null,
-        ?string $stickerFileExtension = null,
-        bool    $throw = false,
-    ): array
-    {
-        if (null !== $limit && 0 > $limit) {
-            $limit = 0;
-        }
-
-        $stickerFileExtension ??= 'webp';
-
-        $made = [];
-        $transliterator = EmojiTransliterator::create('emoji-text');
-
-        try {
-            $payload = $this->request('POST', 'getStickerSet', [
-                'json' => [
-                    'name' => $stickersName,
-                ],
-            ]);
-        } catch (\Exception $exception) {
-            if (true === $throw) {
-                throw $exception;
-            }
-            return $made;
-        }
-
-        /** @var PropertyAccessorInterface $pa */
-        $pa = $this->serviceLocator->get('pa');
-
-        /** @var SluggerInterface $slugger */
-        $slugger = $this->serviceLocator->get('slugger');
-
-        $stickerSetName = \sprintf(
-            '%s%s',
-            $prefixFilename,
-            $pa->getValue($payload, '[result][name]'),
-        );
-
-        $fileIdsObject = $pa->getValue($payload, '[result][stickers]');
-        if (\is_array($fileIdsObject)) {
-            $i = 0;
-            $limitCounter = 0;
-            foreach ($fileIdsObject as $fileIdObject) {
-                if (null !== $limit && $limitCounter >= $limit) {
-                    break;
-                }
-                $fileId = $pa->getValue($fileIdObject, '[file_id]');
-                if ($fileId) {
-                    if (empty($prefixFilename)) {
-                        $prefix = '%s';
-                    } else {
-                        $prefix = '%s_';
-                    }
-                    $emoji = $pa->getValue($fileIdObject, '[emoji]') ?: $i++;
-                    $emojiTextRepresentation = $transliterator->transliterate($emoji);
-                    $filename = (string)$slugger->slug(
-                        \sprintf($prefix . '%s', $stickerSetName, $emojiTextRepresentation),
-                    );
-                    $absFilepathTo = \sprintf('%s/%s.%s', $absDirTo, $filename, $stickerFileExtension);
-                    $wasMade = $this->downloadFile(
-                        $fileId,
-                        $absFilepathTo,
-                        overwrite: $overwrite,
-                        throw: $throw,
-                    );
-                    if (true === $wasMade) {
-                        $made[$absFilepathTo] = $absFilepathTo;
-                        ++$limitCounter;
-                    }
-                }
-            }
-        }
-        return $made;
-    }
-
-    /**
      * TELEGRAM BOT API METHOD
      *
      * https://core.telegram.org/bots/api#deletemessage
@@ -342,7 +174,7 @@ class Telegram
         );
 
         try {
-            $responsePayload = $this->request('POST', 'sendMessage', [
+            $responsePayload = $this->request('POST', __FUNCTION__, [
                 'json' => $jsonRequest,
             ]);
         } catch (\Exception $exception) {
@@ -602,7 +434,7 @@ class Telegram
         $requestJson['ok'] = $ok;
 
         try {
-            $responsePayload = $this->request('POST', 'answerShippingQuery', [
+            $responsePayload = $this->request('POST', __FUNCTION__, [
                 'json' => $requestJson,
             ]);
         } catch (\Exception $exception) {
@@ -659,6 +491,174 @@ class Telegram
         }
 
         return $responseJson;
+    }
+
+    /**
+     * API
+     *
+     * Automatically makes a directory if it doesn't exist
+     *
+     * @return bool True if made, false if not
+     */
+    public function downloadFile(
+        string $fileId,
+        string $absFilepathTo,
+        bool   $overwrite = false,
+        bool   $throw = false,
+    ): bool
+    {
+        if (!Validation::createIsValidCallable(new AbsolutePath())($absFilepathTo)) {
+            if (true === $throw) {
+                throw new \InvalidArgumentException(\sprintf('You passed not an absolute path: "%s"', $absFilepathTo));
+            }
+            return false;
+        }
+
+        if (\is_file($absFilepathTo) && false === $overwrite) {
+            return false;
+        }
+
+        try {
+            $content = $this->request('POST', 'getFile', [
+                'json' => [
+                    'file_id' => $fileId,
+                ],
+            ]);
+        } catch (\Exception $exception) {
+            if (true === $throw) {
+                throw $exception;
+            }
+            return false;
+        }
+
+        /** @var PropertyAccessorInterface $pa */
+        $pa = $this->serviceLocator->get('pa');
+
+        $ok = $pa->getValue($content, '[ok]');
+        if (true !== $ok) {
+            return false;
+        }
+
+        $filepath = $pa->getValue($content, '[result][file_path]');
+        if (empty($filepath)) {
+            return false;
+        }
+
+        /** @var HttpClientInterface $grinwayHttpFileClient */
+        $grinwayHttpFileClient = $this->serviceLocator->get('grinwayTelegramFileClient');
+
+        $url = \ltrim($filepath, '/\\');
+        try {
+            $response = $this->request(
+                'GET',
+                $url,
+                httpClient: $grinwayHttpFileClient,
+            );
+        } catch (\Exception $exception) {
+            if (true === $throw) {
+                throw $exception;
+            }
+            return false;
+        }
+
+        $absPathTo = Path::getDirectory($absFilepathTo);
+        if (!\is_dir($absPathTo)) {
+            $this->serviceLocator->get('filesystem')->mkdir($absPathTo);
+        }
+        $handler = \fopen($absFilepathTo, 'wb');
+        foreach ($grinwayHttpFileClient->stream($response) as $chunk) {
+            \fwrite($handler, $chunk->getContent());
+        }
+        \fclose($handler);
+        return true;
+    }
+
+    /**
+     * API
+     *
+     * https://core.telegram.org/bots/api#getstickerset
+     *
+     * @return array A collection of absolute file paths to the downloaded stickers
+     */
+    public function downloadStickers(
+        string  $stickersName,
+        string  $absDirTo,
+        bool    $overwrite = false,
+        string  $prefixFilename = '',
+        ?int    $limit = null,
+        ?string $stickerFileExtension = null,
+        bool    $throw = false,
+    ): array
+    {
+        if (null !== $limit && 0 > $limit) {
+            $limit = 0;
+        }
+
+        $stickerFileExtension ??= 'webp';
+
+        $made = [];
+        $transliterator = EmojiTransliterator::create('emoji-text');
+
+        try {
+            $payload = $this->request('POST', 'getStickerSet', [
+                'json' => [
+                    'name' => $stickersName,
+                ],
+            ]);
+        } catch (\Exception $exception) {
+            if (true === $throw) {
+                throw $exception;
+            }
+            return $made;
+        }
+
+        /** @var PropertyAccessorInterface $pa */
+        $pa = $this->serviceLocator->get('pa');
+
+        /** @var SluggerInterface $slugger */
+        $slugger = $this->serviceLocator->get('slugger');
+
+        $stickerSetName = \sprintf(
+            '%s%s',
+            $prefixFilename,
+            $pa->getValue($payload, '[result][name]'),
+        );
+
+        $fileIdsObject = $pa->getValue($payload, '[result][stickers]');
+        if (\is_array($fileIdsObject)) {
+            $i = 0;
+            $limitCounter = 0;
+            foreach ($fileIdsObject as $fileIdObject) {
+                if (null !== $limit && $limitCounter >= $limit) {
+                    break;
+                }
+                $fileId = $pa->getValue($fileIdObject, '[file_id]');
+                if ($fileId) {
+                    if (empty($prefixFilename)) {
+                        $prefix = '%s';
+                    } else {
+                        $prefix = '%s_';
+                    }
+                    $emoji = $pa->getValue($fileIdObject, '[emoji]') ?: $i++;
+                    $emojiTextRepresentation = $transliterator->transliterate($emoji);
+                    $filename = (string)$slugger->slug(
+                        \sprintf($prefix . '%s', $stickerSetName, $emojiTextRepresentation),
+                    );
+                    $absFilepathTo = \sprintf('%s/%s.%s', $absDirTo, $filename, $stickerFileExtension);
+                    $wasMade = $this->downloadFile(
+                        $fileId,
+                        $absFilepathTo,
+                        overwrite: $overwrite,
+                        throw: $throw,
+                    );
+                    if (true === $wasMade) {
+                        $made[$absFilepathTo] = $absFilepathTo;
+                        ++$limitCounter;
+                    }
+                }
+            }
+        }
+        return $made;
     }
 
     /**

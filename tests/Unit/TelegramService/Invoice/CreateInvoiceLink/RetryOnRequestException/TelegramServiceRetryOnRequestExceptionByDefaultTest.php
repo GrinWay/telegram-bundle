@@ -1,6 +1,6 @@
 <?php
 
-namespace GrinWay\Telegram\Tests\Unit\TelegramService\Invoice\SendInvoice;
+namespace GrinWay\Telegram\Tests\Unit\TelegramService\Invoice\CreateInvoiceLink\RetryOnRequestException;
 
 use GrinWay\Telegram\Service\Telegram;
 use GrinWay\Telegram\Tests\Trait\TelegramService\TelegramGrinWayHttpClientRequestTestAware;
@@ -11,8 +11,8 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\MockObject\Builder\InvocationMocker;
 use PHPUnit\Framework\MockObject\MockObject;
 
-#[CoversMethod(Telegram::class, 'sendInvoice')]
-class TelegramServiceRetryOnRequestExceptionTest extends AbstractTelegramServiceTestCase
+#[CoversMethod(Telegram::class, 'createInvoiceLink')]
+class TelegramServiceRetryOnRequestExceptionByDefaultTest extends AbstractTelegramServiceTestCase
 {
     use TelegramGrinWayHttpClientRequestTestAware;
 
@@ -29,7 +29,26 @@ class TelegramServiceRetryOnRequestExceptionTest extends AbstractTelegramService
 
     protected function getTelegramApiMethodGrinWayHttpClientTestAware(): string
     {
-        return 'sendInvoice';
+        return 'createInvoiceLink';
+    }
+
+    protected function assertSuccessfulPayload(mixed $payload): void
+    {
+        static::assertTrue(\is_string($payload));
+    }
+
+    protected function assertFailedPayload(mixed $payload): void
+    {
+        $this->assertNull($payload);
+    }
+
+    protected function processGetContentResponseMock(MockObject $responseMock): void
+    {
+        $responseMock
+            ->expects($this->once())
+            ->method('getContent')
+            ->willReturn('{"ok":true,"result":"invoice link"}')//
+        ;
     }
 
     protected function processRequestGrinWayTelegramHttpClientWillThrowMock(
@@ -58,27 +77,20 @@ class TelegramServiceRetryOnRequestExceptionTest extends AbstractTelegramService
         );
         return [
             'json' => [
-                'chat_id' => 'TEST',
                 'title' => 'title',
                 'description' => 'description',
-                'payload' => 'payload',
                 'currency' => 'USD',
-                'photo_url' => 'photo_url',
                 'prices' => $prices->toArray(),
                 'provider_token' => 'provider_token',
-                'need_name' => true,
-                'need_phone_number' => true,
-                'need_email' => true,
-                'need_shipping_address' => true,
-                'send_phone_number_to_provider' => true,
-                'send_email_to_provider' => true,
-                'is_flexible' => true,
-                'start_parameter' => 'start_parameter',
-                'provider_data' => [
-                    'testProviderData' => 'providerData',
-                ],
-                'testPrependJsonRequest' => 'prependJsonRequest',
-                'testAppendJsonRequest' => 'appendJsonRequest',
+                'need_name' => false,
+                'need_phone_number' => false,
+                'need_email' => false,
+                'need_shipping_address' => false,
+                'send_phone_number_to_provider' => false,
+                'send_email_to_provider' => false,
+                'is_flexible' => false,
+                'payload' => '{}',
+                'start_parameter' => 'service',
             ],
         ];
     }
@@ -86,35 +98,12 @@ class TelegramServiceRetryOnRequestExceptionTest extends AbstractTelegramService
     protected function makeMethodCall(Telegram $telegram, string $method, bool $throw): mixed
     {
         $response = $telegram->$method(
-            chatId: 'TEST',
             title: 'title',
             description: 'description',
             prices: static::$prices,
             providerToken: 'provider_token',
             currency: 'USD',
-            photoUri: 'photo_url',
-            needName: true,
-            needPhoneNumber: true,
-            needEmail: true,
-            needShippingAddress: true,
-            sendPhoneNumberToProvider: true,
-            sendEmailToProvider: true,
-            isFlexible: true,
-            payload: 'payload',
-            startParameter: 'start_parameter',
-            providerData: [
-                'testProviderData' => 'providerData',
-            ],
-            prependJsonRequest: [
-                'testPrependJsonRequest' => 'prependJsonRequest',
-            ],
-            appendJsonRequest: [
-                'testAppendJsonRequest' => 'appendJsonRequest',
-            ],
-            labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi: 'default_label',
             forceMakeHttpRequestToCurrencyApi: true,
-            allowDopPriceIfLessThanLowestPossible: false,
-            allowNonRemovableCache: false,
 
             // THIS TEST TESTS THIS ARGUMENT
             retryOnRequestException: true,

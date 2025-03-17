@@ -1,6 +1,6 @@
 <?php
 
-namespace GrinWay\Telegram\Tests\Unit\TelegramService\Invoice\CreateInvoiceLink;
+namespace GrinWay\Telegram\Tests\Unit\TelegramService\Invoice\CreateInvoiceLink\PricesAreTelegramLabeledPricesAfterProcessing;
 
 use GrinWay\Telegram\Service\Telegram;
 use GrinWay\Telegram\Tests\Trait\TelegramService\TelegramGrinWayHttpClientRequestTestAware;
@@ -8,10 +8,11 @@ use GrinWay\Telegram\Tests\Unit\TelegramService\AbstractTelegramServiceTestCase;
 use GrinWay\Telegram\Type\TelegramLabeledPrice;
 use GrinWay\Telegram\Type\TelegramLabeledPrices;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\MockObject\Builder\InvocationMocker;
 use PHPUnit\Framework\MockObject\MockObject;
 
 #[CoversMethod(Telegram::class, 'createInvoiceLink')]
-class TelegramServicePricesArrayAfterProcessingTest extends AbstractTelegramServiceTestCase
+class TelegramServicePricesAreTelegramLabeledPricesAfterProcessingByDefaultTest extends AbstractTelegramServiceTestCase
 {
     use TelegramGrinWayHttpClientRequestTestAware;
 
@@ -21,14 +22,29 @@ class TelegramServicePricesArrayAfterProcessingTest extends AbstractTelegramServ
     {
         parent::setUp();
 
-        static::$prices = (new TelegramLabeledPrices(
+        static::$prices = new TelegramLabeledPrices(
             new TelegramLabeledPrice('label', '100'),
-        ))->toArray();
+        );
     }
 
     protected function getTelegramApiMethodGrinWayHttpClientTestAware(): string
     {
         return 'createInvoiceLink';
+    }
+
+    protected function processRequestGrinWayTelegramHttpClientWillThrowMock(
+        MockObject $grinwayTelegramClientMock,
+        string     $telegramMethod,
+    ): InvocationMocker
+    {
+        return $grinwayTelegramClientMock
+            ->expects(self::exactly(1 + Telegram::INVOICE_DOP_START_NUMBER_RETRY_ATTEMPTS))
+            ->method('request')
+            ->with(
+                self::identicalTo($this->getMethodMethodGrinwayTelegramClient()),
+                self::identicalTo($telegramMethod),
+                self::equalTo($this->getRequestJsonGrinWayHttpClientTestAware()),
+            );
     }
 
     protected function assertSuccessfulPayload(mixed $payload): void
@@ -56,24 +72,18 @@ class TelegramServicePricesArrayAfterProcessingTest extends AbstractTelegramServ
             'json' => [
                 'title' => 'title',
                 'description' => 'description',
-                'payload' => 'payload',
                 'currency' => 'USD',
-                'photo_url' => 'photo_url',
-                'prices' => static::$prices,
+                'prices' => static::$prices->toArray(),
                 'provider_token' => 'provider_token',
-                'need_name' => true,
-                'need_phone_number' => true,
-                'need_email' => true,
-                'need_shipping_address' => true,
-                'send_phone_number_to_provider' => true,
-                'send_email_to_provider' => true,
-                'is_flexible' => true,
-                'start_parameter' => 'start_parameter',
-                'provider_data' => [
-                    'testProviderData' => 'providerData',
-                ],
-                'testPrependJsonRequest' => 'prependJsonRequest',
-                'testAppendJsonRequest' => 'appendJsonRequest',
+                'need_name' => false,
+                'need_phone_number' => false,
+                'need_email' => false,
+                'need_shipping_address' => false,
+                'send_phone_number_to_provider' => false,
+                'send_email_to_provider' => false,
+                'is_flexible' => false,
+                'payload' => '{}',
+                'start_parameter' => 'service',
             ],
         ];
     }
@@ -86,34 +96,11 @@ class TelegramServicePricesArrayAfterProcessingTest extends AbstractTelegramServ
             prices: static::$prices,
             providerToken: 'provider_token',
             currency: 'USD',
-            photoUri: 'photo_url',
-            needName: true,
-            needPhoneNumber: true,
-            needEmail: true,
-            needShippingAddress: true,
-            sendPhoneNumberToProvider: true,
-            sendEmailToProvider: true,
-            isFlexible: true,
-            payload: 'payload',
-            startParameter: 'start_parameter',
-            providerData: [
-                'testProviderData' => 'providerData',
-            ],
-            prependJsonRequest: [
-                'testPrependJsonRequest' => 'prependJsonRequest',
-            ],
-            appendJsonRequest: [
-                'testAppendJsonRequest' => 'appendJsonRequest',
-            ],
-            labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi: 'labelDopPriceToAchieveMinOneBecauseOfTelegramBotApi',
             forceMakeHttpRequestToCurrencyApi: true,
-            allowDopPriceIfLessThanLowestPossible: false,
-            allowNonRemovableCache: false,
-            retryOnRequestException: false,
             throw: $throw,
         );
 
-        self::assertTrue(\is_array(static::$prices));
+        self::assertInstanceOf(TelegramLabeledPrices::class, static::$prices);
 
         return $response;
     }

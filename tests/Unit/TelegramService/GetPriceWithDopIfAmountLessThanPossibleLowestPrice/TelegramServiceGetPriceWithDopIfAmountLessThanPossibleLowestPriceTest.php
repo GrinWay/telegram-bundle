@@ -1,8 +1,9 @@
 <?php
 
-namespace GrinWay\Telegram\Tests\Unit\TelegramService;
+namespace GrinWay\Telegram\Tests\Unit\TelegramService\GetPriceWithDopIfAmountLessThanPossibleLowestPrice;
 
 use GrinWay\Telegram\Service\Telegram;
+use GrinWay\Telegram\Tests\Unit\TelegramService\AbstractTelegramServiceTestCase;
 use GrinWay\Telegram\Type\TelegramLabeledPrice;
 use GrinWay\Telegram\Type\TelegramLabeledPrices;
 use PHPUnit\Framework\Attributes\CoversMethod;
