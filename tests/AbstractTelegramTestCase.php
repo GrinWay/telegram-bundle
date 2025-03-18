@@ -2,8 +2,10 @@
 
 namespace GrinWay\Telegram\Tests;
 
+use GrinWay\Service\Service\Currency;
 use GrinWay\Service\Trait\Test\GrinWayServiceStubsAware;
 use GrinWay\Telegram\GrinWayTelegramBundle;
+use GrinWay\Telegram\Service\Telegram;
 use GrinWay\Telegram\Tests\Trait\GrinWayTelegramStubsAware;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
@@ -13,6 +15,9 @@ abstract class AbstractTelegramTestCase extends WebTestCase
     use HasBrowser, GrinWayTelegramStubsAware, GrinWayServiceStubsAware;
 
     public const WEBHOOK = '/grinway/telegram/bot/webhook';
+    
+    protected static Telegram $telegram;
+    protected static Currency $currencyService;
 
     /**
      * Overwrite with yours if below is not appropriate
@@ -53,6 +58,9 @@ abstract class AbstractTelegramTestCase extends WebTestCase
         static::setUpGrinWayTelegramMockedDependencies();
         static::setUpGrinWayServiceMockedDependencies();
         static::setUpState();
+
+        static::$telegram = static::getContainer()->get('grinway_telegram');
+        static::$currencyService = static::getContainer()->get('grinway_service.currency');
     }
 
     protected static function isStubGrinwayTelegramClient(): bool

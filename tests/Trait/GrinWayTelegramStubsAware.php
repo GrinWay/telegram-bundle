@@ -9,8 +9,6 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 trait GrinWayTelegramStubsAware
 {
-    protected static Telegram $telegram;
-
     abstract protected static function isStubGrinwayTelegramClient(): bool;
 
     abstract protected static function getStubGrinwayTelegramClientResponseBody(): string;
@@ -48,7 +46,5 @@ trait GrinWayTelegramStubsAware
                 ),
             );
         }
-
-        static::$telegram = static::getContainer()->get('grinway_telegram');
     }
 }
