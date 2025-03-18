@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b24e3d96d330fcff7c644e7627817e33",
+    "content-hash": "3bb14dc39a0f78eb89711cb31daabb06",
     "packages": [
         {
             "name": "behat/mink",
@@ -1586,16 +1586,16 @@
         },
         {
             "name": "grinway/service-bundle",
-            "version": "2.0.0",
+            "version": "3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/GrinWay/service-bundle.git",
-                "reference": "1010274044dc6ad68b09cfdfa80139ba9e939863"
+                "reference": "655f90626032495ebe51f1b2d43880739878c169"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/GrinWay/service-bundle/zipball/1010274044dc6ad68b09cfdfa80139ba9e939863",
-                "reference": "1010274044dc6ad68b09cfdfa80139ba9e939863",
+                "url": "https://api.github.com/repos/GrinWay/service-bundle/zipball/655f90626032495ebe51f1b2d43880739878c169",
+                "reference": "655f90626032495ebe51f1b2d43880739878c169",
                 "shasum": ""
             },
             "require": {
@@ -1663,9 +1663,9 @@
             ],
             "support": {
                 "issues": "https://github.com/GrinWay/service-bundle/issues",
-                "source": "https://github.com/GrinWay/service-bundle/tree/v2.0.0"
+                "source": "https://github.com/GrinWay/service-bundle/tree/v3.1.0"
             },
-            "time": "2025-03-14T10:00:31+00:00"
+            "time": "2025-03-18T10:47:13+00:00"
         },
         {
             "name": "guzzlehttp/uri-template",

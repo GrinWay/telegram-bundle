@@ -19,7 +19,7 @@ abstract class AbstractTelegramServiceTestCase extends AbstractTelegramTestCase
         parent::setUp();
         static::ensureKernelShutdown();
         // in order to use fixer API fake data always (fill in the cache with fake data)
-        static::setUpCurrencyAndItsMockedDependencies();
+        static::setUpGrinWayServiceMockedDependencies();
         static::$telegram = static::getContainer()->get('grinway_telegram');
 
         $this->httpClient = static::getContainer()->get(HttpClientInterface::class);

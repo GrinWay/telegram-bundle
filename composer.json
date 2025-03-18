@@ -56,7 +56,7 @@
     "symfony/stimulus-bundle": "^2.22",
     "symfony/webpack-encore-bundle": "^2.2",
     "endroid/installer": "^1",
-    "grinway/service-bundle": "^2.0",
+    "grinway/service-bundle": "^3",
     "zenstruck/browser": "^1.9",
     "guzzlehttp/uri-template": "^1.0",
     "symfony/ux-turbo": "^2.22",

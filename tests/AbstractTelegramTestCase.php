@@ -2,18 +2,15 @@
 
 namespace GrinWay\Telegram\Tests;
 
-use GrinWay\Service\Service\Currency;
+use GrinWay\Service\Trait\Test\GrinWayServiceStubsAware;
 use GrinWay\Telegram\GrinWayTelegramBundle;
-use GrinWay\Telegram\Service\Telegram;
+use GrinWay\Telegram\Tests\Trait\GrinWayTelegramStubsAware;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\HttpClient\MockHttpClient;
-use Symfony\Component\HttpClient\Response\MockResponse;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Zenstruck\Browser\Test\HasBrowser;
 
 abstract class AbstractTelegramTestCase extends WebTestCase
 {
-    use HasBrowser;
+    use HasBrowser, GrinWayTelegramStubsAware, GrinWayServiceStubsAware;
 
     public const WEBHOOK = '/grinway/telegram/bot/webhook';
 
@@ -29,9 +26,6 @@ abstract class AbstractTelegramTestCase extends WebTestCase
     protected static bool $stubGrinwayTelegramClient = true;
     protected static bool $stubGrinwayTelegramFileClient = true;
     protected static bool $stubCurrencyFixerLatest = true;
-
-    protected static Telegram $telegram;
-    protected static Currency $currencyService;
 
     protected static string $telegramBotTestChatId;
     protected static \Closure $getenv;
@@ -56,8 +50,8 @@ abstract class AbstractTelegramTestCase extends WebTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        static::setUpTelegramAndItsMockedDependencies();
-        static::setUpCurrencyAndItsMockedDependencies();
+        static::setUpGrinWayTelegramMockedDependencies();
+        static::setUpGrinWayServiceMockedDependencies();
         static::setUpState();
     }
 
@@ -66,9 +60,19 @@ abstract class AbstractTelegramTestCase extends WebTestCase
         return static::$stubGrinwayTelegramClient;
     }
 
+    protected static function getStubGrinwayTelegramClientResponseBody(): string
+    {
+        return static::$mockedGrinwayTelegramClientPlainResponse;
+    }
+
     protected static function isStubGrinwayTelegramFileClient(): bool
     {
         return static::$stubGrinwayTelegramFileClient;
+    }
+
+    protected static function getStubGrinwayTelegramFileClientResponseBody(): string
+    {
+        return static::$mockedGrinWayTelegramFileClientPlainResponse;
     }
 
     protected static function isStubCurrencyFixerLatest(): bool
@@ -76,67 +80,9 @@ abstract class AbstractTelegramTestCase extends WebTestCase
         return static::$stubCurrencyFixerLatest;
     }
 
-    /**
-     * @internal
-     */
-    protected static function setUpTelegramAndItsMockedDependencies(): void
+    protected static function getStubCurrencyFixerLatestResponseBody(): string
     {
-        if (true === static::isStubGrinwayTelegramClient()) {
-            $grinwayTelegramClientResponseGenerator = static function (): \Generator {
-                while (true) {
-                    yield new MockResponse(static::$mockedGrinwayTelegramClientPlainResponse);
-                }
-            };
-            static::getContainer()->set(\sprintf('%s $grinwayTelegramClient', HttpClientInterface::class), new MockHttpClient(
-                $grinwayTelegramClientResponseGenerator(),
-            ));
-        }
-
-        if (true === static::isStubGrinwayTelegramFileClient()) {
-            $grinwayTelegramFileClientResponseGenerator = static function (): \Generator {
-                while (true) {
-                    yield new MockResponse(static::$mockedGrinWayTelegramFileClientPlainResponse);
-                }
-            };
-            static::getContainer()->set(\sprintf('%s $grinwayTelegramFileClient', HttpClientInterface::class), new MockHttpClient(
-                $grinwayTelegramFileClientResponseGenerator(),
-            ));
-        }
-
-        static::$telegram = static::getContainer()->get('grinway_telegram');
-    }
-
-    /**
-     * @internal
-     */
-    protected static function setUpCurrencyAndItsMockedDependencies(): void
-    {
-        if (true === static::isStubCurrencyFixerLatest()) {
-            $grinwayTelegramFileClientResponseGenerator = static function (): \Generator {
-                while (true) {
-                    yield new MockResponse(static::$mockedGrinWayServiceFixerLatestClientPlainResponse);
-                }
-            };
-            static::getContainer()->set('grinway_service.currency.fixer_latest', new MockHttpClient(
-                $grinwayTelegramFileClientResponseGenerator(),
-            ));
-        }
-
-        $currencyFixerPayload = static::getContainer()
-            ->get('grinway_service.currency.fixer_latest')
-            ->request('GET', '')
-            ->getContent()//
-        ;
-        $fixerArrayPayload = static::getContainer()
-            ->get('serializer')
-            ->decode($currencyFixerPayload, 'json')//
-        ;
-        if (null === ($fixerArrayPayload['grinway_key_fake_fixer'] ?? null)) {
-            $message = '!!! Accidentally used a real fixer API service, MOCK IT !!!';
-            echo $message . \PHP_EOL . \PHP_EOL;
-            throw new \RuntimeException($message);
-        }
-        static::$currencyService = static::getContainer()->get('grinway_service.currency');
+        return static::$mockedGrinWayServiceFixerLatestClientPlainResponse;
     }
 
     /**
