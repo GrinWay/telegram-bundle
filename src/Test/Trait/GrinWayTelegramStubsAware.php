@@ -1,8 +1,7 @@
 <?php
 
-namespace GrinWay\Telegram\Tests\Trait;
+namespace GrinWay\Telegram\Test\Trait;
 
-use GrinWay\Telegram\Service\Telegram;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Contracts\HttpClient\HttpClientInterface;

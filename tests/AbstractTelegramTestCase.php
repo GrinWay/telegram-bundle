@@ -3,10 +3,10 @@
 namespace GrinWay\Telegram\Tests;
 
 use GrinWay\Service\Service\Currency;
-use GrinWay\Service\Trait\Test\GrinWayServiceStubsAware;
+use GrinWay\Service\Test\Trait\GrinWayServiceStubsAware;
 use GrinWay\Telegram\GrinWayTelegramBundle;
 use GrinWay\Telegram\Service\Telegram;
-use GrinWay\Telegram\Tests\Trait\GrinWayTelegramStubsAware;
+use GrinWay\Telegram\Test\Trait\GrinWayTelegramStubsAware;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 

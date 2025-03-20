@@ -1,6 +1,6 @@
 <?php
 
-namespace GrinWay\Telegram\Tests\Trait\TelegramService;
+namespace GrinWay\Telegram\Test\Trait\TelegramService;
 
 use GrinWay\Telegram\Service\Telegram;
 use PHPUnit\Framework\MockObject\Builder\InvocationMocker;

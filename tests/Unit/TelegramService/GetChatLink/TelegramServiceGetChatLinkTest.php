@@ -3,7 +3,7 @@
 namespace GrinWay\Telegram\Tests\Unit\TelegramService\GetChatLink;
 
 use GrinWay\Telegram\Service\Telegram;
-use GrinWay\Telegram\Tests\Trait\TelegramService\TelegramGrinWayHttpClientRequestTestAware;
+use GrinWay\Telegram\Test\Trait\TelegramService\TelegramGrinWayHttpClientRequestTestAware;
 use GrinWay\Telegram\Tests\Unit\TelegramService\AbstractTelegramServiceTestCase;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\MockObject\Builder\InvocationMocker;

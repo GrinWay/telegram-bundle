@@ -3,7 +3,7 @@
 namespace GrinWay\Telegram\Tests\Unit\TelegramService\DownloadStickers\DownloadStickersHttpClient;
 
 use GrinWay\Telegram\Service\Telegram;
-use GrinWay\Telegram\Tests\Trait\TelegramService\TelegramGrinWayHttpClientRequestTestAware;
+use GrinWay\Telegram\Test\Trait\TelegramService\TelegramGrinWayHttpClientRequestTestAware;
 use GrinWay\Telegram\Tests\Unit\TelegramService\DownloadStickers\AbstractTelegramServiceDownloadStickersTestCase;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\MockObject\Builder\InvocationMocker;

@@ -3,7 +3,7 @@
 namespace GrinWay\Telegram\Tests\Unit\TelegramService\Invoice\SendInvoice\RetryOnRequestException;
 
 use GrinWay\Telegram\Service\Telegram;
-use GrinWay\Telegram\Tests\Trait\TelegramService\TelegramGrinWayHttpClientRequestTestAware;
+use GrinWay\Telegram\Test\Trait\TelegramService\TelegramGrinWayHttpClientRequestTestAware;
 use GrinWay\Telegram\Tests\Unit\TelegramService\AbstractTelegramServiceTestCase;
 use GrinWay\Telegram\Type\TelegramLabeledPrice;
 use GrinWay\Telegram\Type\TelegramLabeledPrices;
