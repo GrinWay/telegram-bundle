@@ -10,11 +10,15 @@ trait GrinWayTelegramStubsAware
 {
     abstract protected static function isStubGrinwayTelegramClient(): bool;
 
-    abstract protected static function getStubGrinwayTelegramClientResponseBody(): string;
-
     abstract protected static function isStubGrinwayTelegramFileClient(): bool;
 
-    abstract protected static function getStubGrinwayTelegramFileClientResponseBody(): string;
+    protected static function getStubGrinwayTelegramClientResponseBody(): string {
+        return '{}';
+    }
+
+    protected static function getStubGrinwayTelegramFileClientResponseBody(): string {
+        return '{}';
+    }
 
     protected static function setUpGrinWayTelegramMockedDependencies(): void
     {
