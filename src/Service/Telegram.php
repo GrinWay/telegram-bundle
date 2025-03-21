@@ -52,8 +52,8 @@ class Telegram
     #[Required]
     public function _setRequired_telegram(
         #[AutowireLocator([
-            'grinwayTelegramClient' => new Autowire('@Symfony\Contracts\HttpClient\HttpClientInterface $grinwayTelegramClient'),
-            'grinwayTelegramFileClient' => new Autowire('@Symfony\Contracts\HttpClient\HttpClientInterface $grinwayTelegramFileClient'),
+            'grinwayTelegramClient' => new Autowire('@grinway_telegram.client'),
+            'grinwayTelegramFileClient' => new Autowire('@grinway_telegram.file.client'),
             'serializer' => new Autowire('@Symfony\Component\Serializer\SerializerInterface'),
             'pa' => new Autowire('@Symfony\Component\PropertyAccess\PropertyAccessorInterface'),
             'filesystem' => new Autowire('@Symfony\Component\Filesystem\Filesystem'),
