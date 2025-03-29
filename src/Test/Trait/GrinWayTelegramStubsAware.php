@@ -8,7 +8,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 trait GrinWayTelegramStubsAware
 {
-    abstract protected static function isStubGrinwayTelegramClient(): bool;
+    abstract protected static function isStubGrinWayTelegramClient(): bool;
 
     abstract protected static function isStubGrinwayTelegramFileClient(): bool;
 

@@ -63,22 +63,22 @@ abstract class AbstractTelegramTestCase extends WebTestCase
         static::$currencyService = static::getContainer()->get('grinway_service.currency');
     }
 
-    protected static function isStubGrinwayTelegramClient(): bool
+    protected static function isStubGrinWayTelegramClient(): bool
     {
         return static::$stubGrinwayTelegramClient;
     }
 
-    protected static function getStubGrinwayTelegramClientResponseBody(): string
+    protected static function getStubGrinWayTelegramClientResponseBody(): string
     {
         return static::$mockedGrinwayTelegramClientPlainResponse;
     }
 
-    protected static function isStubGrinwayTelegramFileClient(): bool
+    protected static function isStubGrinWayTelegramFileClient(): bool
     {
         return static::$stubGrinwayTelegramFileClient;
     }
 
-    protected static function getStubGrinwayTelegramFileClientResponseBody(): string
+    protected static function getStubGrinWayTelegramFileClientResponseBody(): string
     {
         return static::$mockedGrinWayTelegramFileClientPlainResponse;
     }
