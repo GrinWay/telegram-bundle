@@ -49,16 +49,16 @@ class TelegramLabeledPrice implements \ArrayAccess
 
     public function offsetExists(mixed $offset): bool
     {
-        return 'label' == $offset || 'amount' == $offset;
+        return 'label' === $offset || 'amount' === $offset;
     }
 
     public function offsetGet(mixed $offset): mixed
     {
-        if ('label' == $offset) {
+        if ('label' === $offset) {
             return $this->getLabel();
         }
 
-        if ('amount' == $offset) {
+        if ('amount' === $offset) {
             return $this->getAmountWithEndFigures();
         }
 
@@ -67,22 +67,22 @@ class TelegramLabeledPrice implements \ArrayAccess
 
     public function offsetSet(mixed $offset, mixed $value): void
     {
-        if ('label' == $offset) {
+        if ('label' === $offset) {
             $this->setLabel($value);
         }
 
-        if ('amount' == $offset) {
+        if ('amount' === $offset) {
             $this->setAmountWithEndFigures($value);
         }
     }
 
     public function offsetUnset(mixed $offset): void
     {
-        if ('label' == $offset) {
+        if ('label' === $offset) {
             $this->setLabel(null);
         }
 
-        if ('amount' == $offset) {
+        if ('amount' === $offset) {
             $this->setAmountWithEndFigures(null);
         }
     }
