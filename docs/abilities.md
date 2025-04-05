@@ -20,6 +20,14 @@ This bundle helps you to:
 * use
   [grinway_telegram:bot:remove_webhook](https://github.com/GrinWay/telegram-bundle/blob/main/src/Bot/Command/TelegramRemoveWebhookCommand.php)
   symfony command
+* Ready to use form types:
+  * [NumberWithEndFiguresFormType]()
+  * [TelegramLabeledPriceFormType]()
+  * [TelegramLabeledPricesFormType]()
+* Related form type data transformers :
+  * [NumberWithEndFiguresDataTransformer]()
+  * [TelegramLabeledPriceDataTransformer]()
+  * [TelegramLabeledPricesDataTransformer]()
 
 This bundle also adds
 a [grinway_telegram_bot_webhook](https://github.com/GrinWay/telegram-bundle/blob/main/.install/symfony/config/routes/grinway_telegram_routes.yaml)
