@@ -21,13 +21,13 @@ This bundle helps you to:
   [grinway_telegram:bot:remove_webhook](https://github.com/GrinWay/telegram-bundle/blob/main/src/Bot/Command/TelegramRemoveWebhookCommand.php)
   symfony command
 * Ready to use form types:
-  * [NumberWithEndFiguresFormType]()
-  * [TelegramLabeledPriceFormType]()
-  * [TelegramLabeledPricesFormType]()
+  * [NumberWithEndFiguresFormType](https://github.com/GrinWay/telegram-bundle/blob/main/src/Form/NumberWithEndFiguresFormType.php)
+  * [TelegramLabeledPriceFormType](https://github.com/GrinWay/telegram-bundle/blob/main/src/Form/TelegramLabeledPriceFormType.php)
+  * [TelegramLabeledPricesFormType](https://github.com/GrinWay/telegram-bundle/blob/main/src/Form/TelegramLabeledPricesFormType.php)
 * Related form type data transformers :
-  * [NumberWithEndFiguresDataTransformer]()
-  * [TelegramLabeledPriceDataTransformer]()
-  * [TelegramLabeledPricesDataTransformer]()
+  * [NumberWithEndFiguresDataTransformer](https://github.com/GrinWay/telegram-bundle/blob/main/src/Form/DataTransformer/NumberWithEndFiguresDataTransformer.php)
+  * [TelegramLabeledPriceDataTransformer](https://github.com/GrinWay/telegram-bundle/blob/main/src/Form/DataTransformer/TelegramLabeledPriceDataTransformer.php)
+  * [TelegramLabeledPricesDataTransformer](https://github.com/GrinWay/telegram-bundle/blob/main/src/Form/DataTransformer/TelegramLabeledPricesDataTransformer.php)
 
 This bundle also adds
 a [grinway_telegram_bot_webhook](https://github.com/GrinWay/telegram-bundle/blob/main/.install/symfony/config/routes/grinway_telegram_routes.yaml)
