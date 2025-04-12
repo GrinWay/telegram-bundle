@@ -12,10 +12,8 @@ grinway_telegram:
         on_topic_supergroup_message_reply_directly_there: true
 
     # Optional
-#    form:
-#        data_transformer:
-#            cache:
-#                lifetime: '%env(APP_FORM_DATA_TRANSFORMER_CACHE_LIFETIME)%'
+#    cache:
+#        lifetime: '%env(APP_TELEGRAM_CACHE_LIFETIME)%'
 
 when@test:
     grinway_telegram:

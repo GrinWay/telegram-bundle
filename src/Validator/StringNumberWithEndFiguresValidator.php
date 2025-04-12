@@ -11,8 +11,6 @@ class StringNumberWithEndFiguresValidator extends ConstraintValidator
 {
     public function validate(mixed $amount, Constraint $constraint): void
     {
-        /* @var StringNumberWithEndFigures $constraint */
-
         if (null === $amount || '' === $amount) {
             return;
         }
