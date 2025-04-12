@@ -1,3 +1,9 @@
-#framework:
-#    cache:
-#        pools:
+framework:
+    cache:
+        pools:
+
+            grinway_telegram.form.data_transformer.cache_pool:
+                adapters:
+                - 'cache.adapter.filesystem'
+                default_lifetime: '%env(string:default:grinway_telegram.form.data_transformer.cache.lifetime:)%'
+                tags: true

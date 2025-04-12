@@ -28,6 +28,7 @@ This bundle helps you to:
   * [NumberWithEndFiguresDataTransformer](https://github.com/GrinWay/telegram-bundle/blob/main/src/Form/DataTransformer/NumberWithEndFiguresDataTransformer.php)
   * [TelegramLabeledPriceDataTransformer](https://github.com/GrinWay/telegram-bundle/blob/main/src/Form/DataTransformer/TelegramLabeledPriceDataTransformer.php)
   * [TelegramLabeledPricesDataTransformer](https://github.com/GrinWay/telegram-bundle/blob/main/src/Form/DataTransformer/TelegramLabeledPricesDataTransformer.php)
+  * [TgAccountUserNameIdDataTransformer](https://github.com/GrinWay/telegram-bundle/blob/main/src/Form/DataTransformer/https://github.com/GrinWay/telegram-bundle/blob/main/src/Form/DataTransformer/TelegramLabeledPricesDataTransformer.php)
 
 This bundle also adds
 a [grinway_telegram_bot_webhook](https://github.com/GrinWay/telegram-bundle/blob/main/.install/symfony/config/routes/grinway_telegram_routes.yaml)

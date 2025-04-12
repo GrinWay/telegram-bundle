@@ -706,6 +706,40 @@ class Telegram
     /**
      * API
      *
+     * https://core.telegram.org/bots/api#getchat
+     */
+    public function getChat(
+        int|string|null $chatId,
+        bool            $throw = false,
+    ): array
+    {
+        if (null === $chatId) {
+            return static::FAILURE_RESPONSE;
+        }
+
+        try {
+            $responseJson = $this->request('POST', 'getChat', [
+                'json' => [
+                    'chat_id' => $chatId,
+                ],
+            ]);
+        } catch (\Exception $exception) {
+            if (true === $throw) {
+                throw $exception;
+            }
+            return static::FAILURE_RESPONSE;
+        }
+
+        if (!\is_array($responseJson)) {
+            $responseJson = [$responseJson];
+        }
+
+        return $responseJson;
+    }
+
+    /**
+     * API
+     *
      * Response is ok checker
      */
     public static function isResponseOk(array $responsePayload): bool

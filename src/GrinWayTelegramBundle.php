@@ -42,6 +42,10 @@ class GrinWayTelegramBundle extends AbstractBundle
 
     public const GENERIC_CACHE_TAG = self::EXTENSION_ALIAS;
 
+    //###> DEFAULTS ###
+    public const DEFAULT_FORM_DATA_TRANSFORMER_CACHE_LIFETIME = 15_778_476; // 15_778_476 sec === 6 months
+    //###< DEFAULTS ###
+
     protected string $extensionAlias = self::EXTENSION_ALIAS;
 
     public function configure(DefinitionConfigurator $definition): void
@@ -86,6 +90,38 @@ class GrinWayTelegramBundle extends AbstractBundle
             //###< bot array node ###
             ->end()
             ->end()
+            ->arrayNode('form')
+            ->addDefaultsIfNotSet()
+            ->children()//
+            //###> form array node ###
+
+            ->arrayNode('data_transformer')
+            ->addDefaultsIfNotSet()
+            ->children()//
+            //###> data transformer array node ###
+
+            ->arrayNode('cache')
+            ->addDefaultsIfNotSet()
+            ->children()//
+            //###> cache array node ###
+
+            ->scalarNode('lifetime')
+            ->cannotBeEmpty()
+            ->defaultValue(static::DEFAULT_FORM_DATA_TRANSFORMER_CACHE_LIFETIME)
+            ->end()//
+
+            ->end()
+            ->end()
+            //###< cache array node ###
+
+            ->end()
+            ->end()
+            //###< data transformer array node ###
+
+            ->end()
+            ->end()
+            //###< form array node ###
+
             ->end()//
         ;
     }
@@ -107,6 +143,8 @@ class GrinWayTelegramBundle extends AbstractBundle
             ->set(self::bundlePrefixed('bot.on_topic_supergroup_message_reply_directly_there'), $config['bot']['on_topic_supergroup_message_reply_directly_there'])//
 
             ->set(self::bundlePrefixed('bot.name'), $config['bot']['name'])//
+
+            ->set(self::bundlePrefixed('form.data_transformer.cache.lifetime'), $config['form']['data_transformer']['cache']['lifetime'])//
 
             ->set(self::bundlePrefixed('dsn'), \sprintf('telegram://%s@default', $apiToken))//
         ;
