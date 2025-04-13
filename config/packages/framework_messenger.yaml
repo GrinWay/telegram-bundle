@@ -1,3 +1,11 @@
 framework:
     messenger:
         enabled: true
+
+when@test:
+    framework:
+        messenger:
+            routing:
+                Symfony\Component\Notifier\Message\ChatMessage: sync
+            transports:
+                sync: 'test://'

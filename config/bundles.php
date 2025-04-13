@@ -6,4 +6,5 @@ return [
     Doctrine\Bundle\DoctrineBundle\DoctrineBundle::class => ['all' => true],
     GrinWay\Telegram\GrinWayTelegramBundle::class => ['all' => true],
     GrinWay\Service\GrinWayServiceBundle::class => ['all' => true],
+    Zenstruck\Messenger\Test\ZenstruckMessengerTestBundle::class => ['test' => true],
 ];

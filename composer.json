@@ -16,7 +16,8 @@
   "require-dev": {
     "symfony/phpunit-bridge": "^7.2|^6",
     "phpunit/phpunit": "11.4",
-    "symfony/test-pack": "^1.0"
+    "symfony/test-pack": "^1.0",
+    "zenstruck/messenger-test": "^1.11"
   },
   "authors": [
     {
@@ -43,7 +44,7 @@
     "symfony/translation": "^7.2|^6",
     "symfony/property-access": "^7.2|^6",
     "symfony/telegram-notifier": "^7.2|^6",
-    "symfony/messenger": "^7.2|^6",
+    "symfony/messenger": "^7.2",
     "symfony/serializer": "^7.2|^6",
     "symfony/notifier": "^7.2|^6",
     "symfony/string": "^7.2|^6",

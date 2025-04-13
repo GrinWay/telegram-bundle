@@ -9,13 +9,17 @@ use GrinWay\Telegram\Service\Telegram;
 use GrinWay\Telegram\Test\Trait\GrinWayTelegramStubsAware;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
+use Zenstruck\Messenger\Test\InteractsWithMessenger;
 
 abstract class AbstractTelegramTestCase extends WebTestCase
 {
-    use HasBrowser, GrinWayTelegramStubsAware, GrinWayServiceStubsAware;
+    use HasBrowser;
+    use InteractsWithMessenger;
+    use GrinWayTelegramStubsAware;
+    use GrinWayServiceStubsAware;
 
     public const WEBHOOK = '/grinway/telegram/bot/webhook';
-    
+
     protected static Telegram $telegram;
     protected static Currency $currencyService;
 

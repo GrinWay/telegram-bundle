@@ -3,6 +3,7 @@
 namespace GrinWay\Telegram\Tests\Functional\Bot;
 
 use GrinWay\Telegram\Tests\AbstractTelegramTestCase;
+use Symfony\Component\Notifier\Message\ChatMessage;
 use Zenstruck\Browser\KernelBrowser;
 
 abstract class AbstractTopicHandlerTestCase extends AbstractTelegramTestCase
@@ -10,14 +11,16 @@ abstract class AbstractTopicHandlerTestCase extends AbstractTelegramTestCase
     protected function assertTelegramBotHandledPayload(array $payload, int $botRepliedCount, ?string $subject = null): void
     {
         $this->invokeWebhook($payload);
-        self::assertNotificationCount($botRepliedCount);
+        $this->transport('sync')->queue()->assertCount($botRepliedCount);
+        $this->transport('sync')->rejected()->assertEmpty();
 
         if (0 < $botRepliedCount) {
-            $notification = self::getNotifierEvent(0)?->getMessage();
-            $this->assertNotNull($notification);
+            /** @var ChatMessage $chatMessage */
+            $chatMessage = $this->transport('sync')->queue()->first(ChatMessage::class)->getMessage();
+            $this->assertNotNull($chatMessage);
             $this->assertNotNull($subject);
-            self::assertNotificationSubjectContains(
-                $notification,
+            self::assertSame(
+                $chatMessage->getSubject(),
                 $subject,
             );
         }
