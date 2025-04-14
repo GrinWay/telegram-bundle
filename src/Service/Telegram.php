@@ -569,7 +569,9 @@ class Telegram
         foreach ($grinwayHttpFileClient->stream($response) as $chunk) {
             \fwrite($handler, $chunk->getContent());
         }
-        \fclose($handler);
+        if (\is_resource($handler)) {
+            \fclose($handler);
+        }
         return true;
     }
 
