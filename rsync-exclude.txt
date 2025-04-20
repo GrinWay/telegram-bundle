@@ -1,0 +1,12 @@
+.git
+.idea
+.github
+.install
+.env.prod.local
+/var
+/bundles
+/vendor
+/node_modules
+/mercure
+/docs
+/tests
