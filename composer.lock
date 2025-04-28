@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e8046ab014ba36abba268ef0411a152d",
+    "content-hash": "a59ea9f42bee427718e6d884c7993668",
     "packages": [
         {
             "name": "behat/mink",
@@ -1586,16 +1586,16 @@
         },
         {
             "name": "grinway/service-bundle",
-            "version": "4.0.0",
+            "version": "5.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/GrinWay/service-bundle.git",
-                "reference": "dfa0ad1927e2581b7f0387072f1e05a69107e92c"
+                "reference": "c2e6a6dfbba141854c3f1c3551a11d9c80d99aa8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/GrinWay/service-bundle/zipball/dfa0ad1927e2581b7f0387072f1e05a69107e92c",
-                "reference": "dfa0ad1927e2581b7f0387072f1e05a69107e92c",
+                "url": "https://api.github.com/repos/GrinWay/service-bundle/zipball/c2e6a6dfbba141854c3f1c3551a11d9c80d99aa8",
+                "reference": "c2e6a6dfbba141854c3f1c3551a11d9c80d99aa8",
                 "shasum": ""
             },
             "require": {
@@ -1663,9 +1663,9 @@
             ],
             "support": {
                 "issues": "https://github.com/GrinWay/service-bundle/issues",
-                "source": "https://github.com/GrinWay/service-bundle/tree/v4.0.0"
+                "source": "https://github.com/GrinWay/service-bundle/tree/v5.0.0"
             },
-            "time": "2025-04-10T10:40:20+00:00"
+            "time": "2025-04-28T08:19:25+00:00"
         },
         {
             "name": "guzzlehttp/uri-template",
@@ -9064,10 +9064,10 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
-    "platform-dev": [],
+    "platform": {},
+    "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }
