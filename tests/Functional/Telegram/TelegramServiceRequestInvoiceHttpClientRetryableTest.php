@@ -8,11 +8,34 @@ use GrinWay\Telegram\Tests\Functional\AbstractTelegramServiceTestCase;
 use GrinWay\Telegram\Type\TelegramLabeledPrice;
 use GrinWay\Telegram\Type\TelegramLabeledPrices;
 use PHPUnit\Framework\Attributes\CoversClass;
+use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpClient\Response\MockResponse;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 #[CoversClass(Telegram::class)]
 class TelegramServiceRequestInvoiceHttpClientRetryableTest extends AbstractTelegramServiceTestCase
 {
     protected static Currency $currencyService;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        static::getContainer()->set(
+            \sprintf('%s $grinwayTelegramClient', HttpClientInterface::class),
+            new MockHttpClient([
+                new MockResponse(\json_encode([]), ['http_code' => 500]),
+                new MockResponse(\json_encode([]), ['http_code' => 500]),
+                new MockResponse(\json_encode([]), ['http_code' => 500]),
+                new MockResponse(\json_encode([]), ['http_code' => 200]),
+            ]),
+        );
+    }
+
+    protected static function isStubGrinWayTelegramClient(): bool
+    {
+        return false;
+    }
 
     public function testCreateInvoiceLink()
     {
@@ -25,12 +48,12 @@ class TelegramServiceRequestInvoiceHttpClientRetryableTest extends AbstractTeleg
             description: 'description',
             prices: $prices,
             providerToken: static::$telegramTestPaymentProviderToken,
-            currency: 'RUB',
+            currency: 'USD',
             forceMakeHttpRequestToCurrencyApi: true,
             allowDopPriceIfLessThanLowestPossible: false,
             allowNonRemovableCache: false,
             retryOnRequestException: true,
-            throw: false, // don't reveal secrets of http client
+            throw: true, // don't reveal secrets of http client
         );
 
 //        $this->assertNotNull($invoiceLink, 'Invoice link successfully created');

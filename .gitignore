@@ -5,6 +5,7 @@
 *.exe
 /bundles/
 private.*
+/composer.lock
 ###< grinway ###
 
 ###> symfony/framework-bundle ###

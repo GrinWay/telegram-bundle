@@ -3,9 +3,5 @@ framework:
 
         enabled: true
 
-when@test:
-    framework:
-        notifier:
-
-            chatter_transports:
-                telegram: '%env(string:default:grinway_telegram.dsn:)%'
+        chatter_transports:
+            telegram: '%env(string:default:grinway_telegram.dsn:)%'

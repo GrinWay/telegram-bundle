@@ -9,12 +9,12 @@ use GrinWay\Telegram\Type\TelegramLabeledPrices;
 use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(Telegram::class)]
-class TelegramServiceTest extends AbstractTelegramServiceTestCase
+abstract class TelegramServiceTest extends AbstractTelegramServiceTestCase
 {
     public function testNotNullInvoiceLinkCreatedWithMinItemAmountIs1AndMinSumAmountNotLessThanOneDollar()
     {
         $prices = new TelegramLabeledPrices(
-            new TelegramLabeledPrice('label 1', '100'), // min available item amount
+            new TelegramLabeledPrice('label 1', '1'), // min available item amount
         );
 
         $invoiceLink = static::$telegram->createInvoiceLink(
@@ -22,7 +22,7 @@ class TelegramServiceTest extends AbstractTelegramServiceTestCase
             description: 'description',
             prices: $prices,
             providerToken: static::$telegramTestPaymentProviderToken,
-            currency: 'RUB',
+            currency: 'USD',
             needName: true,
             needPhoneNumber: true,
             needEmail: true,

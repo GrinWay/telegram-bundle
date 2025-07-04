@@ -1,6 +1,11 @@
 Test
 ------
 
+> `Since 5.1.3`
+> You can even test real invoice link creation when you have real tokens.<br>
+> Just extend `GrinWay\Telegram\Tests\Functional\Telegram\TelegramServiceTest` in your tests.<br>
+> It's not tested by default because of the real bot token shortage.
+
 | Functional tests                                                                                                                       |                                                                                                                                                                                                                                           Description                                                                                                                                                                                                                                           |
 |----------------------------------------------------------------------------------------------------------------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
 | [TelegramBotAllHandlersTest](https://github.com/GrinWay/telegram-bundle/blob/main/tests/Functional/Bot/TelegramBotAllHandlersTest.php) | Test all test handlers with client 'POST' `webhook` requests<br><br>To tell the truth [TestMessageHandler](https://github.com/GrinWay/telegram-bundle/blob/main/src/Bot/Test/Message/TestMessageHandler.php) is not tested because it's impossible to reach this handler because of [priority able versions](https://github.com/GrinWay/telegram-bundle/tree/main/src/Bot/Test/PriorityAble/Message) of the `message` [optional key webhook payload](https://core.telegram.org/bots/api#update) |
