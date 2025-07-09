@@ -1,6 +1,6 @@
 <?php
 
-namespace GrinWay\Telegram\Tests\Functional\Telegram;
+namespace Functional\Telegram;
 
 use GrinWay\Telegram\Service\Telegram;
 use GrinWay\Telegram\Tests\Functional\AbstractTelegramServiceTestCase;
@@ -9,7 +9,7 @@ use GrinWay\Telegram\Type\TelegramLabeledPrices;
 use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(Telegram::class)]
-abstract class TelegramServiceTest extends AbstractTelegramServiceTestCase
+abstract class TelegramServiceTestCase extends AbstractTelegramServiceTestCase
 {
     public function testNotNullInvoiceLinkCreatedWithMinItemAmountIs1AndMinSumAmountNotLessThanOneDollar()
     {
